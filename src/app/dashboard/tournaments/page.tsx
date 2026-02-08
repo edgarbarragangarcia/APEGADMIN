@@ -98,7 +98,7 @@ export default function TournamentsPage() {
                 </div>
 
                 <div className="flex gap-3">
-                    <button className="apple-button-primary apple-button-sm !w-auto !py-2 px-6">
+                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6">
                         <Plus className="w-4.5 h-4.5 mr-2" /> Programar Torneo
                     </button>
                 </div>
@@ -175,7 +175,7 @@ export default function TournamentsPage() {
                                                             <span>{Math.round((t.current_participants / t.participants_limit) * 100)}%</span>
                                                         </div>
                                                         <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-linear-to-r from-[#32d74b] to-[#c1ff72]" style={{ width: `${(t.current_participants / t.participants_limit) * 100}%` }} />
+                                                            <div className="h-full bg-linear-to-r from-[#32d74b] to-primary" style={{ width: `${(t.current_participants / t.participants_limit) * 100}%` }} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -185,7 +185,7 @@ export default function TournamentsPage() {
                                                         <p className="text-[9px] uppercase font-black text-gray-600 tracking-widest mb-0.5">Inscripción</p>
                                                         <p className="text-xl font-black text-white">${Number(t.price).toLocaleString()}</p>
                                                     </div>
-                                                    <button className="apple-button-primary apple-button-sm !w-auto !py-2 px-6">Ver</button>
+                                                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6">Ver</button>
                                                 </div>
                                             </div>
                                         </div>

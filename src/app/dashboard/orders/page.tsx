@@ -128,7 +128,7 @@ export default function OrdersPage() {
                     <button className="h-9 px-4 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase text-gray-400 hover:text-white transition-all flex items-center gap-2">
                         <Download className="w-3.5 h-3.5" /> Exportar PDF
                     </button>
-                    <button className="apple-button-primary apple-button-sm !w-auto !py-2 px-6">
+                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6">
                         <Filter className="w-4 h-4 mr-2" /> Canales
                     </button>
                 </div>
@@ -182,7 +182,7 @@ export default function OrdersPage() {
                                     </div>
                                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-linear-to-r from-[#32d74b] to-[#c1ff72]"
+                                            className="h-full bg-linear-to-r from-[#32d74b] to-primary"
                                             style={{ width: `${(paidOrders / (orders.length || 1)) * 100}%` }}
                                         />
                                     </div>
@@ -238,8 +238,8 @@ export default function OrdersPage() {
                                                     </td>
                                                     <td className="py-4 px-6 text-center">
                                                         <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wide border ${['paid', 'pagado'].includes(order.status?.toLowerCase())
-                                                                ? 'bg-[#32d74b]/10 text-[#32d74b] border-[#32d74b]/20'
-                                                                : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                                                            ? 'bg-[#32d74b]/10 text-[#32d74b] border-[#32d74b]/20'
+                                                            : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                                                             }`}>
                                                             {order.status || 'PENDIENTE'}
                                                         </span>

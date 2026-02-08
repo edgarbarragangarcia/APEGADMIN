@@ -122,7 +122,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {/* Bottom Section */}
             <div className="p-4 border-t border-white/5">
                 <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} p-2`}>
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-xs font-bold text-white shadow-inner uppercase shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center text-xs font-bold text-white shadow-inner uppercase shrink-0">
                         {userData?.name?.charAt(0) || 'U'}
                     </div>
 

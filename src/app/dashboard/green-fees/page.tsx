@@ -160,7 +160,7 @@ export default function GreenFeesPage() {
                 <div className="flex gap-2">
                     <button
                         onClick={() => handleOpenModal()}
-                        className="apple-button-primary apple-button-sm !w-auto !py-2 px-6"
+                        className="apple-button-primary apple-button-sm w-auto! py-2! px-6"
                     >
                         <Plus className="w-4.5 h-4.5 mr-2" /> Programar Campo
                     </button>
@@ -257,7 +257,7 @@ export default function GreenFeesPage() {
                                             <h4 className="text-xs font-black text-white uppercase tracking-tight mb-1">{c.name}</h4>
                                             <div className="flex items-center gap-4">
                                                 <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-linear-to-r from-[#32d74b] to-[#c1ff72]" style={{ width: `${c.utilization}%` }} />
+                                                    <div className="h-full bg-linear-to-r from-[#32d74b] to-primary" style={{ width: `${c.utilization}%` }} />
                                                 </div>
                                                 <span className="text-[10px] font-black text-gray-500 uppercase w-8 text-right">{c.utilization}%</span>
                                             </div>

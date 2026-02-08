@@ -103,7 +103,7 @@ export default function InventoryPage() {
                 </div>
 
                 <div className="flex gap-2">
-                    <button className="apple-button-primary apple-button-sm !w-auto !py-2 px-6">
+                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6">
                         <Plus className="w-4 h-4 mr-2" /> Nuevo SKU
                     </button>
                 </div>
@@ -267,7 +267,7 @@ export default function InventoryPage() {
                                         </div>
                                         <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-linear-to-r from-[#32d74b] to-[#c1ff72]"
+                                                className="h-full bg-linear-to-r from-[#32d74b] to-primary"
                                                 style={{ width: `${(c.val / totalInventoryValue) * 100}%` }}
                                             />
                                         </div>
