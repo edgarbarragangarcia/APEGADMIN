@@ -75,47 +75,47 @@ export default function InventoryPage() {
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
             {/* COMPACT FIXED HEADER */}
-            <div className="px-8 py-5 flex items-center justify-between shrink-0 z-10 relative">
-                <div className="flex items-center gap-4">
-                    <div className="p-2.5 rounded-xl bg-[#32d74b]/10 border border-[#32d74b]/20">
+            <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="p-2.5 rounded-xl bg-[#32d74b]/10 border border-[#32d74b]/20 shrink-0">
                         <Package className="w-5 h-5 text-[#32d74b]" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-white leading-tight uppercase tracking-tighter">Inventario</h1>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Control de Almacén y Stock</p>
+                        <h1 className="text-xl md:text-2xl font-black text-white leading-tight uppercase tracking-tighter">Inventario</h1>
+                        <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Control de Almacén y Stock</p>
                     </div>
 
                     {/* SEGMENTED CONTROL */}
-                    <div className="bg-[#1c1c1e] p-1 rounded-xl flex ml-8 border border-white/5">
+                    <div className="bg-[#1c1c1e] p-1 rounded-xl flex border border-white/5 sm:ml-4">
                         <button
                             onClick={() => setActiveTab('list')}
-                            className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-[#32d74b] text-black shadow-lg shadow-[#32d74b]/20' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-[#32d74b] text-black shadow-lg shadow-[#32d74b]/20' : 'text-gray-500 hover:text-white'}`}
                         >
                             Almacén
                         </button>
                         <button
                             onClick={() => setActiveTab('finance')}
-                            className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-[#32d74b] text-black shadow-lg shadow-[#32d74b]/20' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-[#32d74b] text-black shadow-lg shadow-[#32d74b]/20' : 'text-gray-500 hover:text-white'}`}
                         >
                             Finanzas
                         </button>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6">
+                <div className="flex gap-2 w-full sm:w-auto">
+                    <button className="apple-button-primary apple-button-sm w-full sm:w-auto py-2.5 md:py-2! px-6 flex items-center justify-center">
                         <Plus className="w-4 h-4 mr-2" /> Nuevo SKU
                     </button>
                 </div>
             </div>
 
             {/* MAIN AREA */}
-            <div className="flex-1 p-8 pt-4 flex flex-col gap-6 overflow-hidden relative z-10">
+            <div className="flex-1 p-4 md:p-8 pt-2 md:pt-4 flex flex-col gap-4 md:gap-6 overflow-hidden relative z-10">
 
                 {activeTab === 'list' ? (
                     <>
                         {/* STATS STRIP */}
-                        <div className="grid grid-cols-4 gap-4 shrink-0">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 font-bold tracking-tight">
                             {[
                                 { label: 'Total SKU', val: stats?.inventory?.total || 0, icon: Layers, color: 'text-white' },
                                 { label: 'Alertas Stock', val: stats?.inventory?.low_stock || 0, icon: AlertTriangle, color: 'text-amber-500' },
@@ -123,10 +123,10 @@ export default function InventoryPage() {
                                 { label: 'Estado', val: 'Óptimo', icon: BarChart3, color: 'text-emerald-400' }
                             ].map((s, i) => (
                                 <div key={i} className="apple-card p-4 flex items-center gap-4">
-                                    <div className="p-2 rounded-xl bg-white/5"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{s.label}</p>
-                                        <p className="text-sm font-black text-white">{s.val}</p>
+                                    <div className="p-2 rounded-xl bg-white/5 shrink-0"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
+                                    <div className="min-w-0">
+                                        <p className="text-[8px] md:text-[9px] font-black text-gray-600 uppercase tracking-widest">{s.label}</p>
+                                        <p className="text-xs md:text-sm font-black text-white truncate">{s.val}</p>
                                     </div>
                                 </div>
                             ))}
@@ -139,15 +139,15 @@ export default function InventoryPage() {
                                 <input
                                     type="text"
                                     placeholder="Buscar producto..."
-                                    className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] text-white focus:outline-none focus:border-white/10 transition-all font-bold"
+                                    className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] text-white focus:outline-none focus:border-white/10 transition-all font-bold h-10"
                                 />
                             </div>
-                            <div className="flex bg-[#1c1c1e] p-1 rounded-xl items-center border border-white/5">
-                                <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[#32d74b] text-black shadow-md' : 'text-gray-600'}`}>
-                                    <List className="w-3.5 h-3.5" />
+                            <div className="flex bg-[#1c1c1e] p-1 rounded-xl items-center border border-white/5 h-10">
+                                <button onClick={() => setViewMode('table')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[#32d74b] text-black shadow-md' : 'text-gray-600'}`}>
+                                    <List className="w-4 h-4 md:w-3.5 md:h-3.5" />
                                 </button>
-                                <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#32d74b] text-black shadow-md' : 'text-gray-600'}`}>
-                                    <LayoutGrid className="w-3.5 h-3.5" />
+                                <button onClick={() => setViewMode('grid')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#32d74b] text-black shadow-md' : 'text-gray-600'}`}>
+                                    <LayoutGrid className="w-4 h-4 md:w-3.5 md:h-3.5" />
                                 </button>
                             </div>
                         </div>
@@ -156,13 +156,13 @@ export default function InventoryPage() {
                         <div className="flex-1 apple-card overflow-hidden flex flex-col">
                             <div className="flex-1 overflow-auto custom-scrollbar">
                                 {viewMode === 'table' ? (
-                                    <table className="w-full">
+                                    <table className="w-full min-w-[500px] md:min-w-0">
                                         <thead>
-                                            <tr className="border-b border-white/5">
-                                                <th className="py-4 px-6 text-[9px] font-black uppercase text-gray-600 text-left">SKU / Marca</th>
-                                                <th className="py-4 px-6 text-[9px] font-black uppercase text-gray-600 text-center">Categoría</th>
-                                                <th className="py-4 px-6 text-[9px] font-black uppercase text-gray-600 text-center">Stock</th>
-                                                <th className="py-4 px-6 text-[9px] font-black uppercase text-gray-600 text-right">Precio Unit.</th>
+                                            <tr className="border-b border-white/5 bg-white/2 sticky top-0 z-10">
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-left tracking-widest">SKU / Marca</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-center tracking-widest">Categoría</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-center tracking-widest">Stock</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-right tracking-widest">Precio Unit.</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/2">
@@ -173,23 +173,23 @@ export default function InventoryPage() {
                                             ) : (
                                                 products.map((p) => (
                                                     <tr key={p.id} className="group hover:bg-white/2 transition-colors">
-                                                        <td className="py-3 px-6">
-                                                            <div>
-                                                                <div className="text-xs font-black text-white">{p.name}</div>
-                                                                <div className="text-[8px] font-black text-[#32d74b] uppercase">{p.brand || 'Original'}</div>
+                                                        <td className="py-3 px-4 md:px-6">
+                                                            <div className="min-w-0">
+                                                                <div className="text-xs font-black text-white truncate max-w-[150px] md:max-w-none">{p.name}</div>
+                                                                <div className="text-[8px] font-black text-[#32d74b] uppercase tracking-wider">{p.brand || 'Original'}</div>
                                                             </div>
                                                         </td>
-                                                        <td className="py-3 px-6 text-center">
-                                                            <span className="text-[9px] font-black text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg uppercase">{p.category || 'General'}</span>
+                                                        <td className="py-3 px-4 md:px-6 text-center">
+                                                            <span className="text-[8px] md:text-[9px] font-black text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg uppercase tracking-widest">{p.category || 'General'}</span>
                                                         </td>
-                                                        <td className="py-3 px-6 text-center">
+                                                        <td className="py-3 px-4 md:px-6 text-center">
                                                             <div className="flex flex-col">
                                                                 <span className="text-xs font-black text-white">{p.stock_quantity}</span>
-                                                                <span className={`text-[8px] font-black uppercase ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
+                                                                <span className={`text-[8px] font-black uppercase tracking-tight ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
                                                             </div>
                                                         </td>
-                                                        <td className="py-3 px-6 text-right">
-                                                            <span className="text-xs font-black text-white">{formatCurrency(p.price)}</span>
+                                                        <td className="py-3 px-4 md:px-6 text-right">
+                                                            <span className="text-[11px] md:text-xs font-black text-white">{formatCurrency(p.price)}</span>
                                                         </td>
                                                     </tr>
                                                 ))
@@ -197,17 +197,20 @@ export default function InventoryPage() {
                                         </tbody>
                                     </table>
                                 ) : (
-                                    <div className="grid grid-cols-3 gap-6 p-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
                                         {products.map((p) => (
-                                            <div key={p.id} className="apple-card p-5 bg-white/2 group hover:scale-[1.02] transition-all">
+                                            <div key={p.id} className="apple-card p-5 bg-white/2 group hover:scale-[1.01] transition-all">
                                                 <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center"><Tag className="w-5 h-5 text-gray-600" /></div>
-                                                    <span className={`text-[8px] font-black uppercase ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
+                                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><Tag className="w-5 h-5 text-gray-600" /></div>
+                                                    <span className={`text-[8px] font-black uppercase tracking-widest ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
                                                 </div>
                                                 <h3 className="text-xs font-black text-white truncate mb-4">{p.name}</h3>
                                                 <div className="flex items-end justify-between border-t border-white/5 pt-4">
-                                                    <p className="text-lg font-black text-white">{formatCurrency(p.price)}</p>
-                                                    <button className="p-2 rounded-lg bg-white/5 text-gray-500 hover:text-white"><Eye className="w-3.5 h-3.5" /></button>
+                                                    <div>
+                                                        <p className="text-[8px] font-black text-gray-600 uppercase mb-0.5">Precio Listado</p>
+                                                        <p className="text-base md:text-lg font-black text-white leading-none">{formatCurrency(p.price)}</p>
+                                                    </div>
+                                                    <button className="p-2.5 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all"><Eye className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         ))}
@@ -215,60 +218,60 @@ export default function InventoryPage() {
                                 )}
                             </div>
 
-                            <div className="px-6 py-3 border-t border-white/5 flex items-center justify-between shrink-0">
-                                <p className="text-[9px] font-black text-gray-600 uppercase">Página <span className="text-[#32d74b]">{page}</span></p>
+                            <div className="px-4 md:px-6 py-3 border-t border-white/5 flex items-center justify-between shrink-0 bg-white/2">
+                                <p className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest">Pág. <span className="text-[#32d74b]">{page}</span></p>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-1.5 rounded-lg bg-white/5 text-white hover:bg-white/10"><ChevronLeft className="w-4 h-4" /></button>
-                                    <button onClick={() => setPage(p => p + 1)} className="p-1.5 rounded-lg bg-white/5 text-white hover:bg-white/10"><ChevronRight className="w-4 h-4" /></button>
+                                    <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-all border border-white/5"><ChevronLeft className="w-4 h-4" /></button>
+                                    <button onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-all border border-white/5"><ChevronRight className="w-4 h-4" /></button>
                                 </div>
                             </div>
                         </div>
                     </>
                 ) : (
                     /* FINANCE DASHBOARD */
-                    <div className="flex-1 flex flex-col gap-6 overflow-hidden">
-                        <div className="grid grid-cols-3 gap-6 shrink-0">
+                    <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
                             <div className="apple-card p-6 border-l-4 border-l-[#32d74b]">
-                                <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Valorización de Almacén</p>
-                                <h3 className="text-3xl font-black text-white">{formatCurrency(totalInventoryValue)}</h3>
-                                <p className="text-xs text-[#32d74b] mt-2 font-bold flex items-center gap-1">
+                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Valorización Almacén</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-white truncate">{formatCurrency(totalInventoryValue)}</h3>
+                                <p className="text-[10px] text-[#32d74b] mt-2 font-bold flex items-center gap-1">
                                     <ArrowUpRight className="w-3.5 h-3.5" /> Total activos corrientes
                                 </p>
                             </div>
                             <div className="apple-card p-6">
-                                <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Rotación de Stock</p>
-                                <h3 className="text-3xl font-black text-white">4.2x</h3>
-                                <p className="text-xs text-gray-500 mt-2 font-bold uppercase tracking-tight">Periodo anual estimado</p>
+                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Rotación Stock</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-white">4.2x</h3>
+                                <p className="text-[10px] text-gray-500 mt-2 font-bold uppercase tracking-tight">Periodo anual estimado</p>
                             </div>
-                            <div className="apple-card p-6">
-                                <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Costo de Reposición</p>
-                                <h3 className="text-3xl font-black text-white">{formatCurrency(totalInventoryValue * 0.72)}</h3>
-                                <p className="text-xs text-amber-500 mt-2 font-bold uppercase tracking-tight">Inversión proyectada</p>
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1">
+                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Costo Reposición</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-white truncate">{formatCurrency(totalInventoryValue * 0.72)}</h3>
+                                <p className="text-[10px] text-amber-500 mt-2 font-bold uppercase tracking-tight">Inversión proyectada</p>
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-8 flex flex-col overflow-hidden">
-                            <div className="flex items-center justify-between mb-8">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px]">
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
                                 <div>
-                                    <h3 className="text-lg font-black text-white">Distribución de Capital</h3>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-tight">Valor en inventario por categoría principal</p>
+                                    <h3 className="text-base md:text-lg font-black text-white uppercase tracking-tight">Distribución de Capital</h3>
+                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-tight">Valor en inventario por categoría principal</p>
                                 </div>
                             </div>
 
-                            <div className="flex-1 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-4">
+                            <div className="flex-1 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1 md:pr-4">
                                 {topCategoriesValue.map((c, i) => (
                                     <div key={i} className="flex flex-col gap-3">
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <p className="text-xs font-black text-white uppercase tracking-tight">{c.name}</p>
-                                                <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Participación: {Math.round((c.val / totalInventoryValue) * 100)}%</p>
+                                        <div className="flex justify-between items-end gap-4 overflow-hidden">
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] md:text-xs font-black text-white uppercase tracking-tight truncate">{c.name}</p>
+                                                <p className="text-[8px] md:text-[10px] text-gray-600 font-bold uppercase tracking-widest truncate">Participación: {Math.round((c.val / (totalInventoryValue || 1)) * 100)}%</p>
                                             </div>
-                                            <p className="text-sm font-black text-white">{formatCurrency(c.val)}</p>
+                                            <p className="text-[11px] md:text-sm font-black text-white shrink-0">{formatCurrency(c.val)}</p>
                                         </div>
                                         <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-linear-to-r from-[#32d74b] to-primary"
-                                                style={{ width: `${(c.val / totalInventoryValue) * 100}%` }}
+                                                style={{ width: `${(c.val / (totalInventoryValue || 1)) * 100}%` }}
                                             />
                                         </div>
                                     </div>
@@ -279,11 +282,11 @@ export default function InventoryPage() {
                 )}
 
                 {/* FOOTER */}
-                <div className="px-6 py-4 bg-white/2 border border-white/5 rounded-2xl flex items-center justify-between shrink-0">
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
-                        Status: <span className="text-[#32d74b]">Sincronización Exitosa</span>
+                <div className="px-4 md:px-6 py-4 bg-white/2 border border-white/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0">
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
+                        Status: <span className="text-[#32d74b]">Sincronización OK</span>
                     </p>
-                    <div className="flex items-center gap-3 text-[10px] font-black text-gray-500 uppercase tracking-tighter">
+                    <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-tighter">
                         <span>Apeg Logistics V2.4</span>
                     </div>
                 </div>

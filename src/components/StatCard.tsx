@@ -29,8 +29,8 @@ export default function StatCard({
             <div className="relative z-10">
                 <div className="flex justify-between items-start mb-4">
                     <div>
-                        <p className="text-gray-400 text-sm font-medium">{title}</p>
-                        <h3 className="text-4xl font-black mt-2 text-white tracking-tight">{value}</h3>
+                        <p className="text-gray-400 text-xs md:text-sm font-medium uppercase tracking-tight">{title}</p>
+                        <h3 className="text-2xl md:text-4xl font-black mt-1 md:mt-2 text-white tracking-tighter">{value}</h3>
                     </div>
                     {Icon && (
                         <div className={`p-3 rounded-xl bg-linear-to-br from-primary/20 to-primary/5 ${iconColor} group-hover:scale-110 transition-transform`}>
@@ -43,8 +43,8 @@ export default function StatCard({
                     <div className="flex items-center gap-3 pt-4 border-t border-white/5">
                         {trend && (
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositive
-                                    ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20'
-                                    : 'bg-red-400/10 text-red-400 border border-red-400/20'
+                                ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20'
+                                : 'bg-red-400/10 text-red-400 border border-red-400/20'
                                 }`}>
                                 {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                                 {trend}

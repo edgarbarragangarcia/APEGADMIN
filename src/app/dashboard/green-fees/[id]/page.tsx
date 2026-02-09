@@ -454,42 +454,42 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
             {/* HEADER & SEGMENTED CONTROL */}
-            <div className="px-6 py-5 flex items-center justify-between shrink-0 z-10 relative">
-                <div className="flex items-center gap-4">
+            <div className="px-4 md:px-6 py-4 md:py-5 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 z-10 relative">
+                <div className="flex items-center gap-4 w-full md:w-auto">
                     <Link href="/dashboard/green-fees"
                         className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all text-white/50 hover:text-white"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
 
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-semibold text-white tracking-tight">{course.name}</h1>
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${course.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
-                                {course.status === 'active' ? 'Activo' : course.status}
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                                {course.status === 'active' ? 'Activo' : course.status.toUpperCase()}
                             </span>
                         </div>
-                        <p className="text-sm text-gray-400">{course.location}</p>
+                        <p className="text-xs md:text-sm text-gray-400 truncate">{course.location}</p>
                     </div>
                 </div>
 
                 {/* SEGMENTED CONTROL */}
-                <div className="bg-[#2c2c2e] p-1 rounded-lg flex text-xs font-medium">
+                <div className="bg-[#2c2c2e] p-1 rounded-lg flex text-[10px] sm:text-xs font-medium w-full md:w-auto shadow-inner">
                     <button
                         onClick={() => setActiveTab('agenda')}
-                        className={`px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                     >
                         Agenda
                     </button>
                     <button
                         onClick={() => setActiveTab('prices')}
-                        className={`px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                     >
                         Tarifas
                     </button>
                     <button
                         onClick={() => setActiveTab('blocks')}
-                        className={`px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                     >
                         Bloqueos
                     </button>
@@ -497,30 +497,30 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             </div>
 
             {/* MAIN WORKSPACE Area */}
-            <div className="flex-1 px-6 pb-6 flex flex-row gap-6 overflow-hidden relative z-0">
-                {/* DYNAMIC VIEW Area - FULL HEIGHT */}
-                <div className="flex-1 overflow-hidden animate-fade-in flex flex-col">
+            <div className="flex-1 px-4 md:px-6 pb-6 flex flex-col lg:flex-row gap-4 md:gap-6 overflow-hidden overflow-y-auto lg:overflow-hidden relative z-0 custom-scrollbar">
+                {/* DYNAMIC VIEW Area */}
+                <div className="flex-1 animate-fade-in flex flex-col min-h-[500px] lg:min-h-0">
                     {activeTab === 'agenda' ? (
-                        <div className="flex-1 apple-card p-5 flex flex-col overflow-hidden">
-                            <div className="flex items-center justify-between mb-6 shrink-0">
-                                <h3 className="text-lg font-semibold text-white tracking-tight flex items-center gap-2">
+                        <div className="flex-1 apple-card p-4 md:p-5 flex flex-col overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 shrink-0 gap-4">
+                                <h3 className="text-base md:text-lg font-semibold text-white tracking-tight flex items-center gap-2">
                                     Calendario Operativo
                                 </h3>
 
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-1 bg-[#2c2c2e] rounded-lg p-1">
+                                <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full sm:w-auto">
+                                    <div className="flex-1 sm:flex-none flex items-center gap-1 bg-[#2c2c2e] rounded-lg p-1 order-2 sm:order-1">
                                         <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-1 hover:bg-white/10 rounded-md transition-colors">
                                             <ChevronLeft className="w-4 h-4 text-gray-400" />
                                         </button>
-                                        <span className="text-sm font-medium text-white px-3 min-w-[100px] text-center capitalize">
-                                            {new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' }).format(currentDate)}
+                                        <span className="text-xs sm:text-sm font-medium text-white px-2 sm:px-3 min-w-[80px] sm:min-w-[100px] text-center capitalize">
+                                            {new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(currentDate)}
                                         </span>
                                         <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-1 hover:bg-white/10 rounded-md transition-colors">
                                             <ChevronRight className="w-4 h-4 text-gray-400" />
                                         </button>
                                     </div>
 
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 order-1 sm:order-2">
                                         <button
                                             onClick={() => {
                                                 const today = new Date().toISOString().split('T')[0]
@@ -528,14 +528,14 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                 setSelectedDates([today])
                                                 setLastClickedDate(today)
                                             }}
-                                            className="apple-button apple-button-secondary apple-button-sm font-medium"
+                                            className="apple-button apple-button-secondary apple-button-sm font-medium py-1.5! px-3! text-[10px]"
                                         >
                                             Hoy
                                         </button>
                                         {selectedDates.length > 0 && (
                                             <button
                                                 onClick={clearSelection}
-                                                className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-all"
+                                                className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-medium hover:bg-red-500/20 transition-all border border-red-500/10"
                                             >
                                                 Limpiar
                                             </button>
@@ -544,13 +544,13 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-7 gap-2 mb-2 shrink-0 px-1">
-                                {['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'].map(d => (
-                                    <div key={d} className="text-center text-[10px] font-semibold text-gray-500">{d}</div>
+                            <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2 shrink-0 px-1">
+                                {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(d => (
+                                    <div key={d} className="text-center text-[9px] md:text-[10px] font-bold text-gray-500">{d}</div>
                                 ))}
                             </div>
 
-                            <div className="flex-1 grid grid-cols-7 grid-rows-6 gap-2 p-1">
+                            <div className="flex-1 grid grid-cols-7 grid-rows-6 gap-1 md:gap-2 p-1 min-h-[300px]">
                                 {[...Array(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay())].map((_, i) => (
                                     <div key={`empty-${i}`} className="opacity-0" />
                                 ))}
@@ -561,45 +561,51 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     const isBlocked = blockedDays.some(b => b.blocked_date === dateStr)
                                     const hasOverride = overrides.some(o => dateStr >= o.start_date && dateStr <= o.end_date)
                                     const isSelected = selectedDates.includes(dateStr)
-                                    const isToday = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth()
+                                    const isToday = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() && currentDate.getFullYear() === new Date().getFullYear()
 
                                     return (
                                         <button
                                             key={day}
                                             onClick={(e) => handleDateClick(dateStr, e)}
-                                            className={`relative h-full rounded-xl border transition-all duration-200 flex flex-col group overflow-hidden p-2 text-left
+                                            className={`relative h-full rounded-lg md:rounded-xl border transition-all duration-200 flex flex-col group overflow-hidden p-1 sm:p-2 text-left
                                                 ${isSelected
-                                                    ? 'bg-blue-500/20 border-blue-500 ring-1 ring-blue-500/50'
+                                                    ? 'bg-blue-500/20 border-blue-500 shadow-sm shadow-blue-500/20'
                                                     : isBlocked
                                                         ? 'bg-red-500/5 border-red-500/20 opacity-60'
                                                         : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'}
                                             `}
                                         >
-                                            <div className="flex items-center justify-between w-full mb-1">
-                                                <span className={`text-sm font-semibold transition-colors ${isSelected ? 'text-blue-400' : isToday ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                                            <div className="flex items-center justify-between w-full mb-0.5 md:mb-1">
+                                                <span className={`text-[11px] sm:text-sm font-semibold transition-colors ${isSelected ? 'text-blue-400' : isToday ? 'text-primary' : 'text-gray-400 group-hover:text-white'}`}>
                                                     {day}
                                                 </span>
-                                                <div className="flex gap-1.5">
+                                                <div className="flex gap-1">
                                                     {hasOverride && <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />}
                                                     {isBlocked && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />}
                                                 </div>
                                             </div>
 
-                                            <div className="flex-1 w-full overflow-hidden space-y-0.5">
-                                                {dayRes.slice(0, 3).map((res, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between text-[9px] font-medium text-gray-400">
+                                            <div className="flex-1 w-full overflow-hidden space-y-0.5 hidden sm:block">
+                                                {dayRes.slice(0, 2).map((res, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between text-[8px] md:text-[9px] font-medium text-gray-400">
                                                         <span className="text-gray-300">{res.reservation_time}</span>
                                                         <span className="truncate ml-1">{res.user_name?.split(' ')[0]}</span>
                                                     </div>
                                                 ))}
-                                                {dayRes.length > 3 && (
-                                                    <div className="text-[9px] font-bold text-blue-400/80 text-center mt-auto">
-                                                        + {dayRes.length - 3} más
+                                                {dayRes.length > 2 && (
+                                                    <div className="text-[8px] md:text-[9px] font-bold text-blue-400/80 text-center">
+                                                        + {dayRes.length - 2}
                                                     </div>
                                                 )}
-                                                {dayRes.length === 0 && !isBlocked && (
-                                                    <div className="h-full flex items-center justify-center opacity-0 group-hover:opacity-20 transition-opacity">
-                                                        <Flag className="w-3 h-3 text-gray-500" />
+                                            </div>
+
+                                            {/* Mobile indicators */}
+                                            <div className="flex-1 flex items-center justify-center sm:hidden">
+                                                {dayRes.length > 0 && !isBlocked && (
+                                                    <div className="flex gap-0.5">
+                                                        {[...Array(Math.min(dayRes.length, 3))].map((_, i) => (
+                                                            <div key={i} className="w-1 h-1 rounded-full bg-blue-500/60" />
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
@@ -609,58 +615,58 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             </div>
                         </div>
                     ) : activeTab === 'prices' ? (
-                        <div className="h-full premium-glass p-10 flex flex-col overflow-hidden">
-                            <div className="flex items-center justify-between mb-12 shrink-0">
+                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">Editor de Tarifas</h3>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Establece precios dinámicos por temporadas o eventos</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-1 md:mb-2">Tarifas Dinámicas</h3>
+                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-widest">Establece precios por temporadas o eventos</p>
                                 </div>
                                 <button
                                     onClick={() => setIsOverriding(true)}
-                                    className="btn-primary flex items-center gap-3 px-8 text-[11px] font-black uppercase tracking-widest shadow-primary/30"
+                                    className="btn-primary flex items-center gap-3 px-6 md:px-8 text-[10px] md:text-[11px] font-black uppercase tracking-widest shadow-primary/30 w-full sm:w-auto justify-center"
                                 >
-                                    <Plus className="w-5 h-5" /> Nueva Tarifa Especial
+                                    <Plus className="w-4 h-4 md:w-5 md:h-5" /> Nueva Tarifa Especial
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto space-y-8 custom-scrollbar pr-4">
-                                <div className="mt-12">
+                            <div className="flex-1 overflow-y-auto space-y-6 md:space-y-8 custom-scrollbar pr-1 md:pr-4">
+                                <div className="mt-8 md:mt-12">
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="h-px flex-1 bg-white/5" />
-                                        <h4 className="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-3">
+                                        <h4 className="text-[9px] md:text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
                                             <History className="w-4 h-4" /> Historial de Excepciones
                                         </h4>
                                         <div className="h-px flex-1 bg-white/5" />
                                     </div>
                                     <div className="space-y-4">
                                         {overrides.length > 0 ? overrides.map(o => (
-                                            <div key={o.id} className="glass-panel p-6 flex items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden">
+                                            <div key={o.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden gap-4">
                                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                                                <div className="flex items-center gap-10 relative z-10">
-                                                    <div className="p-4 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-lg shadow-amber-500/10">
-                                                        <DollarSign className="w-6 h-6" />
+                                                <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
+                                                    <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-lg shadow-amber-500/10 shrink-0">
+                                                        <DollarSign className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
-                                                    <div className="text-left">
-                                                        <p className="text-lg font-black text-white uppercase tracking-tighter mb-1">
-                                                            {o.start_date} <span className="text-gray-600 mx-2">→</span> {o.end_date}
+                                                    <div className="text-left min-w-0">
+                                                        <p className="text-base md:text-lg font-black text-white uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
+                                                            {o.start_date} <span className="text-gray-600 mx-1 md:mx-2">→</span> {o.end_date}
                                                         </p>
-                                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{o.note || 'Promocional / Temporal'}</p>
+                                                        <p className="text-[9px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest truncate">{o.note || 'Promocional / Temporal'}</p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-10 relative z-10">
-                                                    <div className="text-right">
-                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Costo Especial</p>
-                                                        <p className="text-2xl font-black text-primary">{formatCurrency(o.price)}</p>
+                                                <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 relative z-10 w-full sm:w-auto">
+                                                    <div className="text-left sm:text-right">
+                                                        <p className="text-[8px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5 md:mb-1">Costo Especial</p>
+                                                        <p className="text-xl md:text-2xl font-black text-primary">{formatCurrency(o.price)}</p>
                                                     </div>
-                                                    <button onClick={() => removeOverride(o.id)} className="p-3 rounded-xl hover:bg-red-500/10 text-gray-600 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 active:scale-90">
-                                                        <Trash2 className="w-5 h-5" />
+                                                    <button onClick={() => removeOverride(o.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-red-500/10 text-gray-600 hover:text-red-500 transition-all active:scale-90">
+                                                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                         )) : (
-                                            <div className="py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
-                                                <DollarSign className="w-16 h-16 mb-6 text-gray-400" />
-                                                <p className="text-sm font-black uppercase tracking-widest text-white">No hay tarifas especiales configuradas</p>
+                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
+                                                <DollarSign className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-gray-400" />
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-white text-center">No hay tarifas especiales configuradas</p>
                                             </div>
                                         )}
                                     </div>
@@ -668,63 +674,63 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full premium-glass p-10 flex flex-col overflow-hidden">
-                            <div className="flex items-center justify-between mb-12 shrink-0">
+                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">Restricciones de Fecha</h3>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Cierra el campo para eventos privados o mantenimiento</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-1 md:mb-2">Restricciones</h3>
+                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-widest">Cierra el campo por eventos o mantenimiento</p>
                                 </div>
                                 <button
                                     onClick={() => setIsBlocking(true)}
-                                    className="btn-primary flex items-center gap-3 px-8 text-[11px] font-black uppercase tracking-widest"
+                                    className="btn-primary flex items-center gap-3 px-6 md:px-8 text-[10px] md:text-[11px] font-black uppercase tracking-widest w-full sm:w-auto justify-center"
                                 >
-                                    <Ban className="w-5 h-5" /> Bloquear Nuevo Día
+                                    <Ban className="w-4 h-4 md:w-5 md:h-5" /> Bloquear Campo
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto space-y-8 custom-scrollbar pr-4">
-                                <div className="mt-12">
+                            <div className="flex-1 overflow-y-auto space-y-6 md:space-y-8 custom-scrollbar pr-1 md:pr-4">
+                                <div className="mt-8 md:mt-12">
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="h-px flex-1 bg-white/5" />
-                                        <h4 className="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-3">
+                                        <h4 className="text-[9px] md:text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
                                             <History className="w-4 h-4" /> Historial de Bloqueos
                                         </h4>
                                         <div className="h-px flex-1 bg-white/5" />
                                     </div>
                                     <div className="space-y-4">
                                         {blockedDays.length > 0 ? blockedDays.map(b => (
-                                            <div key={b.id} className="glass-panel p-6 flex items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden">
+                                            <div key={b.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden gap-4">
                                                 <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                                                <div className="flex items-center gap-10 relative z-10">
-                                                    <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 shadow-lg shadow-red-500/10">
-                                                        <Ban className="w-6 h-6" />
+                                                <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
+                                                    <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 shadow-lg shadow-red-500/10 shrink-0">
+                                                        <Ban className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
-                                                    <div className="text-left">
-                                                        <p className="text-lg font-black text-white uppercase tracking-tighter mb-1">
+                                                    <div className="text-left min-w-0">
+                                                        <p className="text-base md:text-lg font-black text-white uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
                                                             {b.blocked_date}
                                                         </p>
-                                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest leading-relaxed">
+                                                        <p className="text-[9px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest leading-relaxed truncate">
                                                             {b.reason || 'Mantenimiento / Cierre'}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-10 relative z-10">
-                                                    <div className="text-right">
-                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Estado</p>
+                                                <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 relative z-10 w-full sm:w-auto">
+                                                    <div className="text-left sm:text-right">
+                                                        <p className="text-[8px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5 md:mb-1">Estado</p>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                                            <p className="text-sm font-black text-red-500 uppercase">Bloqueado</p>
+                                                            <p className="text-[11px] md:text-sm font-black text-red-500 uppercase">Bloqueado</p>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => unblockDay(b.id)} className="p-3 rounded-xl hover:bg-emerald-500/10 text-gray-600 hover:text-emerald-500 transition-all opacity-0 group-hover:opacity-100 active:scale-90">
-                                                        <Trash2 className="w-5 h-5" />
+                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-emerald-500/10 text-gray-600 hover:text-emerald-500 transition-all active:scale-90">
+                                                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                         )) : (
-                                            <div className="py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
-                                                <LayoutGrid className="w-16 h-16 mb-6 text-gray-400" />
-                                                <p className="text-sm font-black uppercase tracking-widest text-white">No hay bloqueos activos</p>
+                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
+                                                <LayoutGrid className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-gray-400" />
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-white text-center">No hay bloqueos activos</p>
                                             </div>
                                         )}
                                     </div>
@@ -736,30 +742,30 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
 
                 {/* SIDE AGENDA PANEL - DYNAMIC */}
                 {activeTab === 'agenda' && (
-                    <div className={`w-[340px] premium-glass transition-all duration-500 overflow-hidden flex flex-col border-white/5 relative bg-black/40 ${selectedDates.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                        <div className="p-6 border-b border-white/5 bg-white/2 text-left">
+                    <div className={`w-full lg:w-[340px] apple-card transition-all duration-500 flex flex-col border-white/5 relative bg-black/40 ${selectedDates.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'} min-h-[400px] lg:min-h-0`}>
+                        <div className="p-5 md:p-6 border-b border-white/5 bg-white/2 text-left">
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
                                     <List className="w-4 h-4 text-primary" /> Agenda del día
                                 </h3>
-                                <span className="px-2 py-0.5 rounded-md bg-primary/10 text-[9px] font-black text-primary border border-primary/20 italic">
+                                <span className="px-2 py-0.5 rounded-md bg-primary/10 text-[8px] md:text-[9px] font-black text-primary border border-primary/20 italic">
                                     {selectedDates.length === 1 ? 'Individual' : `${selectedDates.length} Días`}
                                 </span>
                             </div>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">
+                            <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">
                                 {selectedDates.length === 1 ? selectedDates[0] : 'Selección múltiple activa'}
                             </p>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                             {selectedReservations.length > 0 ? (
                                 selectedReservations.map((res) => (
-                                    <div key={res.id} className="p-4 rounded-2xl bg-white/2 border border-white/5 hover:border-primary/20 transition-all group animate-fade-in text-left">
+                                    <div key={res.id} className="p-4 rounded-xl md:rounded-2xl bg-white/2 border border-white/5 hover:border-primary/20 transition-all group animate-fade-in text-left">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
                                                 <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-background transition-colors">
                                                     <Clock className="w-3.5 h-3.5" />
                                                 </div>
-                                                <span className="text-[11px] font-black text-white group-hover:text-primary transition-colors">{res.reservation_time}</span>
+                                                <span className="text-[10px] md:text-[11px] font-black text-white group-hover:text-primary transition-colors">{res.reservation_time}</span>
                                             </div>
                                             <div className="px-2 py-0.5 rounded-md bg-white/5 text-[8px] font-bold text-gray-500 uppercase">
                                                 ID: {res.id.substring(0, 4)}
@@ -789,21 +795,23 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                 </div>
                             )}
                         </div>
-                        <div className="p-4 bg-background/60 border-t border-white/5 space-y-2">
-                            <div className="grid grid-cols-2 gap-2 mb-2">
+                        <div className="p-4 bg-background/60 border-t border-white/5 space-y-3">
+                            <div className="grid grid-cols-2 gap-2">
                                 <button onClick={downloadPDF} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                                    <div className="bg-red-500/20 text-red-500 p-1 rounded-md"><ArrowRight className="w-3 h-3 rotate-45" /></div> PDF
+                                    <div className="bg-red-500/20 text-red-500 p-1 rounded-md shrink-0"><ArrowRight className="w-3 h-3 rotate-45" /></div> PDF
                                 </button>
                                 <button onClick={downloadExcel} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                                    <div className="bg-emerald-500/20 text-emerald-500 p-1 rounded-md"><List className="w-3 h-3" /></div> Excel
+                                    <div className="bg-emerald-500/20 text-emerald-500 p-1 rounded-md shrink-0"><List className="w-3 h-3" /></div> Excel
                                 </button>
                             </div>
-                            <button onClick={() => setIsBlocking(true)} className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
-                                <Ban className="w-3.5 h-3.5" /> Bloquear
-                            </button>
-                            <button onClick={() => setIsOverriding(true)} className="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
-                                <DollarSign className="w-3.5 h-3.5" /> Cambiar Tarifa
-                            </button>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button onClick={() => setIsBlocking(true)} className="py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
+                                    <Ban className="w-3.5 h-3.5" /> Bloquear
+                                </button>
+                                <button onClick={() => setIsOverriding(true)} className="py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
+                                    <DollarSign className="w-3.5 h-3.5" /> Cambiar Tarifa
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -811,22 +819,22 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
 
             {/* FLOATING ACTION BAR */}
             {selectedDates.length > 1 && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 animate-slide-up">
-                    <div className="bg-background/80 backdrop-blur-2xl border border-primary/30 p-4 rounded-3xl shadow-[0_20px_50px_rgba(20,184,166,0.3)] flex items-center gap-6 ring-1 ring-white/10">
-                        <div className="px-6 border-r border-white/10 text-left">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-0.5">Selección</p>
-                            <p className="text-sm font-black text-white uppercase tracking-tighter">{selectedDates.length} Días Marcados</p>
+                <div className="fixed bottom-6 md:bottom-10 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-40 animate-slide-up">
+                    <div className="bg-background/80 backdrop-blur-2xl border border-primary/30 p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-[0_20px_50px_rgba(20,184,166,0.3)] flex items-center justify-between md:justify-start gap-3 md:gap-6 ring-1 ring-white/10 max-w-lg mx-auto">
+                        <div className="px-3 md:px-6 border-r border-white/10 text-left min-w-0">
+                            <p className="text-[8px] md:text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-0.5">Selección</p>
+                            <p className="text-xs md:text-sm font-black text-white uppercase tracking-tighter truncate">{selectedDates.length} Días</p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => setIsBlocking(true)} className="px-6 py-3 rounded-2xl bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 flex items-center gap-2.5">
-                                <Ban className="w-4 h-4" /> Bloquear
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <button onClick={() => setIsBlocking(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-red-500/10 text-red-500 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 flex items-center gap-2">
+                                <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Bloquear</span>
                             </button>
-                            <button onClick={() => setIsOverriding(true)} className="px-6 py-3 rounded-2xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20 flex items-center gap-2.5">
-                                <DollarSign className="w-4 h-4" /> Tarifa
+                            <button onClick={() => setIsOverriding(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20 flex items-center gap-2">
+                                <DollarSign className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Tarifa</span>
                             </button>
-                            <div className="w-px h-8 bg-white/10 mx-2" />
-                            <button onClick={clearSelection} className="p-3 rounded-2xl hover:bg-white/5 text-gray-500 hover:text-white transition-all">
-                                <X className="w-5 h-5" />
+                            <div className="w-px h-6 md:h-8 bg-white/10 mx-1 md:mx-2" />
+                            <button onClick={clearSelection} className="p-2 md:p-3 rounded-xl hover:bg-white/5 text-gray-500 hover:text-white transition-all">
+                                <X className="w-4 h-4 md:w-5 md:h-5" />
                             </button>
                         </div>
                     </div>

@@ -7,7 +7,7 @@ import { createClient } from '@/utils/supabase/client'
 import {
     LayoutDashboard, Users, ShoppingCart, Trophy, Package,
     LogOut, Settings, HelpCircle, ChevronLeft, ChevronRight,
-    Ticket, Calendar, Flag
+    Ticket, Calendar, Flag, X
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -23,9 +23,11 @@ const menuItems = [
 interface SidebarProps {
     isCollapsed: boolean
     onToggle: () => void
+    isMobileOpen?: boolean
+    onCloseMobile?: () => void
 }
 
-export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: SidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const supabase = createClient()
@@ -68,27 +70,37 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     const filteredMenuItems = menuItems.filter(item => !item.adminOnly || userData?.isAdmin)
 
     return (
-        <aside className={`fixed left-0 top-0 h-screen ${isCollapsed ? 'w-20' : 'w-64'} flex flex-col z-50 transition-all duration-300 apple-sidebar-glass`}>
-            {/* Toggle Button */}
+        <aside className={`h-full ${isCollapsed ? 'w-20' : 'w-64'} flex flex-col transition-all duration-300 apple-sidebar-glass ${isMobileOpen ? 'w-64 shadow-2xl' : ''}`}>
+            {/* Toggle Button - Hidden on Mobile */}
             <button
                 onClick={onToggle}
-                className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all z-50"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full items-center justify-center shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all z-50"
             >
                 {isCollapsed ? <ChevronRight className="w-3.5 h-3.5 text-black" /> : <ChevronLeft className="w-3.5 h-3.5 text-black" />}
             </button>
 
             {/* Logo Section */}
-            <div className={`relative px-6 py-8 flex items-center ${isCollapsed ? 'justify-center' : ''} h-24`}>
-                {!isCollapsed ? (
+            <div className={`relative px-6 py-8 flex items-center justify-between ${isCollapsed ? 'justify-center' : ''} h-24`}>
+                {(!isCollapsed || isMobileOpen) ? (
                     <div className="flex items-center gap-3">
                         <Image src="/images/logo.png" alt="APEG Logo" width={42} height={42} className="object-contain" />
                         <div>
-                            <h2 className="text-lg font-semibold text-white tracking-tight leading-none">APEG</h2>
-                            <p className="text-[11px] text-gray-400 font-medium">Admin</p>
+                            <h2 className="text-lg font-semibold text-white tracking-tight leading-none uppercase">APEG</h2>
+                            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest">Admin</p>
                         </div>
                     </div>
                 ) : (
                     <Image src="/images/logo.png" alt="APEG Logo" width={32} height={32} className="object-contain" />
+                )}
+
+                {/* Mobile-only close button */}
+                {isMobileOpen && (
+                    <button
+                        onClick={onCloseMobile}
+                        className="lg:hidden p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all active:scale-90"
+                    >
+                        <X size={18} />
+                    </button>
                 )}
             </div>
 
@@ -97,19 +109,22 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 {filteredMenuItems.map((item) => {
                     const isActive = pathname === item.href || (pathname !== '/dashboard' && pathname.startsWith(item.href) && item.href !== '/dashboard');
                     const Icon = item.icon
+                    const isCollapsedNow = isCollapsed && !isMobileOpen;
+
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`apple-nav-item ${isActive ? 'active' : ''} ${isCollapsed ? 'justify-center px-0 py-3' : ''}`}
+                            onClick={() => onCloseMobile?.()}
+                            className={`apple-nav-item ${isActive ? 'active' : ''} ${isCollapsedNow ? 'justify-center px-0 py-3' : ''}`}
                         >
-                            <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-[#0a84ff]' : 'text-gray-400'}`} />
+                            <Icon className={`w-5 h-5 ${isCollapsedNow ? '' : 'mr-3'} ${isActive ? 'text-[#0a84ff]' : 'text-gray-400'}`} />
 
-                            {!isCollapsed && (
+                            {!isCollapsedNow && (
                                 <span>{item.name}</span>
                             )}
 
-                            {isCollapsed && (
+                            {isCollapsedNow && (
                                 <div className="absolute left-16 px-3 py-2 bg-white text-black rounded-lg text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50">
                                     {item.name}
                                 </div>
@@ -121,19 +136,19 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
             {/* Bottom Section */}
             <div className="p-4 border-t border-white/5">
-                <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} p-2`}>
+                <div className={`flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center' : 'gap-3'} p-2`}>
                     <div className="w-9 h-9 rounded-full bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center text-xs font-bold text-white shadow-inner uppercase shrink-0">
                         {userData?.name?.charAt(0) || 'U'}
                     </div>
 
-                    {!isCollapsed && (
+                    {(!isCollapsed || isMobileOpen) && (
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{userData?.name || 'Usuario'}</p>
                             <p className="text-[11px] text-gray-500 truncate">{userData?.email}</p>
                         </div>
                     )}
 
-                    {!isCollapsed && (
+                    {(!isCollapsed || isMobileOpen) && (
                         <button
                             onClick={handleLogout}
                             className="p-1.5 rounded-lg text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
