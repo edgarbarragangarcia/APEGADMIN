@@ -545,8 +545,8 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             </div>
 
                             <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2 shrink-0 px-1">
-                                {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(d => (
-                                    <div key={d} className="text-center text-[9px] md:text-[10px] font-bold text-gray-500">{d}</div>
+                                {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((d, i) => (
+                                    <div key={`${d}-${i}`} className="text-center text-[9px] md:text-[10px] font-bold text-gray-500">{d}</div>
                                 ))}
                             </div>
 
