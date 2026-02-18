@@ -447,19 +447,19 @@ export default function OrdersPage() {
                 ) : (
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 border-l-4 border-l-primary border-black/5 bg-white">
+                            <div className="apple-card p-6 border-l-4 border-l-primary border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Monto Cobrado</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{formatCurrency(stats.totalRevenue)}</h3>
                                 <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1">
                                     <TrendingUp className="w-3.5 h-3.5" /> +12% vs mes anterior
                                 </p>
                             </div>
-                            <div className="apple-card p-6 border-black/5 bg-white">
+                            <div className="apple-card p-6 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Ticket Promedio</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{formatCurrency(stats.totalRevenue / (stats.totalOrders || 1))}</h3>
                                 <p className="text-[10px] text-[#86868b] mt-2 font-bold uppercase tracking-tight">Distribución estable</p>
                             </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-black/5 bg-white">
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Órdenes Pagadas</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{stats.paidOrders}</h3>
                                 <div className="mt-4 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
@@ -468,7 +468,7 @@ export default function OrdersPage() {
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] border-black/5 bg-white">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] border-white/10">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
                                 <div>
                                     <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Rendimiento Comercial</h3>
@@ -506,7 +506,7 @@ export default function OrdersPage() {
             {isEditModalOpen && selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
-                    <div className="apple-card w-full max-w-lg border-black/5 bg-white p-6 relative overflow-hidden shadow-2xl">
+                    <div className="apple-card w-full max-w-lg border-white/10 p-6 relative overflow-hidden shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <div>
                                 <h3 className="text-xl font-black text-foreground uppercase tracking-tighter">Editar Orden</h3>
@@ -589,7 +589,7 @@ export default function OrdersPage() {
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsCreateModalOpen(false)} />
-                    <div className="apple-card w-full max-w-lg border-black/5 bg-white p-6 relative overflow-hidden shadow-2xl">
+                    <div className="apple-card w-full max-w-lg border-white/10 p-6 relative overflow-hidden shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <div>
                                 <h3 className="text-xl font-black text-foreground uppercase tracking-tighter">Nueva Orden</h3>
@@ -659,7 +659,7 @@ export default function OrdersPage() {
             {isDeleteModalOpen && selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)} />
-                    <div className="apple-card w-full max-w-sm border-black/5 bg-white p-6 relative overflow-hidden shadow-2xl">
+                    <div className="apple-card w-full max-w-sm border-white/10 p-6 relative overflow-hidden shadow-2xl">
                         <div className="flex flex-col items-center text-center">
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-4 border border-red-500/10">
                                 <Trash2 className="w-8 h-8" />
@@ -691,9 +691,9 @@ export default function OrdersPage() {
             {isDetailsModalOpen && selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsDetailsModalOpen(false)} />
-                    <div className="apple-card w-full max-w-4xl max-h-[90vh] flex flex-col border-black/5 bg-white relative overflow-hidden shadow-2xl">
+                    <div className="apple-card w-full max-w-4xl max-h-[90vh] flex flex-col border-white/10 relative overflow-hidden shadow-2xl">
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-10">
+                        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-black/40 backdrop-blur-md sticky top-0 z-10">
                             <div>
                                 <h3 className="text-lg md:text-xl font-black text-foreground uppercase tracking-tighter flex items-center gap-2">
                                     Orden #{selectedOrder.id.substring(0, 8).toUpperCase()}
@@ -746,8 +746,8 @@ export default function OrdersPage() {
                                             {selectedOrder.shipping_address && (
                                                 <div className="pt-2">
                                                     <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Dirección de Envío</p>
-                                                    <div className="p-3 rounded-xl bg-white border border-black/5 shadow-sm">
-                                                        <p className="text-[11px] text-[#424245] leading-relaxed font-medium">
+                                                    <div className="p-3 rounded-xl bg-black/20 border border-white/10 shadow-sm">
+                                                        <p className="text-[11px] text-[#f5f5f7] leading-relaxed font-medium">
                                                             {selectedOrder.shipping_address}
                                                         </p>
                                                     </div>
@@ -822,7 +822,7 @@ export default function OrdersPage() {
                                                         id="details-provider"
                                                         defaultValue={selectedOrder.shipping_provider || ''}
                                                         placeholder="Ej. DHL, FedEx, Servientrega"
-                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-bold placeholder:text-gray-400 shadow-sm"
+                                                        className="apple-input"
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -832,7 +832,7 @@ export default function OrdersPage() {
                                                         id="details-tracking"
                                                         defaultValue={selectedOrder.tracking_number || ''}
                                                         placeholder="Guía de rastreo"
-                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-mono font-bold tracking-wider placeholder:text-gray-400 shadow-sm"
+                                                        className="apple-input font-mono tracking-wider"
                                                     />
                                                 </div>
                                             </div>
@@ -889,7 +889,7 @@ export default function OrdersPage() {
                                                     <div key={idx} className="apple-card p-5 border-black/5 bg-black/2 flex gap-6 group hover:bg-black/4 transition-all duration-300 relative overflow-hidden shadow-sm">
                                                         <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-black/2 rounded-full blur-2xl pointer-events-none" />
 
-                                                        <div className="w-24 h-24 rounded-2xl bg-white overflow-hidden shrink-0 border border-black/5 relative shadow-md group-hover:scale-[1.02] transition-transform duration-500">
+                                                        <div className="w-24 h-24 rounded-2xl bg-black/40 overflow-hidden shrink-0 border border-white/5 relative shadow-md group-hover:scale-[1.02] transition-transform duration-500">
                                                             {item.image_url ? (
                                                                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                                             ) : (
@@ -916,7 +916,7 @@ export default function OrdersPage() {
 
                                                             <div className="flex flex-wrap gap-2 mt-auto">
                                                                 {item.category && (
-                                                                    <span className="px-2.5 py-1 rounded-xl bg-white text-[9px] font-black text-[#86868b] uppercase tracking-widest border border-black/5 shadow-sm">
+                                                                    <span className="px-2.5 py-1 rounded-xl bg-white/5 text-[9px] font-black text-[#86868b] uppercase tracking-widest border border-white/5 shadow-sm">
                                                                         {item.category}
                                                                     </span>
                                                                 )}
@@ -926,7 +926,7 @@ export default function OrdersPage() {
                                                                     </span>
                                                                 )}
                                                                 {item.color && (
-                                                                    <span className="px-2.5 py-1 rounded-xl bg-white text-[9px] font-black text-[#86868b] uppercase tracking-widest border border-black/5 shadow-sm">
+                                                                    <span className="px-2.5 py-1 rounded-xl bg-white/5 text-[9px] font-black text-[#86868b] uppercase tracking-widest border border-white/5 shadow-sm">
                                                                         {item.color}
                                                                     </span>
                                                                 )}

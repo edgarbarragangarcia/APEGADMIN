@@ -141,7 +141,7 @@ export default function InventoryPage() {
                                 <input
                                     type="text"
                                     placeholder="Buscar producto..."
-                                    className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] text-foreground focus:outline-none focus:border-primary/30 transition-all font-bold h-10 placeholder:text-[#86868b] shadow-sm"
+                                    className="apple-input pl-10 h-10 rounded-2xl"
                                 />
                             </div>
                             <div className="flex bg-black/5 p-1 rounded-xl items-center border border-black/5 h-10">
@@ -220,7 +220,7 @@ export default function InventoryPage() {
                                 )}
                             </div>
 
-                            <div className="px-4 md:px-6 py-3 border-t border-black/5 flex items-center justify-between shrink-0 bg-white">
+                            <div className="px-4 md:px-6 py-3 border-t border-white/5 flex items-center justify-between shrink-0 bg-black/20">
                                 <p className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest">Pág. <span className="text-primary">{page}</span></p>
                                 <div className="flex gap-2">
                                     <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-2 rounded-lg bg-black/5 text-foreground hover:bg-black/10 transition-all border border-black/5"><ChevronLeft className="w-4 h-4" /></button>
@@ -233,19 +233,19 @@ export default function InventoryPage() {
                     /* FINANCE DASHBOARD */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 border-l-4 border-l-primary bg-white border-black/5">
+                            <div className="apple-card p-6 border-l-4 border-l-primary border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Valorización Almacén</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground truncate">{formatCurrency(totalInventoryValue)}</h3>
                                 <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1">
                                     <ArrowUpRight className="w-3.5 h-3.5" /> Total activos corrientes
                                 </p>
                             </div>
-                            <div className="apple-card p-6 bg-white border-black/5">
+                            <div className="apple-card p-6 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Rotación Stock</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">4.2x</h3>
                                 <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">Periodo anual estimado</p>
                             </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 bg-white border-black/5">
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Costo Reposición</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground truncate">{formatCurrency(totalInventoryValue * 0.72)}</h3>
                                 <p className="text-[10px] text-amber-500 mt-2 font-bold uppercase tracking-tight">Inversión proyectada</p>

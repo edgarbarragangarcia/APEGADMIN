@@ -132,7 +132,7 @@ export default function TournamentsPage() {
                                 <input
                                     type="text"
                                     placeholder="Buscar torneo..."
-                                    className="w-full pl-9 pr-4 py-2 bg-white border border-black/5 rounded-full text-[10px] text-foreground focus:outline-none focus:border-primary/30 transition-all font-bold placeholder:text-[#86868b] h-9 shadow-sm"
+                                    className="apple-input pl-10 h-10 rounded-full"
                                 />
                             </div>
                         </div>
@@ -195,26 +195,26 @@ export default function TournamentsPage() {
                     /* FINANCE DASHBOARD */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0 font-bold tracking-tight">
-                            <div className="apple-card p-6 border-l-4 border-l-primary bg-white border-black/5">
+                            <div className="apple-card p-6 border-l-4 border-l-primary border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Recaudación Actual</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">${currentRevenue.toLocaleString()}</h3>
                                 <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1">
                                     <TrendingUp className="w-3.5 h-3.5" /> Ingresos confirmados
                                 </p>
                             </div>
-                            <div className="apple-card p-6 bg-white border-black/5">
+                            <div className="apple-card p-6 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Potencial Proyectado</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
                                 <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">Basado en cupos totales</p>
                             </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 bg-white border-black/5">
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-white/10">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Total Jugadores</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{totalParticipants}</h3>
                                 <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">En {tournaments.length} torneos</p>
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] bg-white border-black/5">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] border-white/10">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8 text-center sm:text-left">
                                 <div>
                                     <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Ingresos por Torneo</h3>

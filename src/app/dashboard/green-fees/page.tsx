@@ -308,22 +308,22 @@ export default function GreenFeesPage() {
                         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-5 md:space-y-6 custom-scrollbar relative z-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest ml-1">Nombre</label>
-                                    <input required className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all font-bold" value={editingFee?.name || ''} onChange={e => setEditingFee({ ...editingFee!, name: e.target.value })} />
+                                    <label className="text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1"> NOMBRE</label>
+                                    <input required className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-gray-900 focus:outline-none focus:border-primary transition-all font-bold placeholder:text-gray-400" value={editingFee?.name || ''} onChange={e => setEditingFee({ ...editingFee!, name: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest ml-1">Ubicación</label>
-                                    <input className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all font-bold" value={editingFee?.location || ''} onChange={e => setEditingFee({ ...editingFee!, location: e.target.value })} />
+                                    <input className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-gray-900 focus:outline-none focus:border-primary transition-all font-bold placeholder:text-gray-400" value={editingFee?.location || ''} onChange={e => setEditingFee({ ...editingFee!, location: e.target.value })} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest ml-1">Precio Semana</label>
-                                    <input type="number" className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all font-bold" value={editingFee?.price_weekday || 0} onChange={e => setEditingFee({ ...editingFee!, price_weekday: Number(e.target.value) })} />
+                                    <input type="number" className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-gray-900 focus:outline-none focus:border-primary transition-all font-bold placeholder:text-gray-400" value={editingFee?.price_weekday || 0} onChange={e => setEditingFee({ ...editingFee!, price_weekday: Number(e.target.value) })} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest ml-1">Precio Fin Sem.</label>
-                                    <input type="number" className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all font-bold" value={editingFee?.price_weekend || 0} onChange={e => setEditingFee({ ...editingFee!, price_weekend: Number(e.target.value) })} />
+                                    <input type="number" className="w-full bg-black/5 border border-black/10 rounded-xl md:rounded-2xl px-5 py-3 text-sm text-gray-900 focus:outline-none focus:border-primary transition-all font-bold placeholder:text-gray-400" value={editingFee?.price_weekend || 0} onChange={e => setEditingFee({ ...editingFee!, price_weekend: Number(e.target.value) })} />
                                 </div>
                             </div>
                         </form>

@@ -144,7 +144,7 @@ export default function UserDetailsPage() {
                 </div>
 
                 {/* FOOTER METRICS COMPACT */}
-                <div className="px-6 py-3 bg-white border border-black/5 rounded-2xl flex items-center justify-between shrink-0">
+                <div className="px-6 py-3 bg-black/40 border border-white/10 rounded-2xl flex items-center justify-between shrink-0 backdrop-blur-md shadow-lg">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Sincronización de Perfil <span className="text-primary">— ACTIVE</span></p>
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 uppercase"><Calendar className="w-3 h-3" /> Registrado: {new Date(profile.created_at).toLocaleDateString()}</div>
