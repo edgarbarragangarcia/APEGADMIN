@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import {
-    ChevronLeft, ChevronRight, Package,
+    ChevronLeft, ChevronRight, Package, Activity,
     DollarSign, TrendingUp, Search,
     Download, ShoppingCart, Clock, Edit2, Trash2, X, Check, Loader2, Database, Calendar,
 } from 'lucide-react'
@@ -182,7 +182,7 @@ export default function OrdersPage() {
             case 'paid':
             case 'pagado':
             case 'completed':
-                return 'bg-[#2d5a27]/10 text-[#2d5a27] border-[#2d5a27]/20'
+                return 'bg-primary/10 text-primary border-primary/20'
             case 'pending':
             case 'pendiente':
                 return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
@@ -236,20 +236,23 @@ export default function OrdersPage() {
 
             <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
                 <div className="flex flex-wrap items-center gap-4">
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
+                        <Activity className="w-5 h-5 text-amber-600" />
+                    </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black text-[#1d1d1f] leading-tight uppercase tracking-tighter">Órdenes (LIVE)</h1>
+                        <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Órdenes (LIVE)</h1>
                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de Pedidos V2</p>
                     </div>
                     <div className="bg-black/5 p-1 rounded-xl flex border border-black/5 sm:ml-4">
                         <button
                             onClick={() => setActiveTab('list')}
-                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-[#2d5a27] text-white shadow-lg shadow-[#2d5a27]/20' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
                         >
                             Listado
                         </button>
                         <button
                             onClick={() => setActiveTab('finance')}
-                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-[#2d5a27] text-white shadow-lg shadow-[#2d5a27]/20' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
                         >
                             Finanzas
                         </button>
@@ -257,14 +260,14 @@ export default function OrdersPage() {
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <button className="h-9 px-4 flex-1 sm:flex-none rounded-xl bg-black/5 border border-black/5 text-[9px] md:text-[10px] font-black uppercase text-[#86868b] hover:text-[#1d1d1f] transition-all flex items-center justify-center gap-2">
-                        <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Exportar</span>
+                    <button className="h-9 px-4 flex-1 sm:flex-none rounded-xl bg-black/5 border border-black/5 text-[9px] md:text-[10px] font-black uppercase text-[#86868b] hover:text-foreground transition-all flex items-center justify-center gap-2">
+                        <Download className="w-3.5 h-3.5" /> <span>Exportar</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="apple-button-primary apple-button-sm flex-1 sm:flex-none py-2 px-6"
+                        className="apple-button-primary apple-button-sm flex-1 sm:flex-none py-2 px-6 flex items-center justify-center"
                     >
-                        <Package className="w-4 h-4 mr-0 sm:mr-2" /> <span className="hidden sm:inline">Nueva Orden</span>
+                        <Package className="w-4 h-4 mr-2" /> <span>Nueva Orden</span>
                     </button>
                 </div>
             </div>
@@ -273,9 +276,9 @@ export default function OrdersPage() {
                 {activeTab === 'list' ? (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
-                            <div className="apple-card p-4 border-black/5 bg-linear-to-br from-[#2d5a27]/5 to-transparent">
+                            <div className="apple-card p-4 border-black/5 bg-linear-to-br from-primary/5 to-transparent">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-[#2d5a27]/10 text-[#2d5a27] shrink-0">
+                                    <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
                                         <DollarSign className="w-4 h-4" />
                                     </div>
                                     <div className="min-w-0">
@@ -286,7 +289,7 @@ export default function OrdersPage() {
                             </div>
                             <div className="apple-card p-4 border-black/5">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-[#2d5a27]/10 text-[#24491f] shrink-0">
+                                    <div className="p-2 rounded-xl bg-primary/10 text-[#24491f] shrink-0">
                                         <ShoppingCart className="w-4 h-4" />
                                     </div>
                                     <div className="min-w-0">
@@ -310,11 +313,11 @@ export default function OrdersPage() {
                                 <div className="flex flex-col h-full justify-center">
                                     <div className="flex justify-between items-center mb-1.5">
                                         <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Tasa de Cierre</p>
-                                        <span className="text-[10px] font-black text-[#2d5a27]">{Math.round((stats.paidOrders / (stats.totalOrders || 1)) * 100)}%</span>
+                                        <span className="text-[10px] font-black text-primary">{Math.round((stats.paidOrders / (stats.totalOrders || 1)) * 100)}%</span>
                                     </div>
                                     <div className="h-1.5 bg-black/5 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-linear-to-r from-[#2d5a27] to-[#4c7c44]"
+                                            className="h-full bg-linear-to-r from-primary to-[#4c7c44]"
                                             style={{ width: `${(stats.paidOrders / (stats.totalOrders || 1)) * 100}%` }}
                                         />
                                     </div>
@@ -324,7 +327,7 @@ export default function OrdersPage() {
 
                         <div className="apple-card p-2 border-black/5 shrink-0">
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b] group-focus-within:text-[#2d5a27]" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b] group-focus-within:text-primary" />
                                 <input
                                     type="text"
                                     placeholder="Buscar por ID de orden o cliente..."
@@ -342,7 +345,7 @@ export default function OrdersPage() {
                             <div className="flex-1 overflow-auto custom-scrollbar">
                                 <table className="w-full text-left border-collapse min-w-[600px]">
                                     <thead>
-                                        <tr className="border-b border-black/5 bg-black/[0.02] sticky top-0 z-10">
+                                        <tr className="border-b border-black/5 bg-black/2 sticky top-0 z-10">
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Orden</th>
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Fecha</th>
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Cliente</th>
@@ -351,7 +354,7 @@ export default function OrdersPage() {
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b] text-right">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-black/[0.02]">
+                                    <tbody className="divide-y divide-black/2">
                                         {loading ? (
                                             [...Array(6)].map((_, i) => (
                                                 <tr key={i}><td colSpan={6} className="py-6 px-6"><div className="w-full h-8 bg-black/5 rounded-lg animate-pulse" /></td></tr>
@@ -366,7 +369,7 @@ export default function OrdersPage() {
                                                         setSelectedOrder(order)
                                                         setIsDetailsModalOpen(true)
                                                     }}
-                                                    className="group hover:bg-black/[0.03] transition-colors cursor-pointer"
+                                                    className="group hover:bg-black/3 transition-colors cursor-pointer"
                                                 >
                                                     <td className="py-4 px-4 md:px-6">
                                                         <div className="text-foreground font-mono text-[10px] md:text-xs font-black tracking-widest">
@@ -400,7 +403,7 @@ export default function OrdersPage() {
                                                                     setSelectedOrder(order)
                                                                     setIsEditModalOpen(true)
                                                                 }}
-                                                                className="p-2 rounded-lg hover:bg-[#2d5a27]/10 text-[#86868b] hover:text-[#2d5a27] transition-all"
+                                                                className="p-2 rounded-lg hover:bg-primary/10 text-[#86868b] hover:text-primary transition-all"
                                                             >
                                                                 <Edit2 className="w-3.5 h-3.5" />
                                                             </button>
@@ -423,22 +426,22 @@ export default function OrdersPage() {
                                 </table>
                             </div>
 
-                            <div className="px-4 md:px-6 py-4 border-t border-black/5 flex items-center justify-between shrink-0 bg-black/[0.01]">
+                            <div className="px-4 md:px-6 py-4 border-t border-black/5 flex items-center justify-between shrink-0 bg-black/1">
                                 <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest">
-                                    Pág. <span className="text-[#1d1d1f] font-black">{page}</span>
+                                    Pág. <span className="text-foreground font-black">{page}</span>
                                 </p>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setPage(p => Math.max(1, p - 1))}
                                         disabled={page === 1 || loading}
-                                        className="p-2 rounded-lg bg-black/5 disabled:opacity-20 hover:bg-black/10 text-[#1d1d1f] transition-all border border-black/5"
+                                        className="p-2 rounded-lg bg-black/5 disabled:opacity-20 hover:bg-black/10 text-foreground transition-all border border-black/5"
                                     >
                                         <ChevronLeft className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => setPage(p => p + 1)}
                                         disabled={orders.length < 6 || loading}
-                                        className="p-2 rounded-lg bg-black/5 disabled:opacity-20 hover:bg-black/10 text-[#1d1d1f] transition-all border border-black/5"
+                                        className="p-2 rounded-lg bg-black/5 disabled:opacity-20 hover:bg-black/10 text-foreground transition-all border border-black/5"
                                     >
                                         <ChevronRight className="w-4 h-4" />
                                     </button>
@@ -449,23 +452,23 @@ export default function OrdersPage() {
                 ) : (
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 border-l-4 border-l-[#2d5a27] border-black/5 bg-white">
+                            <div className="apple-card p-6 border-l-4 border-l-primary border-black/5 bg-white">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Monto Cobrado</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f]">{formatCurrency(stats.totalRevenue)}</h3>
-                                <p className="text-[10px] text-[#24491f] mt-2 font-bold flex items-center gap-1">
+                                <h3 className="text-2xl md:text-3xl font-black text-foreground">{formatCurrency(stats.totalRevenue)}</h3>
+                                <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1">
                                     <TrendingUp className="w-3.5 h-3.5" /> +12% vs mes anterior
                                 </p>
                             </div>
                             <div className="apple-card p-6 border-black/5 bg-white">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Ticket Promedio</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f]">{formatCurrency(stats.totalRevenue / (stats.totalOrders || 1))}</h3>
+                                <h3 className="text-2xl md:text-3xl font-black text-foreground">{formatCurrency(stats.totalRevenue / (stats.totalOrders || 1))}</h3>
                                 <p className="text-[10px] text-[#86868b] mt-2 font-bold uppercase tracking-tight">Distribución estable</p>
                             </div>
                             <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-black/5 bg-white">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Órdenes Pagadas</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f]">{stats.paidOrders}</h3>
+                                <h3 className="text-2xl md:text-3xl font-black text-foreground">{stats.paidOrders}</h3>
                                 <div className="mt-4 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
-                                    <div className="h-full bg-[#2d5a27]" style={{ width: `${(stats.paidOrders / (stats.totalOrders || 1)) * 100}%` }} />
+                                    <div className="h-full bg-primary" style={{ width: `${(stats.paidOrders / (stats.totalOrders || 1)) * 100}%` }} />
                                 </div>
                             </div>
                         </div>
@@ -473,12 +476,12 @@ export default function OrdersPage() {
                         <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] border-black/5 bg-white">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
                                 <div>
-                                    <h3 className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tight">Rendimiento Comercial</h3>
+                                    <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Rendimiento Comercial</h3>
                                     <p className="text-[9px] md:text-xs text-[#86868b] font-bold uppercase tracking-tight">Ingresos diarios (MXN)</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#2d5a27]" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                                         <span className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest">Órdenes Pagadas</span>
                                     </div>
                                 </div>
@@ -489,10 +492,10 @@ export default function OrdersPage() {
                                     <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-4 h-full justify-end group">
                                         <div className="w-full relative flex-1 flex flex-col justify-end">
                                             <div
-                                                className="w-full bg-[#2d5a27]/80 hover:bg-[#2d5a27] transition-all duration-300 rounded-t-lg md:rounded-t-xl"
+                                                className="w-full bg-primary/80 hover:bg-primary transition-all duration-300 rounded-t-lg md:rounded-t-xl"
                                                 style={{ height: `${(d.val / maxRev) * 100}%`, minHeight: '4px' }}
                                             />
-                                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[#1d1d1f] text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl border border-black/5">
+                                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-foreground text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl border border-black/5">
                                                 {formatCurrency(d.val)}
                                             </div>
                                         </div>
@@ -511,10 +514,10 @@ export default function OrdersPage() {
                     <div className="apple-card w-full max-w-lg border-black/5 bg-white p-6 relative overflow-hidden shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h3 className="text-xl font-black text-[#1d1d1f] uppercase tracking-tighter">Editar Orden</h3>
+                                <h3 className="text-xl font-black text-foreground uppercase tracking-tighter">Editar Orden</h3>
                                 <p className="text-[10px] text-[#86868b] font-bold uppercase tracking-widest mt-1">#{selectedOrder.id.substring(0, 8).toUpperCase()}</p>
                             </div>
-                            <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                            <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-foreground transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -523,7 +526,7 @@ export default function OrdersPage() {
                             <div>
                                 <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest block mb-1.5">Estado</label>
                                 <select
-                                    className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold appearance-none cursor-pointer"
+                                    className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold appearance-none cursor-pointer"
                                     defaultValue={selectedOrder.status}
                                     id="edit-status"
                                 >
@@ -542,7 +545,7 @@ export default function OrdersPage() {
                                         type="text"
                                         id="edit-provider"
                                         defaultValue={selectedOrder.shipping_provider || ''}
-                                        className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold"
+                                        className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold"
                                     />
                                 </div>
                                 <div className="col-span-1">
@@ -551,7 +554,7 @@ export default function OrdersPage() {
                                         type="text"
                                         id="edit-tracking"
                                         defaultValue={selectedOrder.tracking_number || ''}
-                                        className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold"
+                                        className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold"
                                     />
                                 </div>
                             </div>
@@ -562,7 +565,7 @@ export default function OrdersPage() {
                                     type="number"
                                     id="edit-amount"
                                     defaultValue={selectedOrder.total_amount}
-                                    className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold"
+                                    className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold"
                                 />
                             </div>
                         </div>
@@ -578,7 +581,7 @@ export default function OrdersPage() {
                                     const total_amount = parseFloat((document.getElementById('edit-amount') as HTMLInputElement).value);
                                     handleUpdateOrder(selectedOrder.id, { status, shipping_provider, tracking_number, total_amount });
                                 }}
-                                className="flex-1 py-3 px-4 rounded-xl bg-[#2d5a27] text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-[#2d5a27]/20"
+                                className="flex-1 py-3 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
                             >
                                 {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                                 Guardar
@@ -594,10 +597,10 @@ export default function OrdersPage() {
                     <div className="apple-card w-full max-w-lg border-black/5 bg-white p-6 relative overflow-hidden shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h3 className="text-xl font-black text-[#1d1d1f] uppercase tracking-tighter">Nueva Orden</h3>
+                                <h3 className="text-xl font-black text-foreground uppercase tracking-tighter">Nueva Orden</h3>
                                 <p className="text-[10px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Ingreso manual de pedido</p>
                             </div>
-                            <button onClick={() => setIsCreateModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                            <button onClick={() => setIsCreateModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-foreground transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -605,20 +608,20 @@ export default function OrdersPage() {
                         <div className="space-y-4">
                             <div>
                                 <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest block mb-1.5">Nombre del Cliente</label>
-                                <input type="text" id="create-name" placeholder="Ej. Juan Pérez" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold" />
+                                <input type="text" id="create-name" placeholder="Ej. Juan Pérez" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest block mb-1.5">Estado</label>
-                                    <select id="create-status" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold">
+                                    <select id="create-status" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold">
                                         <option value="pending">Pendiente</option>
                                         <option value="paid">Pagado</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest block mb-1.5">Monto (MXN)</label>
-                                    <input type="number" id="create-amount" placeholder="0" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27] transition-all font-bold" />
+                                    <input type="number" id="create-amount" placeholder="0" className="w-full bg-black/5 border border-black/10 rounded-xl px-4 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-bold" />
                                 </div>
                             </div>
                         </div>
@@ -647,7 +650,7 @@ export default function OrdersPage() {
                                     }
                                     setIsSaving(false);
                                 }}
-                                className="flex-1 py-3 px-4 rounded-xl bg-[#2d5a27] text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-[#2d5a27]/20"
+                                className="flex-1 py-3 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
                             >
                                 {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                                 Crear
@@ -666,14 +669,14 @@ export default function OrdersPage() {
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-4 border border-red-500/10">
                                 <Trash2 className="w-8 h-8" />
                             </div>
-                            <h3 className="text-xl font-black text-[#1d1d1f] uppercase tracking-tighter">¿Eliminar Orden?</h3>
+                            <h3 className="text-xl font-black text-foreground uppercase tracking-tighter">¿Eliminar Orden?</h3>
                             <p className="text-sm text-[#86868b] font-bold mt-2">Esta acción no se puede deshacer. Se eliminará la orden #{selectedOrder.id.substring(0, 8).toUpperCase()}.</p>
                         </div>
 
                         <div className="flex gap-3 mt-8">
                             <button
                                 onClick={() => setIsDeleteModalOpen(false)}
-                                className="flex-1 py-3 px-4 rounded-xl border border-black/5 bg-black/5 text-[10px] font-black text-[#86868b] uppercase tracking-widest hover:text-[#1d1d1f] transition-all"
+                                className="flex-1 py-3 px-4 rounded-xl border border-black/5 bg-black/5 text-[10px] font-black text-[#86868b] uppercase tracking-widest hover:text-foreground transition-all"
                             >
                                 Cancelar
                             </button>
@@ -697,7 +700,7 @@ export default function OrdersPage() {
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-10">
                             <div>
-                                <h3 className="text-lg md:text-xl font-black text-[#1d1d1f] uppercase tracking-tighter flex items-center gap-2">
+                                <h3 className="text-lg md:text-xl font-black text-foreground uppercase tracking-tighter flex items-center gap-2">
                                     Orden #{selectedOrder.id.substring(0, 8).toUpperCase()}
                                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border ${getStatusBadge(selectedOrder.status)}`}>
                                         {selectedOrder.status}
@@ -705,7 +708,7 @@ export default function OrdersPage() {
                                 </h3>
                                 <div className="flex items-center gap-4 mt-1.5">
                                     <div className="flex items-center gap-1.5 text-[9px] text-[#86868b] font-bold uppercase tracking-widest">
-                                        <Calendar className="w-3.5 h-3.5 text-[#2d5a27]" />
+                                        <Calendar className="w-3.5 h-3.5 text-primary" />
                                         {formatDate(selectedOrder.created_at)}
                                     </div>
                                     <div className="w-px h-3 bg-black/10" />
@@ -715,7 +718,7 @@ export default function OrdersPage() {
                                     </div>
                                 </div>
                             </div>
-                            <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                            <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-black/5 rounded-full text-[#86868b] hover:text-foreground transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -725,22 +728,22 @@ export default function OrdersPage() {
                                 {/* Left Column: Info */}
                                 <div className="lg:col-span-1 space-y-4">
                                     {/* Customer Card */}
-                                    <div className="apple-card p-5 border-black/5 bg-black/[0.02] relative overflow-hidden group min-h-[220px] flex flex-col">
-                                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#2d5a27]/5 rounded-full blur-3xl group-hover:bg-[#2d5a27]/10 transition-all duration-500" />
+                                    <div className="apple-card p-5 border-black/5 bg-black/2 relative overflow-hidden group min-h-[220px] flex flex-col">
+                                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500" />
 
                                         <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4 flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#2d5a27] shadow-[0_0_8px_rgba(50,215,75,0.5)]" />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(50,215,75,0.5)]" />
                                             Información del Cliente
                                         </h4>
                                         <div className="space-y-4 relative z-10 flex-1 flex flex-col justify-center">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-sm font-black text-[#1d1d1f] shrink-0 uppercase border border-black/5 shadow-sm">
+                                                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-sm font-black text-foreground shrink-0 uppercase border border-black/5 shadow-sm">
                                                     {selectedOrder.buyer_name?.charAt(0) || '?'}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-sm font-black text-[#1d1d1f] truncate">{selectedOrder.buyer_name || 'Cliente Anónimo'}</p>
+                                                    <p className="text-sm font-black text-foreground truncate">{selectedOrder.buyer_name || 'Cliente Anónimo'}</p>
                                                     {selectedOrder.buyer_phone && (
-                                                        <p className="text-[10px] text-[#24491f] font-mono font-bold mt-0.5">{selectedOrder.buyer_phone}</p>
+                                                        <p className="text-[10px] text-primary font-mono font-bold mt-0.5">{selectedOrder.buyer_phone}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -767,21 +770,21 @@ export default function OrdersPage() {
                                         <div className="space-y-2.5 flex-1 flex flex-col justify-center">
                                             <div className="flex justify-between items-center">
                                                 <span className="text-[11px] text-[#86868b] font-bold uppercase tracking-tight">Fecha de Compra</span>
-                                                <span className="text-[10px] font-black text-[#1d1d1f] uppercase whitespace-nowrap">{formatDate(selectedOrder.created_at)}</span>
+                                                <span className="text-[10px] font-black text-foreground uppercase whitespace-nowrap">{formatDate(selectedOrder.created_at)}</span>
                                             </div>
                                             <div className="flex justify-between items-center">
                                                 <span className="text-[11px] text-[#86868b] font-bold uppercase tracking-tight">Subtotal</span>
-                                                <span className="text-xs font-black text-[#1d1d1f]">{formatCurrency(selectedOrder.total_amount)}</span>
+                                                <span className="text-xs font-black text-foreground">{formatCurrency(selectedOrder.total_amount)}</span>
                                             </div>
                                             <div className="flex justify-between items-center">
                                                 <span className="text-[11px] text-[#86868b] font-bold uppercase tracking-tight">Envío</span>
-                                                <span className="text-[10px] font-black text-[#2d5a27] uppercase">Bonificado</span>
+                                                <span className="text-[10px] font-black text-primary uppercase">Bonificado</span>
                                             </div>
                                             <div className="h-px bg-black/5 my-3" />
                                             <div className="flex justify-between items-end">
                                                 <div>
                                                     <p className="text-[9px] text-[#86868b] font-black uppercase tracking-widest mb-0.5">Total de la Orden</p>
-                                                    <p className="text-2xl font-black text-[#1d1d1f] tracking-tighter leading-none">{formatCurrency(selectedOrder.total_amount)}</p>
+                                                    <p className="text-2xl font-black text-foreground tracking-tighter leading-none">{formatCurrency(selectedOrder.total_amount)}</p>
                                                 </div>
                                                 <div className="text-right">
                                                     <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${getStatusBadge(selectedOrder.status)}`}>
@@ -803,14 +806,14 @@ export default function OrdersPage() {
 
                                         <div className="relative z-10">
                                             <div className="flex items-center justify-between mb-5">
-                                                <h4 className="text-xs font-black text-[#1d1d1f] uppercase tracking-tighter flex items-center gap-2">
+                                                <h4 className="text-xs font-black text-foreground uppercase tracking-tighter flex items-center gap-2">
                                                     <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600">
                                                         <Package className="w-3.5 h-3.5" />
                                                     </div>
                                                     Gestión Logística
                                                 </h4>
                                                 {selectedOrder.tracking_number && (
-                                                    <span className="text-[9px] font-black text-[#24491f] uppercase tracking-widest bg-[#2d5a27]/5 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                    <span className="text-[9px] font-black text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded-full flex items-center gap-1">
                                                         <Check className="w-2.5 h-2.5" /> Guía Asignada
                                                     </span>
                                                 )}
@@ -824,7 +827,7 @@ export default function OrdersPage() {
                                                         id="details-provider"
                                                         defaultValue={selectedOrder.shipping_provider || ''}
                                                         placeholder="Ej. DHL, FedEx, Servientrega"
-                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-[#1d1d1f] focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-bold placeholder:text-gray-400 shadow-sm"
+                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-bold placeholder:text-gray-400 shadow-sm"
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -834,7 +837,7 @@ export default function OrdersPage() {
                                                         id="details-tracking"
                                                         defaultValue={selectedOrder.tracking_number || ''}
                                                         placeholder="Guía de rastreo"
-                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-[#1d1d1f] focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-mono font-bold tracking-wider placeholder:text-gray-400 shadow-sm"
+                                                        className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 transition-all font-mono font-bold tracking-wider placeholder:text-gray-400 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
@@ -867,12 +870,12 @@ export default function OrdersPage() {
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex flex-col">
                                                             <span className="text-[8px] text-[#86868b] font-black uppercase tracking-widest">Estatus</span>
-                                                            <span className="text-[10px] text-[#1d1d1f] font-black uppercase tracking-wider">{selectedOrder.status === 'shipped' || selectedOrder.status === 'enviado' ? 'EN TRÁNSITO' : selectedOrder.status}</span>
+                                                            <span className="text-[10px] text-foreground font-black uppercase tracking-wider">{selectedOrder.status === 'shipped' || selectedOrder.status === 'enviado' ? 'EN TRÁNSITO' : selectedOrder.status}</span>
                                                         </div>
                                                         <div className="w-px h-5 bg-black/10" />
                                                         <div className="flex flex-col">
                                                             <span className="text-[8px] text-[#86868b] font-black uppercase tracking-widest">Operador</span>
-                                                            <span className="text-[10px] text-[#1d1d1f] font-black uppercase tracking-wider">{selectedOrder.shipping_provider || '--'}</span>
+                                                            <span className="text-[10px] text-foreground font-black uppercase tracking-wider">{selectedOrder.shipping_provider || '--'}</span>
                                                         </div>
                                                     </div>
                                                     <button className="text-[10px] bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg font-black uppercase tracking-widest flex items-center gap-1.5 transition-all">
@@ -888,8 +891,8 @@ export default function OrdersPage() {
                                         <div className="space-y-2.5">
                                             {Array.isArray(selectedOrder.items) && selectedOrder.items.length > 0 ? (
                                                 selectedOrder.items.map((item, idx) => (
-                                                    <div key={idx} className="apple-card p-5 border-black/5 bg-black/[0.02] flex gap-6 group hover:bg-black/[0.04] transition-all duration-300 relative overflow-hidden shadow-sm">
-                                                        <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-black/[0.02] rounded-full blur-2xl pointer-events-none" />
+                                                    <div key={idx} className="apple-card p-5 border-black/5 bg-black/2 flex gap-6 group hover:bg-black/4 transition-all duration-300 relative overflow-hidden shadow-sm">
+                                                        <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-black/2 rounded-full blur-2xl pointer-events-none" />
 
                                                         <div className="w-24 h-24 rounded-2xl bg-white overflow-hidden shrink-0 border border-black/5 relative shadow-md group-hover:scale-[1.02] transition-transform duration-500">
                                                             {item.image_url ? (
@@ -907,11 +910,11 @@ export default function OrdersPage() {
                                                         <div className="flex-1 min-w-0 flex flex-col pt-1">
                                                             <div className="flex justify-between items-start mb-3">
                                                                 <div className="min-w-0">
-                                                                    <h5 className="text-base font-black text-[#1d1d1f] truncate group-hover:text-[#2d5a27] transition-colors">{item.name || 'Producto sin nombre'}</h5>
+                                                                    <h5 className="text-base font-black text-foreground truncate group-hover:text-primary transition-colors">{item.name || 'Producto sin nombre'}</h5>
                                                                     <p className="text-[10px] text-[#86868b] font-bold uppercase tracking-widest mt-1">{item.brand || 'Colección General'}</p>
                                                                 </div>
                                                                 <div className="text-right shrink-0">
-                                                                    <p className="text-base font-black text-[#1d1d1f] tracking-tight">{formatCurrency(item.price || 0)}</p>
+                                                                    <p className="text-base font-black text-foreground tracking-tight">{formatCurrency(item.price || 0)}</p>
                                                                     <p className="text-[9px] text-[#86868b] font-bold uppercase mt-1">Precio Unit.</p>
                                                                 </div>
                                                             </div>
@@ -923,7 +926,7 @@ export default function OrdersPage() {
                                                                     </span>
                                                                 )}
                                                                 {item.size && (
-                                                                    <span className="px-2.5 py-1 rounded-xl bg-[#2d5a27]/5 text-[9px] font-black text-[#24491f] uppercase tracking-widest border border-[#2d5a27]/10 shadow-sm">
+                                                                    <span className="px-2.5 py-1 rounded-xl bg-primary/5 text-[9px] font-black text-primary uppercase tracking-widest border border-primary/10 shadow-sm">
                                                                         Talla {item.size}
                                                                     </span>
                                                                 )}
@@ -937,7 +940,7 @@ export default function OrdersPage() {
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="p-12 text-center border-2 border-dashed border-black/5 rounded-3xl bg-black/[0.01]">
+                                                <div className="p-12 text-center border-2 border-dashed border-black/5 rounded-3xl bg-black/1">
                                                     <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-4 text-[#86868b]">
                                                         <Package className="w-6 h-6" />
                                                     </div>

@@ -186,20 +186,20 @@ export default function DashboardPage() {
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
             {/* HEADER */}
-            <div className="px-4 md:px-8 py-4 md:py-6 bg-transparent flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#2d5a27]/10 flex items-center justify-center shrink-0">
-                        <BarChart3 className="w-5 h-5 text-[#2d5a27]" />
+            <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                        <BarChart3 className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black text-[#1d1d1f] leading-tight uppercase tracking-tighter">Monitor Central</h1>
+                        <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Monitor Central</h1>
                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Estado global de la plataforma</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4 md:gap-6 ml-auto lg:ml-0">
                     <div className="text-right hidden sm:block">
-                        <p className="text-lg md:text-xl font-semibold text-[#1d1d1f] font-mono">{formatTime(currentTime)}</p>
+                        <p className="text-lg md:text-xl font-semibold text-foreground font-mono">{formatTime(currentTime)}</p>
                         <p className="text-[10px] md:text-xs font-medium text-[#86868b] capitalize">{formatDate(currentTime)}</p>
                     </div>
                     <button onClick={handleRefresh} className={`w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all ${refreshing ? 'animate-spin' : ''}`}>
@@ -216,13 +216,13 @@ export default function DashboardPage() {
                     {userProfile?.isAdmin && (
                         <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center">
-                                    <Users className="w-4 h-4 text-[#2d5a27]" />
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-primary" />
                                 </div>
                                 <span className="text-xs font-medium text-[#86868b]">Usuarios</span>
                             </div>
                             <div className="flex items-baseline gap-2 text-wrap">
-                                <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.users?.total || 0}</p>
+                                <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.users?.total || 0}</p>
                                 <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{(stats as any)?.users?.premium || 0}</span>
                             </div>
                         </div>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
                             <span className="text-xs font-medium text-[#86868b]">Órdenes</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.orders?.total || 0}</p>
+                            <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.orders?.total || 0}</p>
                             <span className="text-xs font-medium text-amber-500">{(stats as any)?.orders?.pending || 0} pend.</span>
                         </div>
                     </div>
@@ -247,19 +247,19 @@ export default function DashboardPage() {
                             <span className="text-xs font-medium text-[#86868b]">Catálogo</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.inventory?.total || 0}</p>
+                            <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.inventory?.total || 0}</p>
                             <span className="text-xs font-medium text-[#5c5c5e]">{(stats as any)?.inventory?.low_stock || 0} bajo stock</span>
                         </div>
                     </div>
                     <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center">
-                                <DollarSign className="w-4 h-4 text-[#2d5a27]" />
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <DollarSign className="w-4 h-4 text-primary" />
                             </div>
                             <span className="text-xs font-medium text-[#86868b]">Ingresos</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f] truncate">{formatCurrency((stats as any)?.orders?.revenue || 0)}</p>
+                            <p className="text-2xl md:text-3xl font-semibold text-foreground truncate">{formatCurrency((stats as any)?.orders?.revenue || 0)}</p>
                         </div>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                     <div className="lg:col-span-2 apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="text-base font-semibold text-[#1d1d1f]">Actividad de Ventas</h3>
+                                <h3 className="text-base font-semibold text-foreground">Actividad de Ventas</h3>
                                 <p className="text-xs text-[#5c5c5e] mt-0.5">Volumen de órdenes semanal</p>
                             </div>
                             <div className="px-3 py-1 bg-black/5 rounded-full text-[10px] md:text-xs font-medium text-[#5c5c5e]">Últimos 7 días</div>
@@ -280,11 +280,11 @@ export default function DashboardPage() {
                                 <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-3 h-full justify-end group">
                                     <div className="w-full relative flex-1 flex flex-col justify-end">
                                         <div
-                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-[#2d5a27] ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45,90,39,0.3)]' : 'opacity-20 group-hover:opacity-40'}`}
+                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-primary ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45,90,39,0.3)]' : 'opacity-20 group-hover:opacity-40'}`}
                                             style={{ height: `${(data.count / maxWeeklyValue) * 100}%`, minHeight: '6px' }}
                                         />
                                     </div>
-                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-[#2d5a27]' : 'text-[#86868b]'}`}>{data.day}</span>
+                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-primary' : 'text-[#86868b]'}`}>{data.day}</span>
                                 </div>
                             ))}
                         </div>
@@ -292,17 +292,17 @@ export default function DashboardPage() {
 
                     {/* RECENT ACTIVITY COMPACT */}
                     <div className="apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
-                        <h3 className="text-base font-semibold text-[#1d1d1f] mb-4">Actividad Reciente</h3>
+                        <h3 className="text-base font-semibold text-foreground mb-4">Actividad Reciente</h3>
                         <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
                             {recentActivity.map((a, i) => {
                                 const Icon = a.icon
                                 return (
                                     <div key={i} className="flex items-center gap-3 group">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${a.type === 'order' ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500/20' : 'bg-[#2d5a27]/10 text-[#2d5a27] group-hover:bg-[#2d5a27]/20'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${a.type === 'order' ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500/20' : 'bg-primary/10 text-primary group-hover:bg-primary/20'}`}>
                                             <Icon className="w-4 h-4" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-[#1d1d1f] truncate group-hover:text-[#5c5c5e] transition-colors">{a.message}</p>
+                                            <p className="text-sm font-medium text-foreground truncate group-hover:text-[#5c5c5e] transition-colors">{a.message}</p>
                                             <p className="text-[10px] text-[#86868b] truncate">{a.detail}</p>
                                         </div>
                                         <div className="text-right shrink-0">
@@ -319,11 +319,11 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-auto">
                     <div className="apple-card p-5 flex flex-col justify-center gap-2 min-h-[120px] bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center shrink-0">
-                                <Zap className="w-4 h-4 text-[#2d5a27]" />
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                <Zap className="w-4 h-4 text-primary" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-[#1d1d1f]">Estado del Sistema</h3>
+                                <h3 className="text-sm font-semibold text-foreground">Estado del Sistema</h3>
                                 <p className="text-[10px] text-[#5c5c5e]">Supabase Cloud</p>
                             </div>
                         </div>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
 
                     <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] bg-white border-black/5 shadow-sm">
                         <div className="flex justify-between items-end">
-                            <p className="text-sm font-semibold text-[#1d1d1f]">Conversión</p>
+                            <p className="text-sm font-semibold text-foreground">Conversión</p>
                             <span className="text-xl font-semibold text-[#4c7c44]">{
                                 (stats as any)?.users?.total > 0
                                     ? Math.round(((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100)
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                             }%</span>
                         </div>
                         <div className="w-full bg-black/5 h-1.5 rounded-full overflow-hidden">
-                            <div className="h-full bg-[#2d5a27] rounded-full" style={{
+                            <div className="h-full bg-primary rounded-full" style={{
                                 width: `${(stats as any)?.users?.total > 0 ? ((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100 : 0}%`
                             }} />
                         </div>
@@ -352,12 +352,12 @@ export default function DashboardPage() {
 
                     <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] md:col-span-2 lg:col-span-1 bg-white border-black/5 shadow-sm">
                         <div className="flex justify-between items-center">
-                            <p className="text-sm font-semibold text-[#1d1d1f]">Salud de API</p>
-                            <span className="text-xs font-bold text-[#4c7c44] bg-[#2d5a27]/10 px-2 py-0.5 rounded-full">99.9%</span>
+                            <p className="text-sm font-semibold text-foreground">Salud de API</p>
+                            <span className="text-xs font-bold text-[#4c7c44] bg-primary/10 px-2 py-0.5 rounded-full">99.9%</span>
                         </div>
                         <div className="flex items-end gap-1 h-8 overflow-hidden">
                             {[...Array(20)].map((_, i) => (
-                                <div key={i} className="flex-1 bg-[#2d5a27]/30 rounded-sm hover:bg-[#4c7c44] transition-colors" style={{ height: `${30 + Math.random() * 70}%` }} />
+                                <div key={i} className="flex-1 bg-primary/30 rounded-sm hover:bg-[#4c7c44] transition-colors" style={{ height: `${30 + Math.random() * 70}%` }} />
                             ))}
                         </div>
                     </div>

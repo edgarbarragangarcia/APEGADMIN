@@ -457,15 +457,15 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             <div className="px-4 md:px-6 py-4 md:py-5 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 z-10 relative">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <Link href="/dashboard/green-fees"
-                        className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all text-[#86868b] hover:text-[#1d1d1f]"
+                        className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all text-[#86868b] hover:text-foreground"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
 
                     <div className="min-w-0">
                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                            <h1 className="text-xl md:text-2xl font-semibold text-[#1d1d1f] tracking-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-[#2d5a27]/10 text-[#2d5a27] border-[#2d5a27]/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
+                            <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tighter leading-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
                                 {course.status === 'active' ? 'Activo' : course.status.toUpperCase()}
                             </span>
                         </div>
@@ -477,19 +477,19 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                 <div className="bg-black/5 p-1 rounded-lg flex text-[10px] sm:text-xs font-medium w-full md:w-auto shadow-inner">
                     <button
                         onClick={() => setActiveTab('agenda')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-white text-foreground shadow-sm' : 'text-[#86868b] hover:text-foreground'}`}
                     >
                         Agenda
                     </button>
                     <button
                         onClick={() => setActiveTab('prices')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-white text-foreground shadow-sm' : 'text-[#86868b] hover:text-foreground'}`}
                     >
                         Tarifas
                     </button>
                     <button
                         onClick={() => setActiveTab('blocks')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-white text-foreground shadow-sm' : 'text-[#86868b] hover:text-foreground'}`}
                     >
                         Bloqueos
                     </button>
@@ -503,7 +503,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     {activeTab === 'agenda' ? (
                         <div className="flex-1 apple-card p-4 md:p-5 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 shrink-0 gap-4">
-                                <h3 className="text-base md:text-lg font-semibold text-[#1d1d1f] tracking-tight flex items-center gap-2">
+                                <h3 className="text-base md:text-lg font-semibold text-foreground tracking-tight flex items-center gap-2">
                                     Calendario Operativo
                                 </h3>
 
@@ -512,7 +512,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                         <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-1 hover:bg-black/5 rounded-md transition-colors">
                                             <ChevronLeft className="w-4 h-4 text-[#86868b]" />
                                         </button>
-                                        <span className="text-xs sm:text-sm font-medium text-[#1d1d1f] px-2 sm:px-3 min-w-[80px] sm:min-w-[100px] text-center capitalize">
+                                        <span className="text-xs sm:text-sm font-medium text-foreground px-2 sm:px-3 min-w-[80px] sm:min-w-[100px] text-center capitalize">
                                             {new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(currentDate)}
                                         </span>
                                         <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-1 hover:bg-black/5 rounded-md transition-colors">
@@ -528,7 +528,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                 setSelectedDates([today])
                                                 setLastClickedDate(today)
                                             }}
-                                            className="apple-button apple-button-secondary apple-button-sm font-medium py-1.5! px-3! text-[10px] bg-black/5 text-[#1d1d1f] hover:bg-black/10"
+                                            className="apple-button apple-button-secondary apple-button-sm font-medium py-1.5! px-3! text-[10px] bg-black/5 text-foreground hover:bg-black/10"
                                         >
                                             Hoy
                                         </button>
@@ -572,11 +572,11 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                     ? 'bg-blue-500/10 border-blue-500 shadow-sm shadow-blue-500/20'
                                                     : isBlocked
                                                         ? 'bg-red-500/5 border-red-500/20 opacity-60'
-                                                        : 'bg-black/[0.02] border-black/5 hover:bg-black/5 hover:border-black/10'}
+                                                        : 'bg-black/2 border-black/5 hover:bg-black/5 hover:border-black/10'}
                                             `}
                                         >
                                             <div className="flex items-center justify-between w-full mb-0.5 md:mb-1">
-                                                <span className={`text-[11px] sm:text-sm font-semibold transition-colors ${isSelected ? 'text-blue-600' : isToday ? 'text-[#2d5a27]' : 'text-[#86868b] group-hover:text-[#1d1d1f]'}`}>
+                                                <span className={`text-[11px] sm:text-sm font-semibold transition-colors ${isSelected ? 'text-blue-600' : isToday ? 'text-primary' : 'text-[#86868b] group-hover:text-foreground'}`}>
                                                     {day}
                                                 </span>
                                                 <div className="flex gap-1">
@@ -618,7 +618,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                         <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-xl md:text-2xl font-black text-[#1d1d1f] uppercase tracking-tighter mb-1 md:mb-2">Tarifas Dinámicas</h3>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground uppercase tracking-tighter mb-1 md:mb-2">Tarifas Dinámicas</h3>
                                     <p className="text-[9px] md:text-xs text-[#86868b] font-bold uppercase tracking-widest">Establece precios por temporadas o eventos</p>
                                 </div>
                                 <button
@@ -640,14 +640,14 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     </div>
                                     <div className="space-y-4">
                                         {overrides.length > 0 ? overrides.map(o => (
-                                            <div key={o.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/[0.02] group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
-                                                <div className="absolute inset-0 bg-[#2d5a27]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                            <div key={o.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/2 group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
+                                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                 <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shadow-lg shadow-amber-500/10 shrink-0">
                                                         <DollarSign className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
                                                     <div className="text-left min-w-0">
-                                                        <p className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
+                                                        <p className="text-base md:text-lg font-black text-foreground uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
                                                             {o.start_date} <span className="text-[#86868b] mx-1 md:mx-2">→</span> {o.end_date}
                                                         </p>
                                                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-black uppercase tracking-widest truncate">{o.note || 'Promocional / Temporal'}</p>
@@ -656,7 +656,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                 <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="text-left sm:text-right">
                                                         <p className="text-[8px] md:text-xs font-black text-[#86868b] uppercase tracking-widest mb-0.5 md:mb-1">Costo Especial</p>
-                                                        <p className="text-xl md:text-2xl font-black text-[#2d5a27]">{formatCurrency(o.price)}</p>
+                                                        <p className="text-xl md:text-2xl font-black text-primary">{formatCurrency(o.price)}</p>
                                                     </div>
                                                     <button onClick={() => removeOverride(o.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-red-500/10 text-[#86868b] hover:text-red-500 transition-all active:scale-90">
                                                         <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
@@ -666,7 +666,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                         )) : (
                                             <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
                                                 <DollarSign className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-[#86868b]" />
-                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-[#1d1d1f] text-center">No hay tarifas especiales configuradas</p>
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-foreground text-center">No hay tarifas especiales configuradas</p>
                                             </div>
                                         )}
                                     </div>
@@ -677,7 +677,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                         <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-xl md:text-2xl font-black text-[#1d1d1f] uppercase tracking-tighter mb-1 md:mb-2">Restricciones</h3>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground uppercase tracking-tighter mb-1 md:mb-2">Restricciones</h3>
                                     <p className="text-[9px] md:text-xs text-[#86868b] font-bold uppercase tracking-widest">Cierra el campo por eventos o mantenimiento</p>
                                 </div>
                                 <button
@@ -699,14 +699,14 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     </div>
                                     <div className="space-y-4">
                                         {blockedDays.length > 0 ? blockedDays.map(b => (
-                                            <div key={b.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/[0.02] group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
+                                            <div key={b.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/2 group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
                                                 <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                 <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 shadow-lg shadow-red-500/10 shrink-0">
                                                         <Ban className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
                                                     <div className="text-left min-w-0">
-                                                        <p className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
+                                                        <p className="text-base md:text-lg font-black text-foreground uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
                                                             {b.blocked_date}
                                                         </p>
                                                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-black uppercase tracking-widest leading-relaxed truncate">
@@ -722,7 +722,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                             <p className="text-[11px] md:text-sm font-black text-red-500 uppercase">Bloqueado</p>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-[#2d5a27]/10 text-[#86868b] hover:text-[#2d5a27] transition-all active:scale-90">
+                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-primary/10 text-[#86868b] hover:text-primary transition-all active:scale-90">
                                                         <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
@@ -730,7 +730,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                         )) : (
                                             <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
                                                 <LayoutGrid className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-[#86868b]" />
-                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-[#1d1d1f] text-center">No hay bloqueos activos</p>
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-foreground text-center">No hay bloqueos activos</p>
                                             </div>
                                         )}
                                     </div>
@@ -745,10 +745,10 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     <div className={`w-full lg:w-[340px] apple-card transition-all duration-500 flex flex-col border-black/5 relative bg-white shadow-lg ${selectedDates.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'} min-h-[400px] lg:min-h-0`}>
                         <div className="p-5 md:p-6 border-b border-black/5 bg-white text-left">
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-[10px] md:text-xs font-black text-[#1d1d1f] uppercase tracking-widest flex items-center gap-2">
-                                    <List className="w-4 h-4 text-[#2d5a27]" /> Agenda del día
+                                <h3 className="text-[10px] md:text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
+                                    <List className="w-4 h-4 text-primary" /> Agenda del día
                                 </h3>
-                                <span className="px-2 py-0.5 rounded-md bg-[#2d5a27]/10 text-[8px] md:text-[9px] font-black text-[#2d5a27] border border-[#2d5a27]/20 italic">
+                                <span className="px-2 py-0.5 rounded-md bg-primary/10 text-[8px] md:text-[9px] font-black text-primary border border-primary/20 italic">
                                     {selectedDates.length === 1 ? 'Individual' : `${selectedDates.length} Días`}
                                 </span>
                             </div>
@@ -759,13 +759,13 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                             {selectedReservations.length > 0 ? (
                                 selectedReservations.map((res) => (
-                                    <div key={res.id} className="p-4 rounded-xl md:rounded-2xl bg-black/5 border border-black/5 hover:border-[#2d5a27]/20 transition-all group animate-fade-in text-left">
+                                    <div key={res.id} className="p-4 rounded-xl md:rounded-2xl bg-black/5 border border-black/5 hover:border-primary/20 transition-all group animate-fade-in text-left">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-[#2d5a27]/10 text-[#2d5a27] group-hover:bg-[#2d5a27] group-hover:text-white transition-colors">
+                                                <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                                                     <Clock className="w-3.5 h-3.5" />
                                                 </div>
-                                                <span className="text-[10px] md:text-[11px] font-black text-[#1d1d1f] group-hover:text-[#2d5a27] transition-colors">{res.reservation_time}</span>
+                                                <span className="text-[10px] md:text-[11px] font-black text-foreground group-hover:text-primary transition-colors">{res.reservation_time}</span>
                                             </div>
                                             <div className="px-2 py-0.5 rounded-md bg-white text-[8px] font-bold text-[#86868b] uppercase border border-black/5">
                                                 ID: {res.id.substring(0, 4)}
@@ -776,32 +776,32 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                 <User className="w-4 h-4 text-[#86868b]" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] font-black text-[#1d1d1f] truncate uppercase">{res.user_name}</p>
+                                                <p className="text-[10px] font-black text-foreground truncate uppercase">{res.user_name}</p>
                                                 <p className="text-[9px] text-[#5c5c5e] truncate lowercase">{res.user_email}</p>
                                             </div>
                                         </div>
                                         <div className="mt-3 pt-3 border-t border-black/5 flex items-center justify-between">
-                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-[#2d5a27]/10 text-[#2d5a27]' : 'bg-amber-500/10 text-amber-600'}`}>
+                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-primary/10 text-primary' : 'bg-amber-500/10 text-amber-600'}`}>
                                                 {res.payment_status === 'paid' ? 'Pagado' : 'Pendiente'}
                                             </span>
-                                            <button className="text-[9px] font-black text-[#2d5a27] uppercase tracking-widest hover:underline">Ver detalles</button>
+                                            <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Ver detalles</button>
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
                                     <Users className="w-12 h-12 mb-4 text-[#86868b]" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed text-[#1d1d1f]">Sin reservas registradas</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed text-foreground">Sin reservas registradas</p>
                                 </div>
                             )}
                         </div>
                         <div className="p-4 bg-white border-t border-black/5 space-y-3">
                             <div className="grid grid-cols-2 gap-2">
-                                <button onClick={downloadPDF} className="py-2.5 rounded-xl bg-black/5 hover:bg-black/10 border border-black/5 text-[#86868b] hover:text-[#1d1d1f] text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                                <button onClick={downloadPDF} className="py-2.5 rounded-xl bg-black/5 hover:bg-black/10 border border-black/5 text-[#86868b] hover:text-foreground text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                                     <div className="bg-red-500/20 text-red-500 p-1 rounded-md shrink-0"><ArrowRight className="w-3 h-3 rotate-45" /></div> PDF
                                 </button>
                                 <button onClick={downloadExcel} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                                    <div className="bg-[#2d5a27]/20 text-[#2d5a27] p-1 rounded-md shrink-0"><List className="w-3 h-3" /></div> Excel
+                                    <div className="bg-primary/20 text-primary p-1 rounded-md shrink-0"><List className="w-3 h-3" /></div> Excel
                                 </button>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
@@ -823,17 +823,17 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     <div className="bg-white/80 backdrop-blur-2xl border border-black/5 p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex items-center justify-between md:justify-start gap-3 md:gap-6 ring-1 ring-black/5 max-w-lg mx-auto">
                         <div className="px-3 md:px-6 border-r border-black/10 text-left min-w-0">
                             <p className="text-[8px] md:text-[10px] font-black text-[#86868b] uppercase tracking-[0.2em] mb-0.5">Selección</p>
-                            <p className="text-xs md:text-sm font-black text-[#1d1d1f] uppercase tracking-tighter truncate">{selectedDates.length} Días</p>
+                            <p className="text-xs md:text-sm font-black text-foreground uppercase tracking-tighter truncate">{selectedDates.length} Días</p>
                         </div>
                         <div className="flex items-center gap-2 md:gap-3">
                             <button onClick={() => setIsBlocking(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-red-500/10 text-red-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 flex items-center gap-2">
                                 <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Bloquear</span>
                             </button>
-                            <button onClick={() => setIsOverriding(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-[#2d5a27]/10 text-[#2d5a27] text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-[#2d5a27]/20 transition-all border border-[#2d5a27]/20 flex items-center gap-2">
+                            <button onClick={() => setIsOverriding(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20 flex items-center gap-2">
                                 <DollarSign className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Tarifa</span>
                             </button>
                             <div className="w-px h-6 md:h-8 bg-black/10 mx-1 md:mx-2" />
-                            <button onClick={clearSelection} className="p-2 md:p-3 rounded-xl hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all">
+                            <button onClick={clearSelection} className="p-2 md:p-3 rounded-xl hover:bg-black/5 text-[#86868b] hover:text-foreground transition-all">
                                 <X className="w-4 h-4 md:w-5 md:h-5" />
                             </button>
                         </div>
@@ -848,10 +848,10 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     <div className="bg-white border border-black/5 w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left rounded-3xl">
                         <div className="p-6 border-b border-black/5 flex items-center justify-between">
                             <div>
-                                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight">Bloquear Operación</h3>
+                                <h3 className="text-xl font-semibold text-foreground tracking-tight">Bloquear Operación</h3>
                                 <p className="text-sm text-[#5c5c5e] font-medium">Suspensión temporal de calendario</p>
                             </div>
-                            <button onClick={() => setIsBlocking(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsBlocking(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-foreground transition-all"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handleBlockDay} className="p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
@@ -862,7 +862,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                         type="date"
                                         required
                                         defaultValue={selectedDates.length > 0 ? selectedDates[0] : ''}
-                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
+                                        className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -871,7 +871,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                         name="end_date"
                                         type="date"
                                         defaultValue={selectedDates.length > 1 ? selectedDates[selectedDates.length - 1] : ''}
-                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
+                                        className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground"
                                     />
                                 </div>
                             </div>
@@ -881,7 +881,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     <input
                                         name="start_time"
                                         type="time"
-                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
+                                        className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -889,7 +889,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     <input
                                         name="end_time"
                                         type="time"
-                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
+                                        className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground"
                                     />
                                 </div>
                             </div>
@@ -909,7 +909,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                     if (textarea) textarea.style.display = e.target.value === 'Otro' ? 'block' : 'none';
                                                 }}
                                             />
-                                            <div className="p-3 rounded-[12px] bg-white border border-black/10 peer-checked:bg-[#1d1d1f] peer-checked:text-white text-[#5c5c5e] text-xs font-medium text-center transition-all hover:bg-black/5 peer-checked:shadow-lg shadow-sm">
+                                            <div className="p-3 rounded-[12px] bg-white border border-black/10 peer-checked:bg-foreground peer-checked:text-white text-[#5c5c5e] text-xs font-medium text-center transition-all hover:bg-black/5 peer-checked:shadow-lg shadow-sm">
                                                 {opt}
                                             </div>
                                         </label>
@@ -920,7 +920,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     name="reason_custom"
                                     placeholder="Detalles adicionales..."
                                     style={{ display: 'none' }}
-                                    className="w-full bg-black/5 text-[#1d1d1f] placeholder:text-[#86868b] rounded-[16px] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 mt-2 h-24 resize-none"
+                                    className="w-full bg-black/5 text-foreground placeholder:text-[#86868b] rounded-[16px] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 mt-2 h-24 resize-none"
                                 />
                             </div>
                             <button type="submit" className="apple-button apple-button-danger w-full justify-center">
@@ -936,20 +936,20 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     <div className="bg-white border border-black/5 w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left rounded-3xl">
                         <div className="p-6 border-b border-black/5 flex items-center justify-between">
                             <div>
-                                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight">Nueva Tarifa Especial</h3>
+                                <h3 className="text-xl font-semibold text-foreground tracking-tight">Nueva Tarifa Especial</h3>
                                 <p className="text-sm text-[#5c5c5e] font-medium">Configuración de precio dinámico</p>
                             </div>
-                            <button onClick={() => setIsOverriding(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsOverriding(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-foreground transition-all"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handlePriceOverride} className="p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Inicio</label>
-                                    <input name="start_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[0] : ''} className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
+                                    <input name="start_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[0] : ''} className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Fin</label>
-                                    <input name="end_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[selectedDates.length - 1] : ''} className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
+                                    <input name="end_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[selectedDates.length - 1] : ''} className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground" />
                                 </div>
                             </div>
                             <div className="space-y-2">
@@ -966,13 +966,13 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                             const val = input.value.replace(/\D/g, '')
                                             input.value = val ? new Intl.NumberFormat('es-MX').format(parseInt(val)) : ''
                                         }}
-                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl pl-10 pr-4 py-3 text-xl font-medium transition-all outline-none text-[#1d1d1f]"
+                                        className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl pl-10 pr-4 py-3 text-xl font-medium transition-all outline-none text-foreground"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-medium text-[#5c5c5e] ml-1">Nota</label>
-                                <input name="note" placeholder="Temporada alta, etc..." className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
+                                <input name="note" placeholder="Temporada alta, etc..." className="w-full bg-black/5 border border-transparent focus:border-primary/30 focus:bg-white focus:ring-4 focus:ring-primary/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-foreground" />
                             </div>
                             <button type="submit" className="apple-button apple-button-primary w-full justify-center">
                                 Aplicar Tarifa

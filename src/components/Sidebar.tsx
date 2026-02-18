@@ -118,7 +118,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
                             onClick={() => onCloseMobile?.()}
                             className={`apple-nav-item ${isActive ? 'active' : ''} ${isCollapsedNow ? 'justify-center px-0 py-3' : ''}`}
                         >
-                            <Icon className={`w-5 h-5 ${isCollapsedNow ? '' : 'mr-3'} ${isActive ? 'text-[#4c7c44]' : 'text-[#86868b]'}`} />
+                            <Icon className={`w-5 h-5 ${isCollapsedNow ? '' : 'mr-3'} ${isActive ? 'text-primary' : 'text-[#86868b]'}`} />
 
                             {!isCollapsedNow && (
                                 <span className="font-bold tracking-tight">{item.name}</span>
