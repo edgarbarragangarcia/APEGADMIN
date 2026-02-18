@@ -81,16 +81,13 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
 
             {/* Logo Section */}
             <div className={`relative px-6 py-8 flex items-center justify-between ${isCollapsed ? 'justify-center' : ''} h-24`}>
-                {(!isCollapsed || isMobileOpen) ? (
+                {(!isCollapsed || isMobileOpen) && (
                     <div className="flex items-center gap-3">
-                        <Image src="/images/logo.png" alt="APEG Logo" width={42} height={42} className="object-contain" />
                         <div>
                             <h2 className="text-lg font-bold text-foreground tracking-tight leading-none uppercase">APEG</h2>
                             <p className="text-[10px] text-[#86868b] font-black uppercase tracking-widest mt-0.5">Admin</p>
                         </div>
                     </div>
-                ) : (
-                    <Image src="/images/logo.png" alt="APEG Logo" width={32} height={32} className="object-contain" />
                 )}
 
                 {/* Mobile-only close button */}
@@ -118,10 +115,10 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
                             onClick={() => onCloseMobile?.()}
                             className={`apple-nav-item ${isActive ? 'active' : ''} ${isCollapsedNow ? 'justify-center px-0 py-3' : ''}`}
                         >
-                            <Icon className={`w-5 h-5 ${isCollapsedNow ? '' : 'mr-3'} ${isActive ? 'text-primary' : 'text-[#86868b]'}`} />
+                            <Icon className={`w-5 h-5 ${isCollapsedNow ? '' : 'mr-3'}`} />
 
                             {!isCollapsedNow && (
-                                <span className="font-bold tracking-tight">{item.name}</span>
+                                <span className="tracking-tight">{item.name}</span>
                             )}
 
                             {isCollapsedNow && (

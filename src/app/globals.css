@@ -149,25 +149,41 @@
 
   /* Apple Sidebar & Navigation Dark */
   .apple-sidebar-glass {
-    background: rgba(5, 12, 5, 0.6) !important;
-    backdrop-filter: blur(50px) saturate(200%) !important;
-    border-right: 1px solid rgba(45, 90, 39, 0.2) !important;
+    background: rgba(5, 12, 5, 0.8) !important;
+    backdrop-filter: blur(60px) saturate(210%) !important;
+    border-right: 1px solid rgba(45, 90, 39, 0.25) !important;
+    box-shadow: 10px 0 50px -10px rgba(0, 0, 0, 0.5);
   }
 
   .apple-nav-item {
-    @apply flex items-center px-4 py-3 rounded-[12px] text-[14px] font-medium transition-all duration-200;
+    @apply flex items-center px-4 py-3 rounded-[14px] text-[14px] font-bold transition-all duration-300 relative overflow-hidden;
     color: #86868b;
+    margin: 4px 12px;
   }
 
   .apple-nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(45, 90, 39, 0.1);
     color: #f5f5f7;
+    transform: translateX(4px);
   }
 
   .apple-nav-item.active {
-    background: rgba(45, 90, 39, 0.08);
-    color: #2d5a27;
-    font-weight: 600;
+    background: linear-gradient(135deg, rgba(45, 90, 39, 0.2) 0%, rgba(76, 124, 68, 0.1) 100%) !important;
+    color: #6fdc6f !important;
+    border: 1px solid rgba(111, 220, 111, 0.2) !important;
+    box-shadow: 0 4px 15px rgba(45, 90, 39, 0.2), inset 0 0 10px rgba(111, 220, 111, 0.05) !important;
+  }
+
+  .apple-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    height: 50%;
+    width: 4px;
+    background: #6fdc6f;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px rgba(111, 220, 111, 0.8);
   }
 
   .apple-button {
