@@ -77,35 +77,51 @@ export default function DashboardPage() {
             setUserProfile({ id: user.id, isAdmin })
 
             if (isAdmin) {
-                // Admin: Fetch everything via RPCs
-                const [statsRes, ordersRes, usersRes] = await Promise.all([
-                    supabase.rpc('get_advanced_admin_stats'),
-                    supabase.rpc('get_all_orders', { page_num: 1, page_size: 20 }),
-                    supabase.rpc('get_all_profiles', { page_num: 1, page_size: 20 })
+                // Admin: Fetch data directly from tables
+                const [
+                    { data: allOrders, count: ordersCount },
+                    { data: allUsers, count: usersCount },
+                    { data: allTournaments, count: tournamentsCount }
+                ] = await Promise.all([
+                    supabase.from('orders').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(20),
+                    supabase.from('profiles').select('*', { count: 'exact' }).limit(20),
+                    supabase.from('tournaments').select('*', { count: 'exact' })
                 ])
-                if (statsRes.data) setStats(statsRes.data)
-                if (ordersRes.data) setOrders(ordersRes.data)
-                if (usersRes.data) setUsers(usersRes.data)
+
+                // Calculate revenue from orders
+                const totalRevenue = allOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
+                const paidOrders = allOrders?.filter(o => ['paid', 'pagado', 'completed'].includes(o.status?.toLowerCase())) || []
+                const paidRevenue = paidOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0)
+
+                setOrders(allOrders || [])
+                setUsers(allUsers || [])
+                setStats({
+                    total_users: usersCount || 0,
+                    total_orders: ordersCount || 0,
+                    total_tournaments: tournamentsCount || 0,
+                    total_revenue: totalRevenue,
+                    paid_revenue: paidRevenue,
+                    pending_orders: (ordersCount || 0) - paidOrders.length
+                })
             } else {
                 // User: Fetch only their data
-                const { data: userOrders } = await supabase
+                const { data: userOrders, count: userOrdersCount } = await supabase
                     .from('orders')
-                    .select('*')
-                    .eq('buyer_id', user.id) // Assuming buyer_id is the link to profile
+                    .select('*', { count: 'exact' })
+                    .eq('buyer_id', user.id)
                     .order('created_at', { ascending: false })
                     .limit(20)
-
-                const { data: inventoryCount } = await supabase
-                    .from('products')
-                    .select('id', { count: 'exact', head: true })
 
                 const totalRevenue = userOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
 
                 setOrders(userOrders || [])
                 setStats({
-                    users: { total: 1, premium: 0 }, // Just themselves
-                    orders: { total: userOrders?.length || 0, pending: userOrders?.filter(o => o.status === 'pending').length || 0, revenue: totalRevenue },
-                    inventory: { total: inventoryCount?.length || 0, low_stock: 0 }
+                    total_users: 1,
+                    total_orders: userOrdersCount || 0,
+                    total_tournaments: 0,
+                    total_revenue: totalRevenue,
+                    paid_revenue: 0,
+                    pending_orders: userOrders?.filter(o => o.status === 'pending').length || 0
                 })
             }
 

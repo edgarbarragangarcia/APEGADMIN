@@ -30,17 +30,27 @@ export default function UsersPage() {
 
     const fetchUsers = useCallback(async () => {
         setLoading(true)
-        const [usersRes, statsRes] = await Promise.all([
-            supabase.rpc('get_all_profiles', {
-                search_query: search,
-                page_num: page,
-                page_size: 6
-            }),
-            supabase.rpc('get_advanced_admin_stats')
-        ])
 
-        if (usersRes.data) setUsers(usersRes.data)
-        if (statsRes.data) setStats(statsRes.data)
+        // Fetch users directly from the table with avatar_url
+        const { data: usersData, error: usersError } = await supabase
+            .from('profiles')
+            .select('id, full_name, email, phone, handicap, updated_at, is_premium, avatar_url')
+            .ilike('full_name', `%${search}%`)
+            .order('updated_at', { ascending: false })
+            .range((page - 1) * 6, page * 6 - 1)
+
+        // Fetch stats
+        const { data: statsData } = await supabase.rpc('get_advanced_admin_stats')
+
+        if (usersError) {
+            console.error('Error fetching users:', usersError)
+            console.error('Error details:', JSON.stringify(usersError, null, 2))
+        }
+
+        console.log('Users data:', usersData)
+        setUsers(usersData || [])
+
+        if (statsData) setStats(statsData)
         setLoading(false)
     }, [page, search, supabase])
 
