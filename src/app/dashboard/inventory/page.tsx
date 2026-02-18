@@ -103,8 +103,8 @@ export default function InventoryPage() {
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <button className="apple-button-primary apple-button-sm w-full sm:w-auto py-2.5 md:py-2! px-6 flex items-center justify-center">
-                        <Plus className="w-4 h-4 mr-2" /> Nuevo SKU
+                    <button className="apple-button apple-button-primary apple-button-sm w-full sm:w-auto flex items-center justify-center shadow-lg shadow-primary/20 text-white font-bold">
+                        <Plus className="w-4 h-4 mr-2 text-white" /> Nuevo SKU
                     </button>
                 </div>
             </div>
@@ -122,8 +122,8 @@ export default function InventoryPage() {
                                 { label: 'Valor Total', val: formatCurrency(totalInventoryValue), icon: ArrowUpRight, color: 'text-primary' },
                                 { label: 'Estado', val: 'Óptimo', icon: BarChart3, color: 'text-primary' }
                             ].map((s, i) => (
-                                <div key={i} className="apple-card p-4 flex items-center gap-4 bg-white border-black/5">
-                                    <div className="p-2 rounded-xl bg-black/5 shrink-0"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
+                                <div key={i} className="apple-card p-4 flex items-center gap-4 border-white/5">
+                                    <div className="p-2 rounded-xl bg-white/5 shrink-0"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
                                     <div className="min-w-0">
                                         <p className="text-[8px] md:text-[9px] font-black text-[#86868b] uppercase tracking-widest">{s.label}</p>
                                         <p className="text-xs md:text-sm font-black text-foreground truncate">{s.val}</p>
@@ -139,7 +139,7 @@ export default function InventoryPage() {
                                 <input
                                     type="text"
                                     placeholder="Buscar producto..."
-                                    className="w-full pl-11 pr-4 py-2 bg-white border border-black/5 rounded-2xl text-[10px] text-foreground focus:outline-none focus:border-primary/30 transition-all font-bold h-10 placeholder:text-[#86868b] shadow-sm"
+                                    className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] text-foreground focus:outline-none focus:border-primary/30 transition-all font-bold h-10 placeholder:text-[#86868b] shadow-sm"
                                 />
                             </div>
                             <div className="flex bg-black/5 p-1 rounded-xl items-center border border-black/5 h-10">
@@ -153,7 +153,7 @@ export default function InventoryPage() {
                         </div>
 
                         {/* LIST DISPLAY */}
-                        <div className="flex-1 apple-card overflow-hidden flex flex-col bg-white border-black/5 shadow-sm">
+                        <div className="flex-1 apple-card overflow-hidden flex flex-col shadow-sm">
                             <div className="flex-1 overflow-auto custom-scrollbar">
                                 {viewMode === 'table' ? (
                                     <table className="w-full min-w-[500px] md:min-w-0">
@@ -199,7 +199,7 @@ export default function InventoryPage() {
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
                                         {products.map((p) => (
-                                            <div key={p.id} className="apple-card p-5 bg-white group hover:scale-[1.01] transition-all border border-black/5">
+                                            <div key={p.id} className="apple-card p-5 group hover:scale-[1.01] transition-all border border-white/5">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center shrink-0"><Tag className="w-5 h-5 text-[#5c5c5e]" /></div>
                                                     <span className={`text-[8px] font-black uppercase tracking-widest ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
@@ -250,7 +250,7 @@ export default function InventoryPage() {
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] bg-white border-black/5">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px]">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8 text-center sm:text-left">
                                 <div>
                                     <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Distribución de Capital</h3>
@@ -282,7 +282,7 @@ export default function InventoryPage() {
                 )}
 
                 {/* FOOTER */}
-                <div className="px-4 md:px-6 py-4 bg-white border border-black/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0">
+                <div className="px-4 md:px-6 py-4 bg-white/5 border border-white/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0">
                     <p className="text-[9px] md:text-[10px] font-black text-[#5c5c5e] uppercase tracking-widest flex items-center gap-2">
                         Status: <span className="text-primary">Sincronización OK</span>
                     </p>

@@ -17,6 +17,7 @@ interface UserProfile {
     handicap: number | null
     updated_at: string
     is_premium: boolean
+    avatar_url: string | null
 }
 
 export default function UsersPage() {
@@ -61,24 +62,26 @@ export default function UsersPage() {
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
             {/* FIXED HEADER - VERY COMPACT */}
-            <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex flex-wrap items-center gap-4">
-                    <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
-                        <Users className="w-5 h-5 text-primary" />
+            <div className="px-4 md:px-8 py-5 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                            <Users className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Usuarios</h1>
+                            <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de comunidad APEG</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Usuarios</h1>
-                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de comunidad APEG</p>
-                    </div>
-                </div>
 
-                <div className="flex gap-2 md:gap-3 w-full sm:w-auto">
-                    <button className="apple-button apple-button-secondary apple-button-sm flex-1 sm:flex-none flex items-center justify-center gap-2 bg-black/5 text-[#5c5c5e] hover:text-foreground hover:bg-black/10 border border-black/5 shadow-none">
-                        <Download className="w-4 h-4" /> <span className="sm:inline">Exportar</span>
-                    </button>
-                    <button className="apple-button apple-button-primary apple-button-sm flex-1 sm:flex-none flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
-                        <UserPlus className="w-4 h-4" /> <span className="sm:inline">Nuevo</span>
-                    </button>
+                    <div className="flex gap-2 md:gap-3 shrink-0">
+                        <button className="apple-button apple-button-secondary apple-button-sm hidden sm:flex items-center justify-center gap-2 bg-white/5 text-[#86868b] hover:text-foreground hover:bg-white/10 border border-white/5 shadow-none">
+                            <Download className="w-4 h-4" /> <span>Exportar</span>
+                        </button>
+                        <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 text-white font-bold">
+                            <UserPlus className="w-4 h-4 text-white" /> <span>Nuevo</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -87,8 +90,8 @@ export default function UsersPage() {
 
                 {/* MINIFIED STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                    <div className="apple-card p-4 md:p-5 flex items-center gap-4 bg-white border-black/5">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 border border-blue-500/20">
+                    <div className="apple-card p-4 md:p-5 flex items-center gap-4">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
                             <Activity className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div className="min-w-0">
@@ -96,7 +99,7 @@ export default function UsersPage() {
                             <p className="text-xl md:text-2xl font-black text-foreground truncate">{stats?.users?.total || 0}</p>
                         </div>
                     </div>
-                    <div className="apple-card p-4 md:p-5 flex items-center gap-4 bg-white border-black/5">
+                    <div className="apple-card p-4 md:p-5 flex items-center gap-4">
                         <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
                             <Shield className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
@@ -105,8 +108,8 @@ export default function UsersPage() {
                             <p className="text-xl md:text-2xl font-black text-foreground truncate">{stats?.users?.premium || 0}</p>
                         </div>
                     </div>
-                    <div className="apple-card p-4 md:p-5 flex items-center gap-4 sm:col-span-2 lg:col-span-1 bg-white border-black/5">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <div className="apple-card p-4 md:p-5 flex items-center gap-4 sm:col-span-2 lg:col-span-1">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Star className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div className="min-w-0">
@@ -117,8 +120,7 @@ export default function UsersPage() {
                 </div>
 
                 {/* COMPACT TOOLBAR */}
-                {/* COMPACT TOOLBAR */}
-                <div className="apple-card p-2 pl-4 flex items-center gap-2 md:gap-4 shrink-0 bg-white border-black/5 shadow-sm">
+                <div className="apple-card p-2 pl-4 flex items-center gap-2 md:gap-4 shrink-0 shadow-sm">
                     <div className="flex-1 relative group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b] group-focus-within:text-primary" />
                         <input
@@ -132,13 +134,13 @@ export default function UsersPage() {
                             className="w-full bg-transparent border-none text-foreground text-sm font-bold focus:outline-none placeholder:text-[#86868b] pl-8 h-10"
                         />
                     </div>
-                    <button className="apple-button apple-button-secondary apple-button-sm w-auto px-4 flex items-center gap-2 m-1 h-10 bg-black/5 text-[#5c5c5e] hover:text-foreground hover:bg-black/10 shadow-none border border-black/5">
+                    <button className="apple-button apple-button-secondary apple-button-sm w-auto px-4 flex items-center gap-2 m-1 h-10 bg-white/5 text-[#86868b] hover:text-foreground hover:bg-white/10 shadow-none border border-white/5">
                         <Filter className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Filtrar</span>
                     </button>
                 </div>
 
                 {/* DATA TABLE */}
-                <div className="flex-1 apple-card flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
+                <div className="flex-1 apple-card flex flex-col overflow-hidden shadow-sm">
                     <div className="overflow-x-auto overflow-y-auto h-full px-1 md:px-2 custom-scrollbar">
                         <table className="w-full border-collapse min-w-[600px] md:min-w-0">
                             <thead className="sticky top-0 z-10 bg-black/2 border-b border-black/5">
@@ -160,7 +162,18 @@ export default function UsersPage() {
                                         <tr key={user.id} className="group hover:bg-black/2 transition-colors">
                                             <td className="py-4 px-4 md:px-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-black/5 flex items-center justify-center text-sm font-black text-[#86868b] shrink-0 border border-black/5">
+                                                    {user.avatar_url ? (
+                                                        <img
+                                                            src={user.avatar_url}
+                                                            alt={user.full_name || 'Usuario'}
+                                                            className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover shrink-0 border-2 border-white/10"
+                                                            onError={(e) => {
+                                                                e.currentTarget.style.display = 'none';
+                                                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-black text-primary shrink-0 border border-primary/20 ${user.avatar_url ? 'hidden' : ''}`}>
                                                         {user.full_name?.charAt(0) || 'U'}
                                                     </div>
                                                     <div className="min-w-0">

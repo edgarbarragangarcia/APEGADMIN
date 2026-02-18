@@ -160,9 +160,9 @@ export default function GreenFeesPage() {
                 <div className="flex gap-2 w-full sm:w-auto">
                     <button
                         onClick={() => handleOpenModal()}
-                        className="apple-button-primary apple-button-sm w-full sm:w-auto py-2.5 md:py-2! px-6 flex items-center justify-center"
+                        className="apple-button apple-button-primary apple-button-sm w-full sm:w-auto flex items-center justify-center shadow-lg shadow-primary/20 text-white font-bold"
                     >
-                        <Plus className="w-4 h-4 mr-2" /> Programar Campo
+                        <Plus className="w-4 h-4 mr-2 text-white" /> Programar Campo
                     </button>
                 </div>
             </div>
@@ -182,11 +182,11 @@ export default function GreenFeesPage() {
                                 </div>
                             ) : (
                                 fees.map((fee) => (
-                                    <div key={fee.id} className="apple-card group hover:translate-y-[-4px] transition-all duration-300 flex flex-col justify-between overflow-hidden p-6 min-h-[280px] md:h-[320px] bg-white border-black/5 shadow-sm">
+                                    <div key={fee.id} className="apple-card group hover:translate-y-[-4px] transition-all duration-300 flex flex-col justify-between overflow-hidden p-6 min-h-[280px] md:h-[320px] shadow-sm">
                                         <div>
                                             <div className="flex justify-between items-start mb-6">
                                                 <div className="flex flex-col min-w-0">
-                                                    <span className={`text-[8px] md:text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border mb-3 w-fit tracking-widest ${fee.source === 'App Movil' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-black/5 text-[#86868b] border-black/5'
+                                                    <span className={`text-[8px] md:text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border mb-3 w-fit tracking-widest ${fee.source === 'App Movil' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-white/5 text-[#86868b] border-white/5'
                                                         }`}>
                                                         {fee.source || 'SISTEMA'}
                                                     </span>
@@ -197,7 +197,7 @@ export default function GreenFeesPage() {
                                                 </div>
                                                 <button
                                                     onClick={() => handleOpenModal(fee)}
-                                                    className="p-2.5 md:p-3 rounded-xl bg-black/5 border border-black/5 text-[#86868b] hover:text-foreground transition-all shrink-0"
+                                                    className="p-2.5 md:p-3 rounded-xl bg-white/5 border border-white/5 text-[#86868b] hover:text-foreground transition-all shrink-0"
                                                 >
                                                     <Settings className="w-4 h-4" />
                                                 </button>
@@ -206,7 +206,7 @@ export default function GreenFeesPage() {
 
                                         <Link
                                             href={`/dashboard/green-fees/${fee.id}`}
-                                            className="w-full py-3.5 md:py-4 rounded-2xl bg-black/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-black/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg"
+                                            className="w-full py-3.5 md:py-4 rounded-2xl bg-white/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-white/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg"
                                         >
                                             Admin Reserva
                                             <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -220,26 +220,26 @@ export default function GreenFeesPage() {
                     /* FINANCE VIEW */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 border-l-4 border-l-primary bg-white border-black/5 shadow-sm">
+                            <div className="apple-card p-6 border-l-4 border-l-primary shadow-sm">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Volumen Estimado Mes</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{formatCurrency(totalRev)}</h3>
                                 <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1 leading-none">
                                     <Activity className="w-3 h-3" /> Basado en precios base
                                 </p>
                             </div>
-                            <div className="apple-card p-6 bg-white border-black/5 shadow-sm">
+                            <div className="apple-card p-6 shadow-sm">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Promedio Ocupación</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">74%</h3>
                                 <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">Rendimiento óptimo general</p>
                             </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 bg-white border-black/5 shadow-sm">
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 shadow-sm">
                                 <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Campos Activos</p>
                                 <h3 className="text-2xl md:text-3xl font-black text-foreground">{stats.active}</h3>
                                 <p className="text-[10px] text-amber-500 mt-2 font-bold uppercase tracking-tight">{stats.maintenance} en mantenimiento</p>
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] bg-white border-black/5 shadow-sm">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] shadow-sm">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
                                 <div>
                                     <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Desempeño por Campo</h3>
@@ -274,7 +274,7 @@ export default function GreenFeesPage() {
                 )}
 
                 {/* FOOTER */}
-                <div className="px-4 md:px-6 py-4 bg-white/40 border border-black/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0 shadow-sm">
+                <div className="px-4 md:px-6 py-4 bg-white/5 border border-white/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0 shadow-sm">
                     <p className="text-[9px] md:text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 shrink-0" /> Monitor en tiempo real
                     </p>

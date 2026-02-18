@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #ffffff;
-  /* Pure white background */
-  --color-foreground: #1d1d1f;
-  /* Apple Black/Dark Gray */
+  --color-background: #050c05;
+  /* Very Deep Golf Green */
+  --color-foreground: #f5f5f7;
+  /* Off-white for high readability */
   --color-primary: #2d5a27;
   /* Deep Golf Green */
   --color-primary-light: #4c7c44;
-  --color-primary-glow: rgba(45, 90, 39, 0.15);
-  --color-accent: #0071e3;
-  /* Apple Blue */
-  --color-accent-light: #0077ed;
-  --color-surface: rgba(0, 0, 0, 0.05);
-  --color-surface-light: rgba(0, 0, 0, 0.03);
-  --color-surface-hover: rgba(0, 0, 0, 0.08);
-  --border: rgba(0, 0, 0, 0.1);
-  --color-border-accent: rgba(45, 90, 39, 0.2);
-  --color-glass: rgba(255, 255, 255, 0.7);
+  --color-primary-glow: rgba(45, 90, 39, 0.3);
+  --color-accent: #d4af37;
+  /* Elegant Gold Accent */
+  --color-accent-light: #f1c40f;
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-surface-light: rgba(255, 255, 255, 0.01);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(45, 90, 39, 0.2);
+  --color-border-accent: rgba(212, 175, 55, 0.3);
+  --color-glass: rgba(5, 12, 5, 0.8);
   --color-success: #4c7c44;
   --color-warning: #ff9f0a;
-  --color-danger: #ff3b30;
+  --color-danger: #ff453a;
 }
 
 :root {
@@ -68,11 +68,11 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-black;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     background-image:
-      radial-gradient(circle at 50% 0%, rgba(45, 90, 39, 0.05) 0%, transparent 40%),
-      radial-gradient(circle at 100% 0%, rgba(0, 113, 227, 0.03) 0%, transparent 30%);
+      radial-gradient(circle at 50% 0%, rgba(45, 90, 39, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 100% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 30%);
     background-attachment: fixed;
   }
 }
@@ -80,84 +80,78 @@
 /* ===== COMPONENT CLASSES ===== */
 @layer components {
 
-  /* Glass Panels - Upgraded to Apple Style Light */
+  /* Glass Panels - Upgraded to Dark Golf Style */
   .glass-panel {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(10, 25, 10, 0.4) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(45, 90, 39, 0.3) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .glass-panel:hover {
-    border-color: rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(45, 90, 39, 0.5) !important;
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4) !important;
   }
 
   /* Premium Glass with Glow */
   .premium-glass {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(10, 25, 10, 0.6) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
+    border: 1.5px solid rgba(45, 90, 39, 0.4) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  /* Apple-inspired aesthetic Light */
+  /* Apple-inspired aesthetic Dark */
   .apple-glass {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(10, 25, 10, 0.7) !important;
     backdrop-filter: blur(50px) saturate(180%) !important;
-    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(45, 90, 39, 0.3) !important;
     box-shadow:
-      0 40px 100px -20px rgba(0, 0, 0, 0.05),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+      0 40px 100px -20px rgba(0, 0, 0, 0.4),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
   }
 
   .apple-input {
     @apply w-full rounded-[14px] px-4 py-3.5 text-[15px] font-medium transition-all duration-200;
-    background: rgba(0, 0, 0, 0.03) !important;
-    color: #1d1d1f !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #f5f5f7 !important;
+    border: 1px solid rgba(45, 90, 39, 0.3) !important;
     outline: none !important;
     backdrop-filter: blur(10px);
   }
 
   .apple-input:focus {
-    background: rgba(255, 255, 255, 1) !important;
-    border-color: #2d5a27 !important;
-    box-shadow: 0 0 0 4px rgba(45, 90, 39, 0.1);
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: #4c7c44 !important;
+    box-shadow: 0 0 0 4px rgba(45, 90, 39, 0.2);
   }
 
-  /* Remove invert from calendar indicator in light mode */
-  .apple-input::-webkit-calendar-picker-indicator {
-    opacity: 0.6;
-    cursor: pointer;
-  }
-
-  /* Apple Card Container Light */
+  /* Apple Card Container Dark */
   .apple-card {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(10, 25, 10, 0.5) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05) !important;
+    border: 1.5px solid rgba(45, 90, 39, 0.3) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .apple-card:hover {
-    background: rgba(255, 255, 255, 0.8) !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.08) !important;
+    background: rgba(10, 25, 10, 0.6) !important;
+    border-color: rgba(45, 90, 39, 0.5) !important;
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.4) !important;
   }
 
-  /* Apple Sidebar & Navigation Light */
+  /* Apple Sidebar & Navigation Dark */
   .apple-sidebar-glass {
-    background: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(5, 12, 5, 0.6) !important;
     backdrop-filter: blur(50px) saturate(200%) !important;
-    border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-right: 1px solid rgba(45, 90, 39, 0.2) !important;
   }
 
   .apple-nav-item {
@@ -166,8 +160,8 @@
   }
 
   .apple-nav-item:hover {
-    background: rgba(0, 0, 0, 0.03);
-    color: #1d1d1f;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f5f5f7;
   }
 
   .apple-nav-item.active {
@@ -198,14 +192,17 @@
   }
 
   .apple-button-primary {
-    background-color: #2d5a27 !important;
-    /* Golf Green Primary */
+    background: linear-gradient(135deg, #6fdc6f 0%, #4caf50 100%) !important;
+    /* Bright Vibrant Green for Dark Theme */
     color: white !important;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.6), 0 0 40px rgba(111, 220, 111, 0.3) !important;
+    border: 1px solid rgba(111, 220, 111, 0.5) !important;
   }
 
   .apple-button-primary:hover {
-    background-color: #24491f !important;
-    box-shadow: 0 8px 20px rgba(45, 90, 39, 0.3);
+    background: linear-gradient(135deg, #81e881 0%, #66bb6a 100%) !important;
+    box-shadow: 0 6px 30px rgba(76, 175, 80, 0.8), 0 0 60px rgba(111, 220, 111, 0.5) !important;
+    transform: translateY(-2px);
   }
 
   .apple-button-secondary {
@@ -254,14 +251,14 @@
 
   .btn-secondary {
     @apply relative px-6 py-3 font-semibold rounded-xl transition-all duration-300;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    color: #1d1d1f;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
   }
 
   .btn-secondary:hover {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
   }
 
@@ -298,14 +295,14 @@
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
   }
 
-  /* Data Table Light */
+  /* Data Table Dark */
   .data-table {
     @apply w-full text-left;
   }
 
   .data-table thead tr {
-    background: rgba(0, 0, 0, 0.02);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(45, 90, 39, 0.2);
   }
 
   .data-table th {
@@ -313,25 +310,25 @@
   }
 
   .data-table tbody tr {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
     transition: all 0.2s ease;
   }
 
   .data-table tbody tr:hover {
-    background: rgba(45, 90, 39, 0.03);
+    background: rgba(45, 90, 39, 0.1);
   }
 
   .data-table td {
     @apply px-6 py-4 text-[13px] text-foreground font-medium;
   }
 
-  /* Stat Cards Light */
+  /* Stat Cards Dark */
   .stat-card {
     @apply relative p-6 rounded-2xl overflow-hidden;
-    background: rgba(255, 255, 255, 0.8) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    background: rgba(10, 25, 10, 0.6) !important;
+    border: 1px solid rgba(45, 90, 39, 0.2) !important;
     backdrop-filter: blur(28px) saturate(180%) !important;
-    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.2) !important;
   }
 
   .stat-card::before {
@@ -362,8 +359,8 @@
   }
 
   .nav-item:hover {
-    background: rgba(0, 0, 0, 0.03);
-    color: #1d1d1f;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f5f5f7;
   }
 
   .nav-item.active {
@@ -396,9 +393,9 @@
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(at 0% 0%, rgba(45, 90, 39, 0.05) 0, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(0, 113, 227, 0.03) 0, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(45, 90, 39, 0.02) 0, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(45, 90, 39, 0.15) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(212, 175, 55, 0.05) 0, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(45, 90, 39, 0.1) 0, transparent 50%);
   background-color: var(--background);
 }
 
@@ -410,8 +407,8 @@
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }

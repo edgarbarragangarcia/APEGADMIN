@@ -260,14 +260,14 @@ export default function OrdersPage() {
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <button className="h-9 px-4 flex-1 sm:flex-none rounded-xl bg-black/5 border border-black/5 text-[9px] md:text-[10px] font-black uppercase text-[#86868b] hover:text-foreground transition-all flex items-center justify-center gap-2">
-                        <Download className="w-3.5 h-3.5" /> <span>Exportar</span>
+                    <button className="apple-button apple-button-secondary apple-button-sm flex-1 sm:flex-none flex items-center justify-center gap-2 bg-black/5 text-[#5c5c5e] hover:text-foreground hover:bg-black/10 border border-black/5 shadow-none">
+                        <Download className="w-3.5 h-3.5" /> <span className="inline">Exportar</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="apple-button-primary apple-button-sm flex-1 sm:flex-none py-2 px-6 flex items-center justify-center"
+                        className="apple-button apple-button-primary apple-button-sm flex-1 sm:flex-none flex items-center justify-center gap-2 shadow-lg shadow-primary/20 text-white font-bold"
                     >
-                        <Package className="w-4 h-4 mr-2" /> <span>Nueva Orden</span>
+                        <Package className="w-4 h-4 text-white" /> <span className="inline">Nueva Orden</span>
                     </button>
                 </div>
             </div>
@@ -275,78 +275,68 @@ export default function OrdersPage() {
             <div className="flex-1 px-4 md:px-8 pb-8 flex flex-col gap-4 md:gap-6 overflow-hidden relative z-10">
                 {activeTab === 'list' ? (
                     <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
-                            <div className="apple-card p-4 border-black/5 bg-linear-to-br from-primary/5 to-transparent">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
-                                        <DollarSign className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Ingresos</p>
-                                        <p className="text-lg font-black text-foreground truncate">{formatCurrency(stats.totalRevenue)}</p>
-                                    </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
+                            <div className="apple-card p-6 flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 shadow-inner">
+                                    <ShoppingCart className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Total</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground">{stats?.totalOrders || 0}</h3>
                                 </div>
                             </div>
-                            <div className="apple-card p-4 border-black/5">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-primary/10 text-[#24491f] shrink-0">
-                                        <ShoppingCart className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Órdenes</p>
-                                        <p className="text-lg font-black text-foreground truncate">{stats.totalOrders}</p>
-                                    </div>
+                            <div className="apple-card p-6 flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                                    <Activity className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Nuevas</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground">{orders.filter(o => new Date(o.created_at).toDateString() === new Date().toDateString()).length}</h3>
                                 </div>
                             </div>
-                            <div className="apple-card p-4 border-black/5">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 shrink-0">
-                                        <Clock className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Espera</p>
-                                        <p className="text-lg font-black text-foreground truncate">{stats.totalOrders - stats.paidOrders}</p>
-                                    </div>
+                            <div className="apple-card p-6 flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shadow-inner">
+                                    <Clock className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Pendientes</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground">{stats?.totalOrders - stats?.paidOrders || 0}</h3>
                                 </div>
                             </div>
-                            <div className="apple-card p-4 sm:col-span-2 lg:col-span-1 border-black/5">
-                                <div className="flex flex-col h-full justify-center">
-                                    <div className="flex justify-between items-center mb-1.5">
-                                        <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Tasa de Cierre</p>
-                                        <span className="text-[10px] font-black text-primary">{Math.round((stats.paidOrders / (stats.totalOrders || 1)) * 100)}%</span>
-                                    </div>
-                                    <div className="h-1.5 bg-black/5 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-linear-to-r from-primary to-[#4c7c44]"
-                                            style={{ width: `${(stats.paidOrders / (stats.totalOrders || 1)) * 100}%` }}
-                                        />
-                                    </div>
+                            <div className="apple-card p-6 flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Ingresos Hoy</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground truncate">{formatCurrency(orders.filter(o => new Date(o.created_at).toDateString() === new Date().toDateString() && ['paid', 'pagado'].includes(o.status?.toLowerCase())).reduce((sum, o) => sum + Number(o.total_amount), 0))}</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="apple-card p-2 border-black/5 shrink-0">
-                            <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b] group-focus-within:text-primary" />
+                        {/* TOOLBAR */}
+                        <div className="apple-card p-2.5 pl-5 flex items-center gap-4 shrink-0 shadow-sm">
+                            <div className="flex-1 relative group">
+                                <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b] group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Buscar por ID de orden o cliente..."
+                                    placeholder="Buscar por cliente o ID..."
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value)
                                         setPage(1)
                                     }}
-                                    className="w-full pl-11 pr-4 py-2 bg-transparent text-xs text-foreground focus:outline-none transition-all font-bold placeholder:text-gray-400 h-8 md:h-10"
+                                    className="w-full bg-transparent border-none text-foreground text-sm font-bold focus:outline-none placeholder:text-[#86868b] pl-8 h-10"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card border-black/5 flex flex-col overflow-hidden bg-white shadow-sm">
+                        {/* TABLE CARD */}
+                        <div className="flex-1 apple-card flex flex-col overflow-hidden shadow-sm">
                             <div className="flex-1 overflow-auto custom-scrollbar">
                                 <table className="w-full text-left border-collapse min-w-[600px]">
                                     <thead>
                                         <tr className="border-b border-black/5 bg-black/2 sticky top-0 z-10">
-                                            <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Orden</th>
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Fecha</th>
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b]">Cliente</th>
                                             <th className="py-4 px-4 md:px-6 text-[10px] font-black uppercase tracking-widest text-[#86868b] text-center">Estado</th>

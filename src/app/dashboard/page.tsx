@@ -6,7 +6,7 @@ import {
     Users, ShoppingCart, Trophy, Activity, TrendingUp, TrendingDown,
     DollarSign, Eye, Clock, ArrowUpRight, ArrowDownRight, BarChart3,
     Zap, Shield, Database, Wifi, ChevronRight, Calendar, Star,
-    Package, CreditCard, RefreshCw, AlertCircle
+    Package, CreditCard, RefreshCw, AlertCircle, Hash
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                         <p className="text-lg md:text-xl font-semibold text-foreground font-mono">{formatTime(currentTime)}</p>
                         <p className="text-[10px] md:text-xs font-medium text-[#86868b] capitalize">{formatDate(currentTime)}</p>
                     </div>
-                    <button onClick={handleRefresh} className={`w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all ${refreshing ? 'animate-spin' : ''}`}>
+                    <button onClick={handleRefresh} className={`w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all ${refreshing ? 'animate-spin' : ''}`}>
                         <RefreshCw className="w-4 h-4 text-[#5c5c5e]" />
                     </button>
                 </div>
@@ -212,153 +212,159 @@ export default function DashboardPage() {
             <div className="flex-1 px-4 md:px-8 pb-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar z-10 relative">
 
                 {/* 1. COMPACT STATS GRID */}
-                <div className={`grid grid-cols-1 sm:grid-cols-2 ${userProfile?.isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 md:gap-6 shrink-0`}>
-                    {userProfile?.isAdmin && (
-                        <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <Users className="w-4 h-4 text-primary" />
-                                </div>
-                                <span className="text-xs font-medium text-[#86868b]">Usuarios</span>
-                            </div>
-                            <div className="flex items-baseline gap-2 text-wrap">
-                                <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.users?.total || 0}</p>
-                                <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{(stats as any)?.users?.premium || 0}</span>
-                            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
+                    <div className="apple-card p-6 flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                            <Users className="w-6 h-6" />
                         </div>
-                    )}
-                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
-                                <Activity className="w-4 h-4 text-amber-500" />
-                            </div>
-                            <span className="text-xs font-medium text-[#86868b]">Órdenes</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.orders?.total || 0}</p>
-                            <span className="text-xs font-medium text-amber-500">{(stats as any)?.orders?.pending || 0} pend.</span>
+                        <div>
+                            <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5 flex items-center gap-1.5">
+                                Usuarios <span className="text-primary">+12%</span>
+                            </p>
+                            <h3 className="text-xl md:text-2xl font-black text-foreground">{stats?.total_users || 0}</h3>
                         </div>
                     </div>
-                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center">
-                                <Package className="w-4 h-4 text-purple-500" />
-                            </div>
-                            <span className="text-xs font-medium text-[#86868b]">Catálogo</span>
+                    <div className="apple-card p-6 flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                            <ShoppingCart className="w-6 h-6" />
                         </div>
-                        <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-foreground">{(stats as any)?.inventory?.total || 0}</p>
-                            <span className="text-xs font-medium text-[#5c5c5e]">{(stats as any)?.inventory?.low_stock || 0} bajo stock</span>
+                        <div>
+                            <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5 flex items-center gap-1.5">
+                                Órdenes <span className="text-primary">+5%</span>
+                            </p>
+                            <h3 className="text-xl md:text-2xl font-black text-foreground">{stats?.total_orders || 0}</h3>
                         </div>
                     </div>
-                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <DollarSign className="w-4 h-4 text-primary" />
-                            </div>
-                            <span className="text-xs font-medium text-[#86868b]">Ingresos</span>
+                    <div className="apple-card p-6 flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shadow-inner">
+                            <Trophy className="w-6 h-6" />
                         </div>
-                        <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-foreground truncate">{formatCurrency((stats as any)?.orders?.revenue || 0)}</p>
+                        <div>
+                            <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Torneos</p>
+                            <h3 className="text-xl md:text-2xl font-black text-foreground">{stats?.total_tournaments || 0}</h3>
+                        </div>
+                    </div>
+                    <div className="apple-card p-6 flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                            <DollarSign className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] md:text-xs font-black text-[#86868b] uppercase tracking-widest leading-none mb-1.5">Ingresos</p>
+                            <h3 className="text-xl md:text-2xl font-black text-foreground">{formatCurrency(stats?.total_revenue || 0)}</h3>
                         </div>
                     </div>
                 </div>
 
-                {/* 2. CHARTS AND ACTIVITY ROW */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[280px]">
-                    {/* CHART BOX */}
-                    <div className="lg:col-span-2 apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 overflow-hidden">
+                    {/* Activity Feed */}
+                    <div className="lg:col-span-2 apple-card flex flex-col overflow-hidden shadow-sm">
+                        <div className="p-5 md:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
                             <div>
-                                <h3 className="text-base font-semibold text-foreground">Actividad de Ventas</h3>
-                                <p className="text-xs text-[#5c5c5e] mt-0.5">Volumen de órdenes semanal</p>
+                                <h3 className="text-[10px] md:text-xs font-black text-foreground uppercase tracking-widest mb-1">Actividad en Tiempo Real</h3>
+                                <p className="text-[8px] md:text-[9px] text-[#5c5c5e] font-bold uppercase tracking-tight">Últimos eventos registrados</p>
                             </div>
-                            <div className="px-3 py-1 bg-black/5 rounded-full text-[10px] md:text-xs font-medium text-[#5c5c5e]">Últimos 7 días</div>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                <span className="text-[8px] md:text-[9px] font-black text-primary uppercase tracking-widest">Live</span>
+                            </div>
                         </div>
-                        <div className="flex-1 flex items-end justify-between gap-2 md:gap-4 px-0 md:px-2 pb-2 overflow-x-auto no-scrollbar">
-                            {weeklyData.map((data, i) => (
-                                <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-3 h-full justify-end group">
-                                    <div className="w-full relative flex-1 flex flex-col justify-end">
-                                        <div
-                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-primary ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45,90,39,0.3)]' : 'opacity-20 group-hover:opacity-40'}`}
-                                            style={{ height: `${(data.count / maxWeeklyValue) * 100}%`, minHeight: '6px' }}
-                                        />
-                                    </div>
-                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-primary' : 'text-[#86868b]'}`}>{data.day}</span>
+                        <div className="flex-1 overflow-y-auto no-scrollbar p-1">
+                            {recentActivity.length > 0 ? (
+                                <div className="divide-y divide-white/5">
+                                    {recentActivity.map((activity, i) => {
+                                        const Icon = activity.icon
+                                        return (
+                                            <div key={i} className="p-4 md:p-5 flex items-center gap-4 md:gap-6 group hover:bg-white/2 transition-all">
+                                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[#86868b] group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20 transition-all shrink-0">
+                                                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-[10px] md:text-xs font-black text-foreground uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">{activity.message}</p>
+                                                    <div className="flex items-center gap-2 text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">
+                                                        <Hash className="w-3 h-3" /> {activity.detail}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right shrink-0">
+                                                    <p className="text-[10px] md:text-xs font-black text-foreground mb-1">{activity.amount || '—'}</p>
+                                                    <p className="text-[8px] md:text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">{activity.time}</p>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
                                 </div>
-                            ))}
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center p-10 text-center opacity-40">
+                                    <Activity className="w-10 h-10 mb-4 text-[#86868b]" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#86868b]">Sin actividad reciente</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* RECENT ACTIVITY COMPACT */}
-                    <div className="apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
-                        <h3 className="text-base font-semibold text-foreground mb-4">Actividad Reciente</h3>
-                        <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
-                            {recentActivity.map((a, i) => {
-                                const Icon = a.icon
-                                return (
-                                    <div key={i} className="flex items-center gap-3 group">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${a.type === 'order' ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500/20' : 'bg-primary/10 text-primary group-hover:bg-primary/20'}`}>
-                                            <Icon className="w-4 h-4" />
+                    {/* Quick Stats Sidebar */}
+                    <div className="flex flex-col gap-6 overflow-y-auto no-scrollbar">
+                        <div className="apple-card p-6 shadow-sm">
+                            <h3 className="text-[10px] md:text-xs font-black text-foreground uppercase tracking-widest mb-6 border-b border-white/5 pb-3">Resumen Financiero</h3>
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                            <TrendingUp className="w-4 h-4" />
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-foreground truncate group-hover:text-[#5c5c5e] transition-colors">{a.message}</p>
-                                            <p className="text-[10px] text-[#86868b] truncate">{a.detail}</p>
-                                        </div>
-                                        <div className="text-right shrink-0">
-                                            <p className="text-[10px] md:text-xs font-semibold text-[#86868b]">{a.amount || a.time}</p>
+                                        <p className="text-[9px] font-black text-[#5c5c5e] uppercase tracking-widest">Margen Bruto</p>
+                                    </div>
+                                    <p className="text-xs font-black text-foreground">84%</p>
+                                </div>
+                                <div className="px-1">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Progreso de Meta</p>
+                                        <span className="text-[10px] font-black text-primary">62%</span>
+                                    </div>
+                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                        <div className="h-full bg-primary rounded-full" style={{ width: '62%' }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="apple-card p-6 flex flex-col justify-center min-h-[140px] shadow-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                    <Zap className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-[10px] font-black text-foreground uppercase tracking-widest">Latencia de API</h3>
+                                    <p className="text-[8px] text-primary font-bold uppercase tracking-tight">Estable</p>
+                                </div>
+                            </div>
+                            <div className="flex items-end gap-1.5 h-12">
+                                {[...Array(12)].map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex-1 bg-white/5 border border-white/5 rounded-t-sm hover:bg-primary/30 transition-all cursor-crosshair group relative"
+                                        style={{ height: `${20 + Math.random() * 80}%` }}
+                                    >
+                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-[8px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                                            {Math.floor(20 + Math.random() * 100)}ms
                                         </div>
                                     </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                </div>
-
-                {/* 3. SYSTEM & METRICS FOOTER ROW */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-auto">
-                    <div className="apple-card p-5 flex flex-col justify-center gap-2 min-h-[120px] bg-white border-black/5 shadow-sm">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                <Zap className="w-4 h-4 text-primary" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-semibold text-foreground">Estado del Sistema</h3>
-                                <p className="text-[10px] text-[#5c5c5e]">Supabase Cloud</p>
+                                ))}
                             </div>
                         </div>
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
-                            <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[#4c7c44] animate-pulse" /> Operacional</span>
-                            <span className="text-xs font-mono text-[#86868b]">{apiLatency}ms</span>
-                        </div>
-                    </div>
 
-                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] bg-white border-black/5 shadow-sm">
-                        <div className="flex justify-between items-end">
-                            <p className="text-sm font-semibold text-foreground">Conversión</p>
-                            <span className="text-xl font-semibold text-[#4c7c44]">{
-                                (stats as any)?.users?.total > 0
-                                    ? Math.round(((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100)
-                                    : 0
-                            }%</span>
-                        </div>
-                        <div className="w-full bg-black/5 h-1.5 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full" style={{
-                                width: `${(stats as any)?.users?.total > 0 ? ((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100 : 0}%`
-                            }} />
-                        </div>
-                        <p className="text-[10px] text-[#5c5c5e]">Ratio Órdenes / Usuarios</p>
-                    </div>
-
-                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] md:col-span-2 lg:col-span-1 bg-white border-black/5 shadow-sm">
-                        <div className="flex justify-between items-center">
-                            <p className="text-sm font-semibold text-foreground">Salud de API</p>
-                            <span className="text-xs font-bold text-[#4c7c44] bg-primary/10 px-2 py-0.5 rounded-full">99.9%</span>
-                        </div>
-                        <div className="flex items-end gap-1 h-8 overflow-hidden">
-                            {[...Array(20)].map((_, i) => (
-                                <div key={i} className="flex-1 bg-primary/30 rounded-sm hover:bg-[#4c7c44] transition-colors" style={{ height: `${30 + Math.random() * 70}%` }} />
-                            ))}
+                        {/* SYSTEM INFO */}
+                        <div className="px-6 py-4 bg-white/5 border border-white/5 rounded-2xl flex flex-col gap-2 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[8px] font-black text-[#5c5c5e] uppercase tracking-widest">Supabase Engine</span>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                    <span className="text-[8px] font-black text-primary uppercase tracking-widest">Online</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[8px] font-black text-[#5c5c5e] uppercase tracking-widest">Vercel Edge</span>
+                                <span className="text-[8px] font-black text-foreground uppercase tracking-widest">v18.2.0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
