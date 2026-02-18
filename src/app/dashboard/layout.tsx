@@ -99,11 +99,11 @@ export default function DashboardLayout({
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 px-6 flex items-center justify-between z-80 bg-white/80 backdrop-blur-xl border-b border-black/5">
                 <div className="flex items-center gap-2">
                     <img src="/images/logo.png" alt="APEG Logo" className="w-8 h-8 object-contain" />
-                    <span className="font-black text-sm tracking-tighter text-[#1d1d1f]">APEG ADMIN</span>
+                    <span className="font-black text-sm tracking-tighter text-foreground">APEG ADMIN</span>
                 </div>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-[#1d1d1f] active:scale-95 transition-all relative z-100"
+                    className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-foreground active:scale-95 transition-all relative z-100"
                 >
                     {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
