@@ -81,21 +81,21 @@ export default function InventoryPage() {
                         <Package className="w-5 h-5 text-[#2d5a27]" />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black text-white leading-tight uppercase tracking-tighter">Inventario</h1>
-                        <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Control de Almacén y Stock</p>
+                        <h1 className="text-xl md:text-2xl font-black text-[#1d1d1f] leading-tight uppercase tracking-tighter">Inventario</h1>
+                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Control de Almacén y Stock</p>
                     </div>
 
                     {/* SEGMENTED CONTROL */}
-                    <div className="bg-[#1c1c1e] p-1 rounded-xl flex border border-white/5 sm:ml-4">
+                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5 sm:ml-4">
                         <button
                             onClick={() => setActiveTab('list')}
-                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-[#2d5a27] text-black shadow-lg shadow-[#2d5a27]/20' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-[#2d5a27] text-white shadow-lg shadow-[#2d5a27]/20' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
                         >
                             Almacén
                         </button>
                         <button
                             onClick={() => setActiveTab('finance')}
-                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-[#2d5a27] text-black shadow-lg shadow-[#2d5a27]/20' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'finance' ? 'bg-[#2d5a27] text-white shadow-lg shadow-[#2d5a27]/20' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
                         >
                             Finanzas
                         </button>
@@ -117,16 +117,16 @@ export default function InventoryPage() {
                         {/* STATS STRIP */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 font-bold tracking-tight">
                             {[
-                                { label: 'Total SKU', val: stats?.inventory?.total || 0, icon: Layers, color: 'text-white' },
+                                { label: 'Total SKU', val: stats?.inventory?.total || 0, icon: Layers, color: 'text-[#1d1d1f]' },
                                 { label: 'Alertas Stock', val: stats?.inventory?.low_stock || 0, icon: AlertTriangle, color: 'text-amber-500' },
                                 { label: 'Valor Total', val: formatCurrency(totalInventoryValue), icon: ArrowUpRight, color: 'text-[#2d5a27]' },
                                 { label: 'Estado', val: 'Óptimo', icon: BarChart3, color: 'text-[#4c7c44]' }
                             ].map((s, i) => (
-                                <div key={i} className="apple-card p-4 flex items-center gap-4">
-                                    <div className="p-2 rounded-xl bg-white/5 shrink-0"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
+                                <div key={i} className="apple-card p-4 flex items-center gap-4 bg-white border-black/5">
+                                    <div className="p-2 rounded-xl bg-black/5 shrink-0"><s.icon className={`w-4 h-4 ${s.color}`} /></div>
                                     <div className="min-w-0">
-                                        <p className="text-[8px] md:text-[9px] font-black text-gray-600 uppercase tracking-widest">{s.label}</p>
-                                        <p className="text-xs md:text-sm font-black text-white truncate">{s.val}</p>
+                                        <p className="text-[8px] md:text-[9px] font-black text-[#86868b] uppercase tracking-widest">{s.label}</p>
+                                        <p className="text-xs md:text-sm font-black text-[#1d1d1f] truncate">{s.val}</p>
                                     </div>
                                 </div>
                             ))}
@@ -135,61 +135,61 @@ export default function InventoryPage() {
                         {/* TOOLBAR */}
                         <div className="flex gap-4 shrink-0">
                             <div className="flex-1 relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-700" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#86868b] group-focus-within:text-[#2d5a27]" />
                                 <input
                                     type="text"
                                     placeholder="Buscar producto..."
-                                    className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] text-white focus:outline-none focus:border-white/10 transition-all font-bold h-10"
+                                    className="w-full pl-11 pr-4 py-2 bg-white border border-black/5 rounded-2xl text-[10px] text-[#1d1d1f] focus:outline-none focus:border-[#2d5a27]/30 transition-all font-bold h-10 placeholder:text-[#86868b] shadow-sm"
                                 />
                             </div>
-                            <div className="flex bg-[#1c1c1e] p-1 rounded-xl items-center border border-white/5 h-10">
-                                <button onClick={() => setViewMode('table')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[#2d5a27] text-black shadow-md' : 'text-gray-600'}`}>
+                            <div className="flex bg-black/5 p-1 rounded-xl items-center border border-black/5 h-10">
+                                <button onClick={() => setViewMode('table')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[#2d5a27] text-white shadow-md' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
                                     <List className="w-4 h-4 md:w-3.5 md:h-3.5" />
                                 </button>
-                                <button onClick={() => setViewMode('grid')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#2d5a27] text-black shadow-md' : 'text-gray-600'}`}>
+                                <button onClick={() => setViewMode('grid')} className={`p-1.5 md:p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#2d5a27] text-white shadow-md' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
                                     <LayoutGrid className="w-4 h-4 md:w-3.5 md:h-3.5" />
                                 </button>
                             </div>
                         </div>
 
                         {/* LIST DISPLAY */}
-                        <div className="flex-1 apple-card overflow-hidden flex flex-col">
+                        <div className="flex-1 apple-card overflow-hidden flex flex-col bg-white border-black/5 shadow-sm">
                             <div className="flex-1 overflow-auto custom-scrollbar">
                                 {viewMode === 'table' ? (
                                     <table className="w-full min-w-[500px] md:min-w-0">
                                         <thead>
-                                            <tr className="border-b border-white/5 bg-white/2 sticky top-0 z-10">
-                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-left tracking-widest">SKU / Marca</th>
-                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-center tracking-widest">Categoría</th>
-                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-center tracking-widest">Stock</th>
-                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-gray-600 text-right tracking-widest">Precio Unit.</th>
+                                            <tr className="border-b border-black/5 bg-black/[0.02] sticky top-0 z-10">
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-[#86868b] text-left tracking-widest">SKU / Marca</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-[#86868b] text-center tracking-widest">Categoría</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-[#86868b] text-center tracking-widest">Stock</th>
+                                                <th className="py-4 px-4 md:px-6 text-[9px] font-black uppercase text-[#86868b] text-right tracking-widest">Precio Unit.</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-white/2">
+                                        <tbody className="divide-y divide-black/5">
                                             {loading ? (
                                                 [...Array(6)].map((_, i) => (
-                                                    <tr key={i}><td colSpan={4} className="p-6"><div className="w-full h-8 bg-white/2 rounded-xl animate-pulse" /></td></tr>
+                                                    <tr key={i}><td colSpan={4} className="p-6"><div className="w-full h-8 bg-black/5 rounded-xl animate-pulse" /></td></tr>
                                                 ))
                                             ) : (
                                                 products.map((p) => (
-                                                    <tr key={p.id} className="group hover:bg-white/2 transition-colors">
+                                                    <tr key={p.id} className="group hover:bg-black/[0.02] transition-colors">
                                                         <td className="py-3 px-4 md:px-6">
                                                             <div className="min-w-0">
-                                                                <div className="text-xs font-black text-white truncate max-w-[150px] md:max-w-none">{p.name}</div>
+                                                                <div className="text-xs font-black text-[#1d1d1f] truncate max-w-[150px] md:max-w-none">{p.name}</div>
                                                                 <div className="text-[8px] font-black text-[#2d5a27] uppercase tracking-wider">{p.brand || 'Original'}</div>
                                                             </div>
                                                         </td>
                                                         <td className="py-3 px-4 md:px-6 text-center">
-                                                            <span className="text-[8px] md:text-[9px] font-black text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg uppercase tracking-widest">{p.category || 'General'}</span>
+                                                            <span className="text-[8px] md:text-[9px] font-black text-[#5c5c5e] bg-black/5 px-2 py-0.5 rounded-lg uppercase tracking-widest">{p.category || 'General'}</span>
                                                         </td>
                                                         <td className="py-3 px-4 md:px-6 text-center">
                                                             <div className="flex flex-col">
-                                                                <span className="text-xs font-black text-white">{p.stock_quantity}</span>
+                                                                <span className="text-xs font-black text-[#1d1d1f]">{p.stock_quantity}</span>
                                                                 <span className={`text-[8px] font-black uppercase tracking-tight ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
                                                             </div>
                                                         </td>
                                                         <td className="py-3 px-4 md:px-6 text-right">
-                                                            <span className="text-[11px] md:text-xs font-black text-white">{formatCurrency(p.price)}</span>
+                                                            <span className="text-[11px] md:text-xs font-black text-[#1d1d1f]">{formatCurrency(p.price)}</span>
                                                         </td>
                                                     </tr>
                                                 ))
@@ -199,18 +199,18 @@ export default function InventoryPage() {
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
                                         {products.map((p) => (
-                                            <div key={p.id} className="apple-card p-5 bg-white/2 group hover:scale-[1.01] transition-all">
+                                            <div key={p.id} className="apple-card p-5 bg-white group hover:scale-[1.01] transition-all border border-black/5">
                                                 <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><Tag className="w-5 h-5 text-gray-600" /></div>
+                                                    <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center shrink-0"><Tag className="w-5 h-5 text-[#5c5c5e]" /></div>
                                                     <span className={`text-[8px] font-black uppercase tracking-widest ${getStockStatus(p.stock_quantity).color}`}>{getStockStatus(p.stock_quantity).label}</span>
                                                 </div>
-                                                <h3 className="text-xs font-black text-white truncate mb-4">{p.name}</h3>
-                                                <div className="flex items-end justify-between border-t border-white/5 pt-4">
+                                                <h3 className="text-xs font-black text-[#1d1d1f] truncate mb-4">{p.name}</h3>
+                                                <div className="flex items-end justify-between border-t border-black/5 pt-4">
                                                     <div>
-                                                        <p className="text-[8px] font-black text-gray-600 uppercase mb-0.5">Precio Listado</p>
-                                                        <p className="text-base md:text-lg font-black text-white leading-none">{formatCurrency(p.price)}</p>
+                                                        <p className="text-[8px] font-black text-[#86868b] uppercase mb-0.5">Precio Listado</p>
+                                                        <p className="text-base md:text-lg font-black text-[#1d1d1f] leading-none">{formatCurrency(p.price)}</p>
                                                     </div>
-                                                    <button className="p-2.5 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all"><Eye className="w-4 h-4" /></button>
+                                                    <button className="p-2.5 rounded-lg bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all"><Eye className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         ))}
@@ -218,11 +218,11 @@ export default function InventoryPage() {
                                 )}
                             </div>
 
-                            <div className="px-4 md:px-6 py-3 border-t border-white/5 flex items-center justify-between shrink-0 bg-white/2">
-                                <p className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest">Pág. <span className="text-[#2d5a27]">{page}</span></p>
+                            <div className="px-4 md:px-6 py-3 border-t border-black/5 flex items-center justify-between shrink-0 bg-white">
+                                <p className="text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-widest">Pág. <span className="text-[#2d5a27]">{page}</span></p>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-all border border-white/5"><ChevronLeft className="w-4 h-4" /></button>
-                                    <button onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-all border border-white/5"><ChevronRight className="w-4 h-4" /></button>
+                                    <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-2 rounded-lg bg-black/5 text-[#1d1d1f] hover:bg-black/10 transition-all border border-black/5"><ChevronLeft className="w-4 h-4" /></button>
+                                    <button onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg bg-black/5 text-[#1d1d1f] hover:bg-black/10 transition-all border border-black/5"><ChevronRight className="w-4 h-4" /></button>
                                 </div>
                             </div>
                         </div>
@@ -231,30 +231,30 @@ export default function InventoryPage() {
                     /* FINANCE DASHBOARD */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 border-l-4 border-l-[#2d5a27]">
-                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Valorización Almacén</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-white truncate">{formatCurrency(totalInventoryValue)}</h3>
+                            <div className="apple-card p-6 border-l-4 border-l-[#2d5a27] bg-white border-black/5">
+                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Valorización Almacén</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f] truncate">{formatCurrency(totalInventoryValue)}</h3>
                                 <p className="text-[10px] text-[#2d5a27] mt-2 font-bold flex items-center gap-1">
                                     <ArrowUpRight className="w-3.5 h-3.5" /> Total activos corrientes
                                 </p>
                             </div>
-                            <div className="apple-card p-6">
-                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Rotación Stock</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-white">4.2x</h3>
-                                <p className="text-[10px] text-gray-500 mt-2 font-bold uppercase tracking-tight">Periodo anual estimado</p>
+                            <div className="apple-card p-6 bg-white border-black/5">
+                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Rotación Stock</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f]">4.2x</h3>
+                                <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">Periodo anual estimado</p>
                             </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1">
-                                <p className="text-[10px] md:text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Costo Reposición</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-white truncate">{formatCurrency(totalInventoryValue * 0.72)}</h3>
+                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 bg-white border-black/5">
+                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Costo Reposición</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-[#1d1d1f] truncate">{formatCurrency(totalInventoryValue * 0.72)}</h3>
                                 <p className="text-[10px] text-amber-500 mt-2 font-bold uppercase tracking-tight">Inversión proyectada</p>
                             </div>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px]">
-                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
+                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] bg-white border-black/5">
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8 text-center sm:text-left">
                                 <div>
-                                    <h3 className="text-base md:text-lg font-black text-white uppercase tracking-tight">Distribución de Capital</h3>
-                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-tight">Valor en inventario por categoría principal</p>
+                                    <h3 className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tight">Distribución de Capital</h3>
+                                    <p className="text-[9px] md:text-xs text-[#5c5c5e] font-bold uppercase tracking-tight">Valor en inventario por categoría principal</p>
                                 </div>
                             </div>
 
@@ -263,12 +263,12 @@ export default function InventoryPage() {
                                     <div key={i} className="flex flex-col gap-3">
                                         <div className="flex justify-between items-end gap-4 overflow-hidden">
                                             <div className="min-w-0">
-                                                <p className="text-[10px] md:text-xs font-black text-white uppercase tracking-tight truncate">{c.name}</p>
-                                                <p className="text-[8px] md:text-[10px] text-gray-600 font-bold uppercase tracking-widest truncate">Participación: {Math.round((c.val / (totalInventoryValue || 1)) * 100)}%</p>
+                                                <p className="text-[10px] md:text-xs font-black text-[#1d1d1f] uppercase tracking-tight truncate">{c.name}</p>
+                                                <p className="text-[8px] md:text-[10px] text-[#86868b] font-bold uppercase tracking-widest truncate">Participación: {Math.round((c.val / (totalInventoryValue || 1)) * 100)}%</p>
                                             </div>
-                                            <p className="text-[11px] md:text-sm font-black text-white shrink-0">{formatCurrency(c.val)}</p>
+                                            <p className="text-[11px] md:text-sm font-black text-[#1d1d1f] shrink-0">{formatCurrency(c.val)}</p>
                                         </div>
-                                        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                        <div className="w-full h-1.5 bg-black/5 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-linear-to-r from-[#2d5a27] to-primary"
                                                 style={{ width: `${(c.val / (totalInventoryValue || 1)) * 100}%` }}
@@ -282,11 +282,11 @@ export default function InventoryPage() {
                 )}
 
                 {/* FOOTER */}
-                <div className="px-4 md:px-6 py-4 bg-white/2 border border-white/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0">
-                    <p className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
+                <div className="px-4 md:px-6 py-4 bg-white border border-black/5 rounded-2xl flex flex-wrap gap-4 items-center justify-between shrink-0">
+                    <p className="text-[9px] md:text-[10px] font-black text-[#5c5c5e] uppercase tracking-widest flex items-center gap-2">
                         Status: <span className="text-[#2d5a27]">Sincronización OK</span>
                     </p>
-                    <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-tighter">
+                    <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-black text-[#86868b] uppercase tracking-tighter">
                         <span>Apeg Logistics V2.4</span>
                     </div>
                 </div>

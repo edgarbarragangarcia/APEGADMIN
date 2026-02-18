@@ -224,7 +224,7 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-[#1d1d1f] via-[#1d1d1f] to-[#1d1d1f]/60;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-foreground via-foreground to-foreground/60;
   }
 
   .text-gradient-primary {
@@ -309,7 +309,7 @@
   }
 
   .data-table th {
-    @apply px-6 py-4 text-[10px] font-black uppercase tracking-[0.1em] text-[#86868b];
+    @apply px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#86868b];
   }
 
   .data-table tbody tr {
@@ -322,7 +322,7 @@
   }
 
   .data-table td {
-    @apply px-6 py-4 text-[13px] text-[#1d1d1f] font-medium;
+    @apply px-6 py-4 text-[13px] text-foreground font-medium;
   }
 
   /* Stat Cards Light */
@@ -378,7 +378,7 @@
   }
 
   .page-header h1 {
-    @apply text-3xl font-black text-[#1d1d1f] mb-1 tracking-tight;
+    @apply text-3xl font-black text-foreground mb-1 tracking-tight;
   }
 
   .page-header p {

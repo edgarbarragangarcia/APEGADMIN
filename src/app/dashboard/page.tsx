@@ -192,18 +192,18 @@ export default function DashboardPage() {
                         <BarChart3 className="w-5 h-5 text-[#2d5a27]" />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">Monitor Central</h1>
-                        <p className="text-xs md:text-sm text-gray-400 font-medium">Estado global de la plataforma</p>
+                        <h1 className="text-xl md:text-2xl font-black text-[#1d1d1f] leading-tight uppercase tracking-tighter">Monitor Central</h1>
+                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Estado global de la plataforma</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4 md:gap-6 ml-auto lg:ml-0">
                     <div className="text-right hidden sm:block">
-                        <p className="text-lg md:text-xl font-semibold text-white font-mono">{formatTime(currentTime)}</p>
-                        <p className="text-[10px] md:text-xs font-medium text-gray-500 capitalize">{formatDate(currentTime)}</p>
+                        <p className="text-lg md:text-xl font-semibold text-[#1d1d1f] font-mono">{formatTime(currentTime)}</p>
+                        <p className="text-[10px] md:text-xs font-medium text-[#86868b] capitalize">{formatDate(currentTime)}</p>
                     </div>
-                    <button onClick={handleRefresh} className={`w-8 h-8 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] flex items-center justify-center transition-all ${refreshing ? 'animate-spin' : ''}`}>
-                        <RefreshCw className="w-4 h-4 text-gray-400" />
+                    <button onClick={handleRefresh} className={`w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all ${refreshing ? 'animate-spin' : ''}`}>
+                        <RefreshCw className="w-4 h-4 text-[#5c5c5e]" />
                     </button>
                 </div>
             </div>
@@ -214,52 +214,52 @@ export default function DashboardPage() {
                 {/* 1. COMPACT STATS GRID */}
                 <div className={`grid grid-cols-1 sm:grid-cols-2 ${userProfile?.isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 md:gap-6 shrink-0`}>
                     {userProfile?.isAdmin && (
-                        <div className="apple-card p-5">
+                        <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center">
-                                    <Users className="w-4 h-4 text-[#4c7c44]" />
+                                <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-[#2d5a27]" />
                                 </div>
-                                <span className="text-xs font-medium text-gray-400">Usuarios</span>
+                                <span className="text-xs font-medium text-[#86868b]">Usuarios</span>
                             </div>
                             <div className="flex items-baseline gap-2 text-wrap">
-                                <p className="text-2xl md:text-3xl font-semibold text-white">{(stats as any)?.users?.total || 0}</p>
+                                <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.users?.total || 0}</p>
                                 <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{(stats as any)?.users?.premium || 0}</span>
                             </div>
                         </div>
                     )}
-                    <div className="apple-card p-5">
+                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
                                 <Activity className="w-4 h-4 text-amber-500" />
                             </div>
-                            <span className="text-xs font-medium text-gray-400">Órdenes</span>
+                            <span className="text-xs font-medium text-[#86868b]">Órdenes</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-white">{(stats as any)?.orders?.total || 0}</p>
+                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.orders?.total || 0}</p>
                             <span className="text-xs font-medium text-amber-500">{(stats as any)?.orders?.pending || 0} pend.</span>
                         </div>
                     </div>
-                    <div className="apple-card p-5">
+                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                <Package className="w-4 h-4 text-purple-400" />
+                            <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center">
+                                <Package className="w-4 h-4 text-purple-500" />
                             </div>
-                            <span className="text-xs font-medium text-gray-400">Catálogo</span>
+                            <span className="text-xs font-medium text-[#86868b]">Catálogo</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-white">{(stats as any)?.inventory?.total || 0}</p>
-                            <span className="text-xs font-medium text-gray-500">{(stats as any)?.inventory?.low_stock || 0} bajo stock</span>
+                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f]">{(stats as any)?.inventory?.total || 0}</p>
+                            <span className="text-xs font-medium text-[#5c5c5e]">{(stats as any)?.inventory?.low_stock || 0} bajo stock</span>
                         </div>
                     </div>
-                    <div className="apple-card p-5">
+                    <div className="apple-card p-5 bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center">
-                                <DollarSign className="w-4 h-4 text-[#4c7c44]" />
+                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center">
+                                <DollarSign className="w-4 h-4 text-[#2d5a27]" />
                             </div>
-                            <span className="text-xs font-medium text-gray-400">Ingresos</span>
+                            <span className="text-xs font-medium text-[#86868b]">Ingresos</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl md:text-3xl font-semibold text-white truncate">{formatCurrency((stats as any)?.orders?.revenue || 0)}</p>
+                            <p className="text-2xl md:text-3xl font-semibold text-[#1d1d1f] truncate">{formatCurrency((stats as any)?.orders?.revenue || 0)}</p>
                         </div>
                     </div>
                 </div>
@@ -267,32 +267,32 @@ export default function DashboardPage() {
                 {/* 2. CHARTS AND ACTIVITY ROW */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[280px]">
                     {/* CHART BOX */}
-                    <div className="lg:col-span-2 apple-card p-6 flex flex-col min-h-[280px]">
+                    <div className="lg:col-span-2 apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="text-base font-semibold text-white">Actividad de Ventas</h3>
-                                <p className="text-xs text-gray-500 mt-0.5">Volumen de órdenes semanal</p>
+                                <h3 className="text-base font-semibold text-[#1d1d1f]">Actividad de Ventas</h3>
+                                <p className="text-xs text-[#5c5c5e] mt-0.5">Volumen de órdenes semanal</p>
                             </div>
-                            <div className="px-3 py-1 bg-[#2c2c2e] rounded-full text-[10px] md:text-xs font-medium text-gray-300">Últimos 7 días</div>
+                            <div className="px-3 py-1 bg-black/5 rounded-full text-[10px] md:text-xs font-medium text-[#5c5c5e]">Últimos 7 días</div>
                         </div>
                         <div className="flex-1 flex items-end justify-between gap-2 md:gap-4 px-0 md:px-2 pb-2 overflow-x-auto no-scrollbar">
                             {weeklyData.map((data, i) => (
                                 <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-3 h-full justify-end group">
                                     <div className="w-full relative flex-1 flex flex-col justify-end">
                                         <div
-                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-[#2d5a27] ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45, 90, 39,0.5)]' : 'opacity-20 group-hover:opacity-40'}`}
+                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-[#2d5a27] ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45,90,39,0.3)]' : 'opacity-20 group-hover:opacity-40'}`}
                                             style={{ height: `${(data.count / maxWeeklyValue) * 100}%`, minHeight: '6px' }}
                                         />
                                     </div>
-                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-[#4c7c44]' : 'text-gray-500'}`}>{data.day}</span>
+                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-[#2d5a27]' : 'text-[#86868b]'}`}>{data.day}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* RECENT ACTIVITY COMPACT */}
-                    <div className="apple-card p-6 flex flex-col min-h-[280px]">
-                        <h3 className="text-base font-semibold text-white mb-4">Actividad Reciente</h3>
+                    <div className="apple-card p-6 flex flex-col min-h-[280px] bg-white border-black/5 shadow-sm">
+                        <h3 className="text-base font-semibold text-[#1d1d1f] mb-4">Actividad Reciente</h3>
                         <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
                             {recentActivity.map((a, i) => {
                                 const Icon = a.icon
@@ -302,11 +302,11 @@ export default function DashboardPage() {
                                             <Icon className="w-4 h-4" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-white truncate group-hover:text-gray-200 transition-colors">{a.message}</p>
-                                            <p className="text-[10px] text-gray-500 truncate">{a.detail}</p>
+                                            <p className="text-sm font-medium text-[#1d1d1f] truncate group-hover:text-[#5c5c5e] transition-colors">{a.message}</p>
+                                            <p className="text-[10px] text-[#86868b] truncate">{a.detail}</p>
                                         </div>
                                         <div className="text-right shrink-0">
-                                            <p className="text-[10px] md:text-xs font-semibold text-gray-300">{a.amount || a.time}</p>
+                                            <p className="text-[10px] md:text-xs font-semibold text-[#86868b]">{a.amount || a.time}</p>
                                         </div>
                                     </div>
                                 )
@@ -317,42 +317,42 @@ export default function DashboardPage() {
 
                 {/* 3. SYSTEM & METRICS FOOTER ROW */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-auto">
-                    <div className="apple-card p-5 flex flex-col justify-center gap-2 min-h-[120px]">
+                    <div className="apple-card p-5 flex flex-col justify-center gap-2 min-h-[120px] bg-white border-black/5 shadow-sm">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center shrink-0">
-                                <Zap className="w-4 h-4 text-[#4c7c44]" />
+                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/10 flex items-center justify-center shrink-0">
+                                <Zap className="w-4 h-4 text-[#2d5a27]" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-white">Estado del Sistema</h3>
-                                <p className="text-[10px] text-gray-500">Supabase Cloud</p>
+                                <h3 className="text-sm font-semibold text-[#1d1d1f]">Estado del Sistema</h3>
+                                <p className="text-[10px] text-[#5c5c5e]">Supabase Cloud</p>
                             </div>
                         </div>
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
                             <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[#4c7c44] animate-pulse" /> Operacional</span>
-                            <span className="text-xs font-mono text-gray-400">{apiLatency}ms</span>
+                            <span className="text-xs font-mono text-[#86868b]">{apiLatency}ms</span>
                         </div>
                     </div>
 
-                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px]">
+                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] bg-white border-black/5 shadow-sm">
                         <div className="flex justify-between items-end">
-                            <p className="text-sm font-semibold text-white">Conversión</p>
+                            <p className="text-sm font-semibold text-[#1d1d1f]">Conversión</p>
                             <span className="text-xl font-semibold text-[#4c7c44]">{
                                 (stats as any)?.users?.total > 0
                                     ? Math.round(((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100)
                                     : 0
                             }%</span>
                         </div>
-                        <div className="w-full bg-[#2c2c2e] h-1.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-black/5 h-1.5 rounded-full overflow-hidden">
                             <div className="h-full bg-[#2d5a27] rounded-full" style={{
                                 width: `${(stats as any)?.users?.total > 0 ? ((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100 : 0}%`
                             }} />
                         </div>
-                        <p className="text-[10px] text-gray-500">Ratio Órdenes / Usuarios</p>
+                        <p className="text-[10px] text-[#5c5c5e]">Ratio Órdenes / Usuarios</p>
                     </div>
 
-                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] md:col-span-2 lg:col-span-1">
+                    <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] md:col-span-2 lg:col-span-1 bg-white border-black/5 shadow-sm">
                         <div className="flex justify-between items-center">
-                            <p className="text-sm font-semibold text-white">Salud de API</p>
+                            <p className="text-sm font-semibold text-[#1d1d1f]">Salud de API</p>
                             <span className="text-xs font-bold text-[#4c7c44] bg-[#2d5a27]/10 px-2 py-0.5 rounded-full">99.9%</span>
                         </div>
                         <div className="flex items-end gap-1 h-8 overflow-hidden">

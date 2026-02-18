@@ -457,39 +457,39 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             <div className="px-4 md:px-6 py-4 md:py-5 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 z-10 relative">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <Link href="/dashboard/green-fees"
-                        className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all text-white/50 hover:text-white"
+                        className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-all text-[#86868b] hover:text-[#1d1d1f]"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
 
                     <div className="min-w-0">
                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-[#2d5a27]/10 text-[#4c7c44] border-[#2d5a27]/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                            <h1 className="text-xl md:text-2xl font-semibold text-[#1d1d1f] tracking-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-[#2d5a27]/10 text-[#2d5a27] border-[#2d5a27]/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
                                 {course.status === 'active' ? 'Activo' : course.status.toUpperCase()}
                             </span>
                         </div>
-                        <p className="text-xs md:text-sm text-gray-400 truncate">{course.location}</p>
+                        <p className="text-xs md:text-sm text-[#5c5c5e] truncate">{course.location}</p>
                     </div>
                 </div>
 
                 {/* SEGMENTED CONTROL */}
-                <div className="bg-[#2c2c2e] p-1 rounded-lg flex text-[10px] sm:text-xs font-medium w-full md:w-auto shadow-inner">
+                <div className="bg-black/5 p-1 rounded-lg flex text-[10px] sm:text-xs font-medium w-full md:w-auto shadow-inner">
                     <button
                         onClick={() => setActiveTab('agenda')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'agenda' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
                     >
                         Agenda
                     </button>
                     <button
                         onClick={() => setActiveTab('prices')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'prices' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
                     >
                         Tarifas
                     </button>
                     <button
                         onClick={() => setActiveTab('blocks')}
-                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-[#636366] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 rounded-md transition-all ${activeTab === 'blocks' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}
                     >
                         Bloqueos
                     </button>
@@ -501,22 +501,22 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                 {/* DYNAMIC VIEW Area */}
                 <div className="flex-1 animate-fade-in flex flex-col min-h-[500px] lg:min-h-0">
                     {activeTab === 'agenda' ? (
-                        <div className="flex-1 apple-card p-4 md:p-5 flex flex-col overflow-hidden">
+                        <div className="flex-1 apple-card p-4 md:p-5 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 shrink-0 gap-4">
-                                <h3 className="text-base md:text-lg font-semibold text-white tracking-tight flex items-center gap-2">
+                                <h3 className="text-base md:text-lg font-semibold text-[#1d1d1f] tracking-tight flex items-center gap-2">
                                     Calendario Operativo
                                 </h3>
 
                                 <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full sm:w-auto">
-                                    <div className="flex-1 sm:flex-none flex items-center gap-1 bg-[#2c2c2e] rounded-lg p-1 order-2 sm:order-1">
-                                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-1 hover:bg-white/10 rounded-md transition-colors">
-                                            <ChevronLeft className="w-4 h-4 text-gray-400" />
+                                    <div className="flex-1 sm:flex-none flex items-center gap-1 bg-black/5 rounded-lg p-1 order-2 sm:order-1">
+                                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-1 hover:bg-black/5 rounded-md transition-colors">
+                                            <ChevronLeft className="w-4 h-4 text-[#86868b]" />
                                         </button>
-                                        <span className="text-xs sm:text-sm font-medium text-white px-2 sm:px-3 min-w-[80px] sm:min-w-[100px] text-center capitalize">
+                                        <span className="text-xs sm:text-sm font-medium text-[#1d1d1f] px-2 sm:px-3 min-w-[80px] sm:min-w-[100px] text-center capitalize">
                                             {new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(currentDate)}
                                         </span>
-                                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-1 hover:bg-white/10 rounded-md transition-colors">
-                                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-1 hover:bg-black/5 rounded-md transition-colors">
+                                            <ChevronRight className="w-4 h-4 text-[#86868b]" />
                                         </button>
                                     </div>
 
@@ -528,14 +528,14 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                 setSelectedDates([today])
                                                 setLastClickedDate(today)
                                             }}
-                                            className="apple-button apple-button-secondary apple-button-sm font-medium py-1.5! px-3! text-[10px]"
+                                            className="apple-button apple-button-secondary apple-button-sm font-medium py-1.5! px-3! text-[10px] bg-black/5 text-[#1d1d1f] hover:bg-black/10"
                                         >
                                             Hoy
                                         </button>
                                         {selectedDates.length > 0 && (
                                             <button
                                                 onClick={clearSelection}
-                                                className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-medium hover:bg-red-500/20 transition-all border border-red-500/10"
+                                                className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-[10px] font-medium hover:bg-red-500/20 transition-all border border-red-500/10"
                                             >
                                                 Limpiar
                                             </button>
@@ -546,7 +546,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
 
                             <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2 shrink-0 px-1">
                                 {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((d, i) => (
-                                    <div key={`${d}-${i}`} className="text-center text-[9px] md:text-[10px] font-bold text-gray-500">{d}</div>
+                                    <div key={`${d}-${i}`} className="text-center text-[9px] md:text-[10px] font-bold text-[#86868b]">{d}</div>
                                 ))}
                             </div>
 
@@ -569,14 +569,14 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                             onClick={(e) => handleDateClick(dateStr, e)}
                                             className={`relative h-full rounded-lg md:rounded-xl border transition-all duration-200 flex flex-col group overflow-hidden p-1 sm:p-2 text-left
                                                 ${isSelected
-                                                    ? 'bg-blue-500/20 border-blue-500 shadow-sm shadow-blue-500/20'
+                                                    ? 'bg-blue-500/10 border-blue-500 shadow-sm shadow-blue-500/20'
                                                     : isBlocked
                                                         ? 'bg-red-500/5 border-red-500/20 opacity-60'
-                                                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'}
+                                                        : 'bg-black/[0.02] border-black/5 hover:bg-black/5 hover:border-black/10'}
                                             `}
                                         >
                                             <div className="flex items-center justify-between w-full mb-0.5 md:mb-1">
-                                                <span className={`text-[11px] sm:text-sm font-semibold transition-colors ${isSelected ? 'text-blue-400' : isToday ? 'text-primary' : 'text-gray-400 group-hover:text-white'}`}>
+                                                <span className={`text-[11px] sm:text-sm font-semibold transition-colors ${isSelected ? 'text-blue-600' : isToday ? 'text-[#2d5a27]' : 'text-[#86868b] group-hover:text-[#1d1d1f]'}`}>
                                                     {day}
                                                 </span>
                                                 <div className="flex gap-1">
@@ -587,13 +587,13 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
 
                                             <div className="flex-1 w-full overflow-hidden space-y-0.5 hidden sm:block">
                                                 {dayRes.slice(0, 2).map((res, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between text-[8px] md:text-[9px] font-medium text-gray-400">
-                                                        <span className="text-gray-300">{res.reservation_time}</span>
+                                                    <div key={idx} className="flex items-center justify-between text-[8px] md:text-[9px] font-medium text-[#86868b]">
+                                                        <span className="text-[#5c5c5e]">{res.reservation_time}</span>
                                                         <span className="truncate ml-1">{res.user_name?.split(' ')[0]}</span>
                                                     </div>
                                                 ))}
                                                 {dayRes.length > 2 && (
-                                                    <div className="text-[8px] md:text-[9px] font-bold text-blue-400/80 text-center">
+                                                    <div className="text-[8px] md:text-[9px] font-bold text-blue-500/80 text-center">
                                                         + {dayRes.length - 2}
                                                     </div>
                                                 )}
@@ -615,11 +615,11 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             </div>
                         </div>
                     ) : activeTab === 'prices' ? (
-                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden">
+                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-1 md:mb-2">Tarifas Dinámicas</h3>
-                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-widest">Establece precios por temporadas o eventos</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-[#1d1d1f] uppercase tracking-tighter mb-1 md:mb-2">Tarifas Dinámicas</h3>
+                                    <p className="text-[9px] md:text-xs text-[#86868b] font-bold uppercase tracking-widest">Establece precios por temporadas o eventos</p>
                                 </div>
                                 <button
                                     onClick={() => setIsOverriding(true)}
@@ -632,41 +632,41 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             <div className="flex-1 overflow-y-auto space-y-6 md:space-y-8 custom-scrollbar pr-1 md:pr-4">
                                 <div className="mt-8 md:mt-12">
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="h-px flex-1 bg-white/5" />
-                                        <h4 className="text-[9px] md:text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
+                                        <div className="h-px flex-1 bg-black/5" />
+                                        <h4 className="text-[9px] md:text-[11px] font-black text-[#86868b] uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
                                             <History className="w-4 h-4" /> Historial de Excepciones
                                         </h4>
-                                        <div className="h-px flex-1 bg-white/5" />
+                                        <div className="h-px flex-1 bg-black/5" />
                                     </div>
                                     <div className="space-y-4">
                                         {overrides.length > 0 ? overrides.map(o => (
-                                            <div key={o.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden gap-4">
-                                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                            <div key={o.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/[0.02] group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
+                                                <div className="absolute inset-0 bg-[#2d5a27]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                 <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
-                                                    <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-lg shadow-amber-500/10 shrink-0">
+                                                    <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shadow-lg shadow-amber-500/10 shrink-0">
                                                         <DollarSign className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
                                                     <div className="text-left min-w-0">
-                                                        <p className="text-base md:text-lg font-black text-white uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
-                                                            {o.start_date} <span className="text-gray-600 mx-1 md:mx-2">→</span> {o.end_date}
+                                                        <p className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
+                                                            {o.start_date} <span className="text-[#86868b] mx-1 md:mx-2">→</span> {o.end_date}
                                                         </p>
-                                                        <p className="text-[9px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest truncate">{o.note || 'Promocional / Temporal'}</p>
+                                                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-black uppercase tracking-widest truncate">{o.note || 'Promocional / Temporal'}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="text-left sm:text-right">
-                                                        <p className="text-[8px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5 md:mb-1">Costo Especial</p>
-                                                        <p className="text-xl md:text-2xl font-black text-primary">{formatCurrency(o.price)}</p>
+                                                        <p className="text-[8px] md:text-xs font-black text-[#86868b] uppercase tracking-widest mb-0.5 md:mb-1">Costo Especial</p>
+                                                        <p className="text-xl md:text-2xl font-black text-[#2d5a27]">{formatCurrency(o.price)}</p>
                                                     </div>
-                                                    <button onClick={() => removeOverride(o.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-red-500/10 text-gray-600 hover:text-red-500 transition-all active:scale-90">
+                                                    <button onClick={() => removeOverride(o.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-red-500/10 text-[#86868b] hover:text-red-500 transition-all active:scale-90">
                                                         <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                         )) : (
-                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
-                                                <DollarSign className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-gray-400" />
-                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-white text-center">No hay tarifas especiales configuradas</p>
+                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
+                                                <DollarSign className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-[#86868b]" />
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-[#1d1d1f] text-center">No hay tarifas especiales configuradas</p>
                                             </div>
                                         )}
                                     </div>
@@ -674,11 +674,11 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden">
+                        <div className="h-full apple-card p-6 md:p-10 flex flex-col overflow-hidden bg-white border-black/5 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-12 shrink-0 gap-4">
                                 <div>
-                                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-1 md:mb-2">Restricciones</h3>
-                                    <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase tracking-widest">Cierra el campo por eventos o mantenimiento</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-[#1d1d1f] uppercase tracking-tighter mb-1 md:mb-2">Restricciones</h3>
+                                    <p className="text-[9px] md:text-xs text-[#86868b] font-bold uppercase tracking-widest">Cierra el campo por eventos o mantenimiento</p>
                                 </div>
                                 <button
                                     onClick={() => setIsBlocking(true)}
@@ -691,46 +691,46 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                             <div className="flex-1 overflow-y-auto space-y-6 md:space-y-8 custom-scrollbar pr-1 md:pr-4">
                                 <div className="mt-8 md:mt-12">
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="h-px flex-1 bg-white/5" />
-                                        <h4 className="text-[9px] md:text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
+                                        <div className="h-px flex-1 bg-black/5" />
+                                        <h4 className="text-[9px] md:text-[11px] font-black text-[#86868b] uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3">
                                             <History className="w-4 h-4" /> Historial de Bloqueos
                                         </h4>
-                                        <div className="h-px flex-1 bg-white/5" />
+                                        <div className="h-px flex-1 bg-black/5" />
                                     </div>
                                     <div className="space-y-4">
                                         {blockedDays.length > 0 ? blockedDays.map(b => (
-                                            <div key={b.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-white/5 bg-background/40 group hover:bg-white/5 transition-all relative overflow-hidden gap-4">
+                                            <div key={b.id} className="glass-panel p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-black/5 bg-black/[0.02] group hover:bg-black/5 transition-all relative overflow-hidden gap-4">
                                                 <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                 <div className="flex items-center gap-4 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 shadow-lg shadow-red-500/10 shrink-0">
                                                         <Ban className="w-5 h-5 md:w-6 md:h-6" />
                                                     </div>
                                                     <div className="text-left min-w-0">
-                                                        <p className="text-base md:text-lg font-black text-white uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
+                                                        <p className="text-base md:text-lg font-black text-[#1d1d1f] uppercase tracking-tighter mb-0.5 md:mb-1 truncate">
                                                             {b.blocked_date}
                                                         </p>
-                                                        <p className="text-[9px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest leading-relaxed truncate">
+                                                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-black uppercase tracking-widest leading-relaxed truncate">
                                                             {b.reason || 'Mantenimiento / Cierre'}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 relative z-10 w-full sm:w-auto">
                                                     <div className="text-left sm:text-right">
-                                                        <p className="text-[8px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5 md:mb-1">Estado</p>
+                                                        <p className="text-[8px] md:text-xs font-black text-[#86868b] uppercase tracking-widest mb-0.5 md:mb-1">Estado</p>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                                                             <p className="text-[11px] md:text-sm font-black text-red-500 uppercase">Bloqueado</p>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-[#2d5a27]/10 text-gray-600 hover:text-[#2d5a27] transition-all active:scale-90">
+                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-[#2d5a27]/10 text-[#86868b] hover:text-[#2d5a27] transition-all active:scale-90">
                                                         <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                         )) : (
-                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-white/1 rounded-3xl border-2 border-dashed border-white/10">
-                                                <LayoutGrid className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-gray-400" />
-                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-white text-center">No hay bloqueos activos</p>
+                                            <div className="py-16 md:py-24 flex flex-col items-center justify-center opacity-30 bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
+                                                <LayoutGrid className="w-12 h-12 md:w-16 md:h-16 mb-4 md:mb-6 text-[#86868b]" />
+                                                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest text-[#1d1d1f] text-center">No hay bloqueos activos</p>
                                             </div>
                                         )}
                                     </div>
@@ -742,62 +742,62 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
 
                 {/* SIDE AGENDA PANEL - DYNAMIC */}
                 {activeTab === 'agenda' && (
-                    <div className={`w-full lg:w-[340px] apple-card transition-all duration-500 flex flex-col border-white/5 relative bg-black/40 ${selectedDates.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'} min-h-[400px] lg:min-h-0`}>
-                        <div className="p-5 md:p-6 border-b border-white/5 bg-white/2 text-left">
+                    <div className={`w-full lg:w-[340px] apple-card transition-all duration-500 flex flex-col border-black/5 relative bg-white shadow-lg ${selectedDates.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'} min-h-[400px] lg:min-h-0`}>
+                        <div className="p-5 md:p-6 border-b border-black/5 bg-white text-left">
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                    <List className="w-4 h-4 text-primary" /> Agenda del día
+                                <h3 className="text-[10px] md:text-xs font-black text-[#1d1d1f] uppercase tracking-widest flex items-center gap-2">
+                                    <List className="w-4 h-4 text-[#2d5a27]" /> Agenda del día
                                 </h3>
-                                <span className="px-2 py-0.5 rounded-md bg-primary/10 text-[8px] md:text-[9px] font-black text-primary border border-primary/20 italic">
+                                <span className="px-2 py-0.5 rounded-md bg-[#2d5a27]/10 text-[8px] md:text-[9px] font-black text-[#2d5a27] border border-[#2d5a27]/20 italic">
                                     {selectedDates.length === 1 ? 'Individual' : `${selectedDates.length} Días`}
                                 </span>
                             </div>
-                            <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">
+                            <p className="text-[9px] md:text-[10px] text-[#86868b] font-bold uppercase tracking-widest truncate">
                                 {selectedDates.length === 1 ? selectedDates[0] : 'Selección múltiple activa'}
                             </p>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                             {selectedReservations.length > 0 ? (
                                 selectedReservations.map((res) => (
-                                    <div key={res.id} className="p-4 rounded-xl md:rounded-2xl bg-white/2 border border-white/5 hover:border-primary/20 transition-all group animate-fade-in text-left">
+                                    <div key={res.id} className="p-4 rounded-xl md:rounded-2xl bg-black/5 border border-black/5 hover:border-[#2d5a27]/20 transition-all group animate-fade-in text-left">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
-                                                <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-background transition-colors">
+                                                <div className="p-2 rounded-lg bg-[#2d5a27]/10 text-[#2d5a27] group-hover:bg-[#2d5a27] group-hover:text-white transition-colors">
                                                     <Clock className="w-3.5 h-3.5" />
                                                 </div>
-                                                <span className="text-[10px] md:text-[11px] font-black text-white group-hover:text-primary transition-colors">{res.reservation_time}</span>
+                                                <span className="text-[10px] md:text-[11px] font-black text-[#1d1d1f] group-hover:text-[#2d5a27] transition-colors">{res.reservation_time}</span>
                                             </div>
-                                            <div className="px-2 py-0.5 rounded-md bg-white/5 text-[8px] font-bold text-gray-500 uppercase">
+                                            <div className="px-2 py-0.5 rounded-md bg-white text-[8px] font-bold text-[#86868b] uppercase border border-black/5">
                                                 ID: {res.id.substring(0, 4)}
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-white/10 to-transparent flex items-center justify-center border border-white/10 shrink-0">
-                                                <User className="w-4 h-4 text-gray-400" />
+                                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-white to-black/5 flex items-center justify-center border border-black/5 shrink-0">
+                                                <User className="w-4 h-4 text-[#86868b]" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] font-black text-white truncate uppercase">{res.user_name}</p>
-                                                <p className="text-[9px] text-gray-500 truncate lowercase">{res.user_email}</p>
+                                                <p className="text-[10px] font-black text-[#1d1d1f] truncate uppercase">{res.user_name}</p>
+                                                <p className="text-[9px] text-[#5c5c5e] truncate lowercase">{res.user_email}</p>
                                             </div>
                                         </div>
-                                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-[#2d5a27]/10 text-[#4c7c44]' : 'bg-amber-500/10 text-amber-400'}`}>
+                                        <div className="mt-3 pt-3 border-t border-black/5 flex items-center justify-between">
+                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-[#2d5a27]/10 text-[#2d5a27]' : 'bg-amber-500/10 text-amber-600'}`}>
                                                 {res.payment_status === 'paid' ? 'Pagado' : 'Pendiente'}
                                             </span>
-                                            <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Ver detalles</button>
+                                            <button className="text-[9px] font-black text-[#2d5a27] uppercase tracking-widest hover:underline">Ver detalles</button>
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
-                                    <Users className="w-12 h-12 mb-4" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">Sin reservas registradas</p>
+                                    <Users className="w-12 h-12 mb-4 text-[#86868b]" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed text-[#1d1d1f]">Sin reservas registradas</p>
                                 </div>
                             )}
                         </div>
-                        <div className="p-4 bg-background/60 border-t border-white/5 space-y-3">
+                        <div className="p-4 bg-white border-t border-black/5 space-y-3">
                             <div className="grid grid-cols-2 gap-2">
-                                <button onClick={downloadPDF} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                                <button onClick={downloadPDF} className="py-2.5 rounded-xl bg-black/5 hover:bg-black/10 border border-black/5 text-[#86868b] hover:text-[#1d1d1f] text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                                     <div className="bg-red-500/20 text-red-500 p-1 rounded-md shrink-0"><ArrowRight className="w-3 h-3 rotate-45" /></div> PDF
                                 </button>
                                 <button onClick={downloadExcel} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
@@ -820,20 +820,20 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             {/* FLOATING ACTION BAR */}
             {selectedDates.length > 1 && (
                 <div className="fixed bottom-6 md:bottom-10 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto z-40 animate-slide-up">
-                    <div className="bg-background/80 backdrop-blur-2xl border border-primary/30 p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-[0_20px_50px_rgba(20,184,166,0.3)] flex items-center justify-between md:justify-start gap-3 md:gap-6 ring-1 ring-white/10 max-w-lg mx-auto">
-                        <div className="px-3 md:px-6 border-r border-white/10 text-left min-w-0">
-                            <p className="text-[8px] md:text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-0.5">Selección</p>
-                            <p className="text-xs md:text-sm font-black text-white uppercase tracking-tighter truncate">{selectedDates.length} Días</p>
+                    <div className="bg-white/80 backdrop-blur-2xl border border-black/5 p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex items-center justify-between md:justify-start gap-3 md:gap-6 ring-1 ring-black/5 max-w-lg mx-auto">
+                        <div className="px-3 md:px-6 border-r border-black/10 text-left min-w-0">
+                            <p className="text-[8px] md:text-[10px] font-black text-[#86868b] uppercase tracking-[0.2em] mb-0.5">Selección</p>
+                            <p className="text-xs md:text-sm font-black text-[#1d1d1f] uppercase tracking-tighter truncate">{selectedDates.length} Días</p>
                         </div>
                         <div className="flex items-center gap-2 md:gap-3">
-                            <button onClick={() => setIsBlocking(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-red-500/10 text-red-500 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 flex items-center gap-2">
+                            <button onClick={() => setIsBlocking(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-red-500/10 text-red-600 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 flex items-center gap-2">
                                 <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Bloquear</span>
                             </button>
-                            <button onClick={() => setIsOverriding(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20 flex items-center gap-2">
+                            <button onClick={() => setIsOverriding(true)} className="p-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl bg-[#2d5a27]/10 text-[#2d5a27] text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-[#2d5a27]/20 transition-all border border-[#2d5a27]/20 flex items-center gap-2">
                                 <DollarSign className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Tarifa</span>
                             </button>
-                            <div className="w-px h-6 md:h-8 bg-white/10 mx-1 md:mx-2" />
-                            <button onClick={clearSelection} className="p-2 md:p-3 rounded-xl hover:bg-white/5 text-gray-500 hover:text-white transition-all">
+                            <div className="w-px h-6 md:h-8 bg-black/10 mx-1 md:mx-2" />
+                            <button onClick={clearSelection} className="p-2 md:p-3 rounded-xl hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all">
                                 <X className="w-4 h-4 md:w-5 md:h-5" />
                             </button>
                         </div>
@@ -844,61 +844,57 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             {/* MODALS */}
             {/* MODALS */}
             {isBlocking && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-6 animate-in fade-in duration-300">
-                    <div className="apple-glass w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left">
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-md p-6 animate-in fade-in duration-300">
+                    <div className="bg-white border border-black/5 w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left rounded-3xl">
+                        <div className="p-6 border-b border-black/5 flex items-center justify-between">
                             <div>
-                                <h3 className="text-xl font-semibold text-white tracking-tight">Bloquear Operación</h3>
-                                <p className="text-sm text-gray-400 font-medium">Suspensión temporal de calendario</p>
+                                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight">Bloquear Operación</h3>
+                                <p className="text-sm text-[#5c5c5e] font-medium">Suspensión temporal de calendario</p>
                             </div>
-                            <button onClick={() => setIsBlocking(false)} className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-all"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsBlocking(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handleBlockDay} className="p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Fecha Inicio</label>
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Inicio</label>
                                     <input
                                         name="start_date"
                                         type="date"
                                         required
                                         defaultValue={selectedDates.length > 0 ? selectedDates[0] : ''}
-                                        className="apple-input"
-                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Fecha Fin</label>
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Fin</label>
                                     <input
                                         name="end_date"
                                         type="date"
                                         defaultValue={selectedDates.length > 1 ? selectedDates[selectedDates.length - 1] : ''}
-                                        className="apple-input"
-                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Hora Inicio (Opcional)</label>
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Hora Inicio (Opcional)</label>
                                     <input
                                         name="start_time"
                                         type="time"
-                                        className="apple-input"
-                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Hora Fin (Opcional)</label>
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Hora Fin (Opcional)</label>
                                     <input
                                         name="end_time"
                                         type="time"
-                                        className="apple-input"
-                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-400 ml-1">Motivo del Cierre</label>
+                                <label className="text-xs font-medium text-[#5c5c5e] ml-1">Motivo del Cierre</label>
                                 <div className="grid grid-cols-2 gap-2">
                                     {['Mantenimiento', 'Torneo Oficial', 'Evento Privado', 'Clima / Lluvia', 'Reparaciones', 'Otro'].map((opt) => (
                                         <label key={opt} className="cursor-pointer group relative">
@@ -913,7 +909,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                     if (textarea) textarea.style.display = e.target.value === 'Otro' ? 'block' : 'none';
                                                 }}
                                             />
-                                            <div className="p-3 rounded-[12px] bg-white/5 border border-white/5 peer-checked:bg-white peer-checked:text-black text-gray-400 text-xs font-medium text-center transition-all hover:bg-white/10 peer-checked:shadow-lg">
+                                            <div className="p-3 rounded-[12px] bg-white border border-black/10 peer-checked:bg-[#1d1d1f] peer-checked:text-white text-[#5c5c5e] text-xs font-medium text-center transition-all hover:bg-black/5 peer-checked:shadow-lg shadow-sm">
                                                 {opt}
                                             </div>
                                         </label>
@@ -924,10 +920,10 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     name="reason_custom"
                                     placeholder="Detalles adicionales..."
                                     style={{ display: 'none' }}
-                                    className="w-full bg-black/20 text-white rounded-[16px] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 mt-2 h-24 resize-none"
+                                    className="w-full bg-black/5 text-[#1d1d1f] placeholder:text-[#86868b] rounded-[16px] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 mt-2 h-24 resize-none"
                                 />
                             </div>
-                            <button type="submit" className="apple-button apple-button-danger">
+                            <button type="submit" className="apple-button apple-button-danger w-full justify-center">
                                 Ejecutar Bloqueo
                             </button>
                         </form>
@@ -936,30 +932,30 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
             )}
 
             {isOverriding && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-6 animate-in fade-in duration-300">
-                    <div className="apple-glass w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left">
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-md p-6 animate-in fade-in duration-300">
+                    <div className="bg-white border border-black/5 w-full max-w-lg flex flex-col shadow-2xl animate-in zoom-in-95 duration-300 text-left rounded-3xl">
+                        <div className="p-6 border-b border-black/5 flex items-center justify-between">
                             <div>
-                                <h3 className="text-xl font-semibold text-white tracking-tight">Nueva Tarifa Especial</h3>
-                                <p className="text-sm text-gray-400 font-medium">Configuración de precio dinámico</p>
+                                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight">Nueva Tarifa Especial</h3>
+                                <p className="text-sm text-[#5c5c5e] font-medium">Configuración de precio dinámico</p>
                             </div>
-                            <button onClick={() => setIsOverriding(false)} className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-all"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsOverriding(false)} className="p-2 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handlePriceOverride} className="p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Fecha Inicio</label>
-                                    <input name="start_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[0] : ''} className="apple-input" style={{ colorScheme: 'dark' }} />
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Inicio</label>
+                                    <input name="start_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[0] : ''} className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-400 ml-1">Fecha Fin</label>
-                                    <input name="end_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[selectedDates.length - 1] : ''} className="apple-input" style={{ colorScheme: 'dark' }} />
+                                    <label className="text-xs font-medium text-[#5c5c5e] ml-1">Fecha Fin</label>
+                                    <input name="end_date" type="date" required defaultValue={selectedDates.length > 0 ? selectedDates.sort()[selectedDates.length - 1] : ''} className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-400 ml-1">Valor Unitario (MXN)</label>
+                                <label className="text-xs font-medium text-[#5c5c5e] ml-1">Valor Unitario (MXN)</label>
                                 <div className="relative group">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-lg">$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868b] font-medium text-lg">$</span>
                                     <input
                                         name="price"
                                         type="text"
@@ -970,15 +966,15 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                             const val = input.value.replace(/\D/g, '')
                                             input.value = val ? new Intl.NumberFormat('es-MX').format(parseInt(val)) : ''
                                         }}
-                                        className="apple-input pl-10 text-xl"
+                                        className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl pl-10 pr-4 py-3 text-xl font-medium transition-all outline-none text-[#1d1d1f]"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-400 ml-1">Nota</label>
-                                <input name="note" placeholder="Temporada alta, etc..." className="apple-input" />
+                                <label className="text-xs font-medium text-[#5c5c5e] ml-1">Nota</label>
+                                <input name="note" placeholder="Temporada alta, etc..." className="w-full bg-black/5 border border-transparent focus:border-[#2d5a27]/30 focus:bg-white focus:ring-4 focus:ring-[#2d5a27]/10 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none text-[#1d1d1f]" />
                             </div>
-                            <button type="submit" className="apple-button apple-button-primary">
+                            <button type="submit" className="apple-button apple-button-primary w-full justify-center">
                                 Aplicar Tarifa
                             </button>
                         </form>

@@ -238,7 +238,7 @@ export default function OrdersPage() {
                 <div className="flex flex-wrap items-center gap-4">
                     <div>
                         <h1 className="text-xl md:text-2xl font-black text-[#1d1d1f] leading-tight uppercase tracking-tighter">Órdenes (LIVE)</h1>
-                        <p className="text-[9px] md:text-[10px] text-[#86868b] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de Pedidos V2</p>
+                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de Pedidos V2</p>
                     </div>
                     <div className="bg-black/5 p-1 rounded-xl flex border border-black/5 sm:ml-4">
                         <button
@@ -280,7 +280,7 @@ export default function OrdersPage() {
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Ingresos</p>
-                                        <p className="text-lg font-black text-[#1d1d1f] truncate">{formatCurrency(stats.totalRevenue)}</p>
+                                        <p className="text-lg font-black text-foreground truncate">{formatCurrency(stats.totalRevenue)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +291,7 @@ export default function OrdersPage() {
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Órdenes</p>
-                                        <p className="text-lg font-black text-[#1d1d1f] truncate">{stats.totalOrders}</p>
+                                        <p className="text-lg font-black text-foreground truncate">{stats.totalOrders}</p>
                                     </div>
                                 </div>
                             </div>
@@ -302,7 +302,7 @@ export default function OrdersPage() {
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Espera</p>
-                                        <p className="text-lg font-black text-[#1d1d1f] truncate">{stats.totalOrders - stats.paidOrders}</p>
+                                        <p className="text-lg font-black text-foreground truncate">{stats.totalOrders - stats.paidOrders}</p>
                                     </div>
                                 </div>
                             </div>
@@ -333,7 +333,7 @@ export default function OrdersPage() {
                                         setSearchTerm(e.target.value)
                                         setPage(1)
                                     }}
-                                    className="w-full pl-11 pr-4 py-2 bg-transparent text-xs text-[#1d1d1f] focus:outline-none transition-all font-bold placeholder:text-gray-400 h-8 md:h-10"
+                                    className="w-full pl-11 pr-4 py-2 bg-transparent text-xs text-foreground focus:outline-none transition-all font-bold placeholder:text-gray-400 h-8 md:h-10"
                                 />
                             </div>
                         </div>
@@ -369,19 +369,19 @@ export default function OrdersPage() {
                                                     className="group hover:bg-black/[0.03] transition-colors cursor-pointer"
                                                 >
                                                     <td className="py-4 px-4 md:px-6">
-                                                        <div className="text-[#1d1d1f] font-mono text-[10px] md:text-xs font-black tracking-widest">
+                                                        <div className="text-foreground font-mono text-[10px] md:text-xs font-black tracking-widest">
                                                             #{order.id.substring(0, 8).toUpperCase()}
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6">
-                                                        <div className="text-[10px] md:text-xs text-[#1d1d1f] font-bold">{formatDate(order.created_at)}</div>
+                                                        <div className="text-[10px] md:text-xs text-foreground font-bold">{formatDate(order.created_at)}</div>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-[10px] font-black text-[#86868b] shrink-0 uppercase border border-black/5">
                                                                 {order.buyer_name?.charAt(0) || '?'}
                                                             </div>
-                                                            <div className="text-[11px] md:text-xs font-black text-[#1d1d1f] truncate max-w-[150px]">{order.buyer_name || 'Anónimo'}</div>
+                                                            <div className="text-[11px] md:text-xs font-black text-foreground truncate max-w-[150px]">{order.buyer_name || 'Anónimo'}</div>
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6 text-center">
@@ -390,7 +390,7 @@ export default function OrdersPage() {
                                                         </span>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6">
-                                                        <div className="text-[11px] md:text-xs font-black text-[#1d1d1f]">{formatCurrency(order.total_amount)}</div>
+                                                        <div className="text-[11px] md:text-xs font-black text-foreground">{formatCurrency(order.total_amount)}</div>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6 text-right">
                                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -923,7 +923,7 @@ export default function OrdersPage() {
                                                                     </span>
                                                                 )}
                                                                 {item.size && (
-                                                                    <span className="px-2.5 py-1 rounded-xl bg-[#2d5a27]/5 text-[9px] font-black text-[#24491f] uppercase tracking-widest border border-emerald-100 shadow-sm">
+                                                                    <span className="px-2.5 py-1 rounded-xl bg-[#2d5a27]/5 text-[9px] font-black text-[#24491f] uppercase tracking-widest border border-[#2d5a27]/10 shadow-sm">
                                                                         Talla {item.size}
                                                                     </span>
                                                                 )}

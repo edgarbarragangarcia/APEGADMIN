@@ -85,7 +85,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
                     <div className="flex items-center gap-3">
                         <Image src="/images/logo.png" alt="APEG Logo" width={42} height={42} className="object-contain" />
                         <div>
-                            <h2 className="text-lg font-bold text-[#1d1d1f] tracking-tight leading-none uppercase">APEG</h2>
+                            <h2 className="text-lg font-bold text-foreground tracking-tight leading-none uppercase">APEG</h2>
                             <p className="text-[10px] text-[#86868b] font-black uppercase tracking-widest mt-0.5">Admin</p>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
                 {isMobileOpen && (
                     <button
                         onClick={onCloseMobile}
-                        className="lg:hidden p-2 rounded-xl bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-all active:scale-90"
+                        className="lg:hidden p-2 rounded-xl bg-black/5 text-[#86868b] hover:text-foreground transition-all active:scale-90"
                     >
                         <X size={18} />
                     </button>
@@ -125,7 +125,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
                             )}
 
                             {isCollapsedNow && (
-                                <div className="absolute left-16 px-3 py-2 bg-[#1d1d1f] text-white rounded-lg text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50">
+                                <div className="absolute left-16 px-3 py-2 bg-foreground text-white rounded-lg text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50">
                                     {item.name}
                                 </div>
                             )}
@@ -137,13 +137,13 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMo
             {/* Bottom Section */}
             <div className="p-4 border-t border-black/5">
                 <div className={`flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center' : 'gap-3'} p-2`}>
-                    <div className="w-9 h-9 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center text-xs font-black text-[#1d1d1f] shadow-sm uppercase shrink-0 border border-black/5">
+                    <div className="w-9 h-9 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center text-xs font-black text-foreground shadow-sm uppercase shrink-0 border border-black/5">
                         {userData?.name?.charAt(0) || 'U'}
                     </div>
 
                     {(!isCollapsed || isMobileOpen) && (
                         <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-bold text-[#1d1d1f] truncate leading-none mb-0.5">{userData?.name || 'Usuario'}</p>
+                            <p className="text-[13px] font-bold text-foreground truncate leading-none mb-0.5">{userData?.name || 'Usuario'}</p>
                             <p className="text-[10px] text-[#86868b] font-medium truncate">{userData?.email}</p>
                         </div>
                     )}
