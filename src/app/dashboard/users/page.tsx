@@ -72,26 +72,27 @@ export default function UsersPage() {
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
             {/* FIXED HEADER - VERY COMPACT */}
-            <div className="px-4 md:px-8 py-5 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
-                            <Users className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Usuarios</h1>
-                            <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de comunidad APEG</p>
-                        </div>
+            <div className="px-4 md:px-8 py-5 shrink-0 z-10 relative mt-4 lg:mt-0 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
                     </div>
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Usuarios</h1>
+                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de comunidad APEG</p>
+                    </div>
+                </div>
 
-                    <div className="flex gap-2 md:gap-3 shrink-0">
-                        <button className="apple-button apple-button-secondary apple-button-sm hidden sm:flex items-center justify-center gap-2 bg-white/5 text-[#86868b] hover:text-foreground hover:bg-white/10 border border-white/5 shadow-none">
-                            <Download className="w-4 h-4" /> <span>Exportar</span>
-                        </button>
-                        <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 text-white font-bold">
-                            <UserPlus className="w-4 h-4 text-white" /> <span>Nuevo</span>
-                        </button>
-                    </div>
+                {/* COLUMNA CENTRAL VACÍA PARA MANTENER ALINEACIÓN */}
+                <div></div>
+
+                <div className="flex justify-end gap-2 md:gap-3">
+                    <button className="apple-button apple-button-secondary apple-button-sm hidden sm:flex items-center justify-center gap-2">
+                        <Download className="w-4 h-4" /> <span>Exportar</span>
+                    </button>
+                    <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 text-white font-bold">
+                        <UserPlus className="w-4 h-4 text-white" /> <span>Nuevo</span>
+                    </button>
                 </div>
             </div>
 

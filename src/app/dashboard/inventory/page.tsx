@@ -75,8 +75,8 @@ export default function InventoryPage() {
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
             {/* COMPACT FIXED HEADER */}
-            <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex flex-wrap items-center gap-4">
+            <div className="px-4 md:px-8 py-5 grid grid-cols-[1fr_auto_1fr] items-center gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
                         <Package className="w-5 h-5 text-primary" />
                     </div>
@@ -84,9 +84,11 @@ export default function InventoryPage() {
                         <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Inventario</h1>
                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Control de Almacén y Stock</p>
                     </div>
+                </div>
 
-                    {/* SEGMENTED CONTROL */}
-                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5 sm:ml-4">
+                {/* SEGMENTED CONTROL - CENTRADO */}
+                <div className="flex justify-center">
+                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5">
                         <button
                             onClick={() => setActiveTab('list')}
                             className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
@@ -102,8 +104,8 @@ export default function InventoryPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-2 w-full sm:w-auto">
-                    <button className="apple-button apple-button-primary apple-button-sm w-full sm:w-auto flex items-center justify-center shadow-lg shadow-primary/20 text-white font-bold">
+                <div className="flex justify-end">
+                    <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center shadow-lg shadow-primary/20 text-white font-bold">
                         <Plus className="w-4 h-4 mr-2 text-white" /> Nuevo SKU
                     </button>
                 </div>

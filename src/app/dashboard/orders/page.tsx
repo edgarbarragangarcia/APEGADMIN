@@ -234,34 +234,20 @@ export default function OrdersPage() {
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
-            <div className="px-4 md:px-8 py-5 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-4">
-                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
-                            <Activity className="w-5 h-5 text-amber-600" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Órdenes (LIVE)</h1>
-                            <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de Pedidos V2</p>
-                        </div>
+            <div className="px-4 md:px-8 py-5 grid grid-cols-[1fr_auto_1fr] items-center gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex items-center gap-4">
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
+                        <Activity className="w-5 h-5 text-amber-600" />
                     </div>
-
-                    <div className="flex gap-2 md:gap-3 shrink-0">
-                        <button className="apple-button apple-button-secondary apple-button-sm hidden sm:flex items-center justify-center gap-2 bg-white/5 text-[#86868b] hover:text-foreground hover:bg-white/10 border border-white/5 shadow-none">
-                            <Download className="w-3.5 h-3.5" /> <span>Exportar</span>
-                        </button>
-                        <button
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 text-white font-bold"
-                        >
-                            <Package className="w-4 h-4 text-white" /> <span>Nueva Orden</span>
-                        </button>
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Órdenes (LIVE)</h1>
+                        <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de Pedidos V2</p>
                     </div>
                 </div>
 
-                {/* Tab Switcher */}
-                <div className="flex justify-center sm:justify-start">
-                    <div className="bg-white/5 p-1 rounded-xl flex border border-white/5">
+                {/* SEGMENTED CONTROL - CENTRADO */}
+                <div className="flex justify-center">
+                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5">
                         <button
                             onClick={() => setActiveTab('list')}
                             className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
@@ -276,7 +262,20 @@ export default function OrdersPage() {
                         </button>
                     </div>
                 </div>
+
+                <div className="flex justify-end gap-2 md:gap-3">
+                    <button className="apple-button apple-button-secondary apple-button-sm hidden sm:flex items-center justify-center gap-2">
+                        <Download className="w-3.5 h-3.5" /> <span>Exportar</span>
+                    </button>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 text-white font-bold"
+                    >
+                        <Package className="w-4 h-4 text-white" /> <span>Nueva Orden</span>
+                    </button>
+                </div>
             </div>
+
 
             <div className="flex-1 px-4 md:px-8 pb-8 flex flex-col gap-4 md:gap-6 overflow-hidden relative z-10">
                 {activeTab === 'list' ? (

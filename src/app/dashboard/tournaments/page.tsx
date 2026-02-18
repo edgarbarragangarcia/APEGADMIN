@@ -70,8 +70,8 @@ export default function TournamentsPage() {
             <div className="bg-mesh opacity-30 fixed inset-0 pointer-events-none" />
 
             {/* FIXED HEADER COMPACT */}
-            <div className="px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
-                <div className="flex flex-wrap items-center gap-4">
+            <div className="px-4 md:px-8 py-5 grid grid-cols-[1fr_auto_1fr] items-center gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
+                <div className="flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
                         <Trophy className="w-5 h-5 text-primary" />
                     </div>
@@ -79,9 +79,11 @@ export default function TournamentsPage() {
                         <h1 className="text-xl md:text-2xl font-black text-foreground leading-tight uppercase tracking-tighter">Torneos</h1>
                         <p className="text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Gestión de campeonatos y premios</p>
                     </div>
+                </div>
 
-                    {/* SEGMENTED CONTROL */}
-                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5 sm:ml-4">
+                {/* SEGMENTED CONTROL - CENTRADO */}
+                <div className="flex justify-center">
+                    <div className="bg-black/5 p-1 rounded-xl flex border border-black/5">
                         <button
                             onClick={() => setActiveTab('list')}
                             className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
@@ -97,9 +99,9 @@ export default function TournamentsPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-3 w-full sm:w-auto">
-                    <button className="apple-button-primary apple-button-sm w-full sm:w-auto py-2.5 md:py-2! px-6 flex items-center justify-center">
-                        <Plus className="w-4.5 h-4.5 mr-2" /> Programar Torneo
+                <div className="flex justify-end">
+                    <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 text-white font-bold">
+                        <Plus className="w-4 h-4 text-white" /> <span>Programar Torneo</span>
                     </button>
                 </div>
             </div>
@@ -117,8 +119,8 @@ export default function TournamentsPage() {
                                         key={f}
                                         onClick={() => setFilter(f)}
                                         className={`px-3 md:px-4 py-1.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f
-                                            ? 'bg-white text-foreground shadow-sm border border-black/10'
-                                            : 'text-[#86868b] hover:text-[#5c5c5e]'
+                                            ? 'bg-primary text-white shadow-md shadow-primary/30'
+                                            : 'text-[#86868b] hover:text-foreground hover:bg-white/50'
                                             }`}
                                     >
                                         {f}
@@ -136,39 +138,37 @@ export default function TournamentsPage() {
                         </div>
 
                         {/* TOURNAMENT CARDS GRID */}
-                        <div className="flex-1 overflow-auto custom-scrollbar pr-1">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-6">
+                        <div className="flex-1 overflow-auto custom-scrollbar pr-1 md:pr-2 pb-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 items-start">
                                 {loading ? (
-                                    [...Array(3)].map((_, i) => (
-                                        <div key={i} className="apple-card h-[400px] animate-pulse bg-white border-black/5" />
+                                    [...Array(4)].map((_, i) => (
+                                        <div key={i} className="apple-card h-[280px] md:h-[320px] animate-pulse shadow-sm" />
                                     ))
                                 ) : (
                                     filteredTournaments.map((t) => (
-                                        <div key={t.id} className="apple-card group hover:translate-y-[-4px] transition-all duration-300 flex flex-col h-full overflow-hidden">
-                                            {t.image_url && (
-                                                <div className="h-32 md:h-40 overflow-hidden relative">
-                                                    <img src={t.image_url} alt={t.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                                    <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
-                                                    <div className="absolute top-4 left-4">
-                                                        <span className="px-2 py-1 rounded-md bg-primary text-black text-[8px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">ACTIVO</span>
+                                        <div key={t.id} className="apple-card group hover:translate-y-[-4px] transition-all duration-300 flex flex-col justify-between overflow-hidden p-6 min-h-[280px] md:h-[320px] shadow-sm">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-6">
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className={`text-[8px] md:text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border mb-3 w-fit tracking-widest ${t.status === 'Inscripciones Abiertas'
+                                                            ? 'bg-primary/10 text-primary border-primary/20'
+                                                            : 'bg-white/5 text-[#86868b] border-white/5'
+                                                            }`}>
+                                                            {t.status || 'ABIERTO'}
+                                                        </span>
+                                                        <h3 className="text-lg md:text-xl font-black text-foreground group-hover:text-primary transition-colors leading-tight mb-2 uppercase tracking-tighter truncate">
+                                                            {t.name}
+                                                        </h3>
+                                                        <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest truncate mb-2">
+                                                            <Calendar className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary/50" /> {formatDate(t.date)}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest truncate">
+                                                            <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary/50" /> {t.club}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            )}
 
-                                            <div className="p-5 md:p-6 flex-1 flex flex-col bg-white">
-                                                <h3 className="text-base md:text-lg font-black text-foreground group-hover:text-primary transition-colors leading-tight mb-4 pr-2 uppercase tracking-tight">
-                                                    {t.name}
-                                                </h3>
-
-                                                <div className="space-y-3 mb-6">
-                                                    <div className="flex items-center gap-3 text-[11px] md:text-xs text-[#5c5c5e] font-bold uppercase tracking-tight">
-                                                        <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
-                                                        {formatDate(t.date)}
-                                                    </div>
-                                                    <div className="flex items-center gap-3 text-[11px] md:text-xs text-[#5c5c5e] font-bold uppercase tracking-tight">
-                                                        <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                                                        <span className="truncate">{t.club}</span>
-                                                    </div>
+                                                <div className="space-y-3 mb-4">
                                                     <div className="pt-2">
                                                         <div className="flex justify-between text-[8px] md:text-[9px] font-black text-[#86868b] uppercase mb-1.5 tracking-widest">
                                                             <span>Cupo {t.current_participants}/{t.participants_limit}</span>
@@ -179,15 +179,12 @@ export default function TournamentsPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <div className="mt-auto pt-4 border-t border-black/5 flex items-center justify-between">
-                                                    <div>
-                                                        <p className="text-[8px] md:text-[9px] uppercase font-black text-[#86868b] tracking-widest mb-0.5">Inscripción</p>
-                                                        <p className="text-lg md:text-xl font-black text-foreground leading-none tracking-tighter">${Number(t.price).toLocaleString()}</p>
-                                                    </div>
-                                                    <button className="apple-button-primary apple-button-sm w-auto! py-2! px-6! transition-all hover:scale-105 active:scale-95">Ver</button>
-                                                </div>
                                             </div>
+
+                                            <button className="w-full py-3.5 md:py-4 rounded-2xl bg-white/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-white/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg">
+                                                Ver Detalles
+                                                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                            </button>
                                         </div>
                                     ))
                                 )}
