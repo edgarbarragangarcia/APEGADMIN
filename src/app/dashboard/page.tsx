@@ -188,8 +188,8 @@ export default function DashboardPage() {
             {/* HEADER */}
             <div className="px-4 md:px-8 py-4 md:py-6 bg-transparent flex flex-wrap items-center justify-between gap-4 shrink-0 z-10 relative mt-4 lg:mt-0">
                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <BarChart3 className="w-5 h-5 text-emerald-500" />
+                    <div className="w-10 h-10 rounded-full bg-[#2d5a27]/10 flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-5 h-5 text-[#2d5a27]" />
                     </div>
                     <div>
                         <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">Monitor Central</h1>
@@ -216,14 +216,14 @@ export default function DashboardPage() {
                     {userProfile?.isAdmin && (
                         <div className="apple-card p-5">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                    <Users className="w-4 h-4 text-emerald-400" />
+                                <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-[#4c7c44]" />
                                 </div>
                                 <span className="text-xs font-medium text-gray-400">Usuarios</span>
                             </div>
                             <div className="flex items-baseline gap-2 text-wrap">
                                 <p className="text-2xl md:text-3xl font-semibold text-white">{(stats as any)?.users?.total || 0}</p>
-                                <span className="text-xs font-medium text-emerald-400 flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{(stats as any)?.users?.premium || 0}</span>
+                                <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{(stats as any)?.users?.premium || 0}</span>
                             </div>
                         </div>
                     )}
@@ -253,8 +253,8 @@ export default function DashboardPage() {
                     </div>
                     <div className="apple-card p-5">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                <DollarSign className="w-4 h-4 text-emerald-400" />
+                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center">
+                                <DollarSign className="w-4 h-4 text-[#4c7c44]" />
                             </div>
                             <span className="text-xs font-medium text-gray-400">Ingresos</span>
                         </div>
@@ -280,11 +280,11 @@ export default function DashboardPage() {
                                 <div key={i} className="flex-1 min-w-[30px] flex flex-col items-center gap-3 h-full justify-end group">
                                     <div className="w-full relative flex-1 flex flex-col justify-end">
                                         <div
-                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-emerald-500 ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'opacity-20 group-hover:opacity-40'}`}
+                                            className={`w-full max-w-[40px] mx-auto rounded-t-lg transition-all duration-500 bg-[#2d5a27] ${data.isToday ? 'opacity-100 shadow-[0_0_15px_rgba(45, 90, 39,0.5)]' : 'opacity-20 group-hover:opacity-40'}`}
                                             style={{ height: `${(data.count / maxWeeklyValue) * 100}%`, minHeight: '6px' }}
                                         />
                                     </div>
-                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-emerald-400' : 'text-gray-500'}`}>{data.day}</span>
+                                    <span className={`text-[10px] font-medium ${data.isToday ? 'text-[#4c7c44]' : 'text-gray-500'}`}>{data.day}</span>
                                 </div>
                             ))}
                         </div>
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                                 const Icon = a.icon
                                 return (
                                     <div key={i} className="flex items-center gap-3 group">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${a.type === 'order' ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500/20'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${a.type === 'order' ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500/20' : 'bg-[#2d5a27]/10 text-[#2d5a27] group-hover:bg-[#2d5a27]/20'}`}>
                                             <Icon className="w-4 h-4" />
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -319,8 +319,8 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-auto">
                     <div className="apple-card p-5 flex flex-col justify-center gap-2 min-h-[120px]">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                                <Zap className="w-4 h-4 text-emerald-400" />
+                            <div className="w-8 h-8 rounded-full bg-[#2d5a27]/20 flex items-center justify-center shrink-0">
+                                <Zap className="w-4 h-4 text-[#4c7c44]" />
                             </div>
                             <div>
                                 <h3 className="text-sm font-semibold text-white">Estado del Sistema</h3>
@@ -328,7 +328,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-                            <span className="text-xs font-medium text-emerald-400 flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Operacional</span>
+                            <span className="text-xs font-medium text-[#4c7c44] flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[#4c7c44] animate-pulse" /> Operacional</span>
                             <span className="text-xs font-mono text-gray-400">{apiLatency}ms</span>
                         </div>
                     </div>
@@ -336,14 +336,14 @@ export default function DashboardPage() {
                     <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px]">
                         <div className="flex justify-between items-end">
                             <p className="text-sm font-semibold text-white">Conversión</p>
-                            <span className="text-xl font-semibold text-emerald-400">{
+                            <span className="text-xl font-semibold text-[#4c7c44]">{
                                 (stats as any)?.users?.total > 0
                                     ? Math.round(((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100)
                                     : 0
                             }%</span>
                         </div>
                         <div className="w-full bg-[#2c2c2e] h-1.5 rounded-full overflow-hidden">
-                            <div className="h-full bg-emerald-500 rounded-full" style={{
+                            <div className="h-full bg-[#2d5a27] rounded-full" style={{
                                 width: `${(stats as any)?.users?.total > 0 ? ((stats as any)?.orders?.total / (stats as any)?.users?.total) * 100 : 0}%`
                             }} />
                         </div>
@@ -353,11 +353,11 @@ export default function DashboardPage() {
                     <div className="apple-card p-5 flex flex-col justify-center gap-3 min-h-[120px] md:col-span-2 lg:col-span-1">
                         <div className="flex justify-between items-center">
                             <p className="text-sm font-semibold text-white">Salud de API</p>
-                            <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">99.9%</span>
+                            <span className="text-xs font-bold text-[#4c7c44] bg-[#2d5a27]/10 px-2 py-0.5 rounded-full">99.9%</span>
                         </div>
                         <div className="flex items-end gap-1 h-8 overflow-hidden">
                             {[...Array(20)].map((_, i) => (
-                                <div key={i} className="flex-1 bg-emerald-500/30 rounded-sm hover:bg-emerald-400 transition-colors" style={{ height: `${30 + Math.random() * 70}%` }} />
+                                <div key={i} className="flex-1 bg-[#2d5a27]/30 rounded-sm hover:bg-[#4c7c44] transition-colors" style={{ height: `${30 + Math.random() * 70}%` }} />
                             ))}
                         </div>
                     </div>

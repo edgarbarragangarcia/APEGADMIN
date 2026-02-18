@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #020202;
-  /* Deepest black for OLED feel */
-  --color-foreground: #f5f5f7;
-  /* Apple Off-White */
-  --color-primary: #c1ff72;
-  --color-primary-light: #d4ff97;
-  --color-primary-glow: rgba(193, 255, 114, 0.3);
-  --color-accent: #34c759;
-  /* Apple Green */
-  --color-accent-light: #66d483;
-  --color-surface: rgba(255, 255, 255, 0.05);
-  --color-surface-light: rgba(255, 255, 255, 0.08);
-  --color-surface-hover: rgba(255, 255, 255, 0.12);
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-border-accent: rgba(193, 255, 114, 0.3);
-  --color-glass: rgba(30, 30, 30, 0.6);
-  --color-success: #34c759;
+  --color-background: #ffffff;
+  /* Pure white background */
+  --color-foreground: #1d1d1f;
+  /* Apple Black/Dark Gray */
+  --color-primary: #2d5a27;
+  /* Deep Golf Green */
+  --color-primary-light: #4c7c44;
+  --color-primary-glow: rgba(45, 90, 39, 0.15);
+  --color-accent: #0071e3;
+  /* Apple Blue */
+  --color-accent-light: #0077ed;
+  --color-surface: rgba(0, 0, 0, 0.05);
+  --color-surface-light: rgba(0, 0, 0, 0.03);
+  --color-surface-hover: rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.1);
+  --color-border-accent: rgba(45, 90, 39, 0.2);
+  --color-glass: rgba(255, 255, 255, 0.7);
+  --color-success: #4c7c44;
   --color-warning: #ff9f0a;
   --color-danger: #ff3b30;
 }
@@ -33,7 +34,7 @@
   --surface: var(--color-surface);
   --surface-light: var(--color-surface-light);
   --surface-hover: var(--color-surface-hover);
-  --border: var(--color-border);
+  --border: var(--border);
   --border-accent: var(--color-border-accent);
   --glass: var(--color-glass);
   --success: var(--color-success);
@@ -45,7 +46,7 @@
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -58,20 +59,20 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.2);
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-black;
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     background-image:
-      radial-gradient(circle at 50% 0%, rgba(193, 255, 114, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 100% 0%, rgba(52, 199, 89, 0.05) 0%, transparent 30%);
+      radial-gradient(circle at 50% 0%, rgba(45, 90, 39, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(0, 113, 227, 0.03) 0%, transparent 30%);
     background-attachment: fixed;
   }
 }
@@ -79,100 +80,99 @@
 /* ===== COMPONENT CLASSES ===== */
 @layer components {
 
-  /* Glass Panels - Upgraded to Apple Style */
+  /* Glass Panels - Upgraded to Apple Style Light */
   .glass-panel {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(30, 30, 30, 0.45) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .glass-panel:hover {
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.12) !important;
   }
 
   /* Premium Glass with Glow */
   .premium-glass {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(30, 30, 30, 0.45) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  /* Apple-inspired aesthetic */
+  /* Apple-inspired aesthetic Light */
   .apple-glass {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(20, 20, 20, 0.7) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: blur(50px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
     box-shadow:
-      0 40px 100px -20px rgba(0, 0, 0, 0.7),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+      0 40px 100px -20px rgba(0, 0, 0, 0.05),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
   }
 
   .apple-input {
     @apply w-full rounded-[14px] px-4 py-3.5 text-[15px] font-medium transition-all duration-200;
-    background: rgba(0, 0, 0, 0.3) !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+    color: #1d1d1f !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     outline: none !important;
     backdrop-filter: blur(10px);
   }
 
   .apple-input:focus {
-    background: rgba(0, 0, 0, 0.5) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: #2d5a27 !important;
+    box-shadow: 0 0 0 4px rgba(45, 90, 39, 0.1);
   }
 
-  /* Force dark color-scheme on inputs to ensure calendar picker is dark */
+  /* Remove invert from calendar indicator in light mode */
   .apple-input::-webkit-calendar-picker-indicator {
-    filter: invert(1);
     opacity: 0.6;
     cursor: pointer;
   }
 
-  /* Apple Card Container */
+  /* Apple Card Container Light */
   .apple-card {
     @apply relative overflow-hidden rounded-[24px];
-    background: rgba(30, 30, 30, 0.45) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .apple-card:hover {
-    background: rgba(40, 40, 40, 0.5) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.08) !important;
   }
 
-  /* Apple Sidebar & Navigation */
+  /* Apple Sidebar & Navigation Light */
   .apple-sidebar-glass {
-    background: rgba(10, 10, 10, 0.65) !important;
+    background: rgba(255, 255, 255, 0.4) !important;
     backdrop-filter: blur(50px) saturate(200%) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
   }
 
   .apple-nav-item {
-    @apply flex items-center px-3 py-2.5 rounded-[10px] text-[14px] font-medium transition-all duration-200;
-    color: rgba(255, 255, 255, 0.6);
+    @apply flex items-center px-4 py-3 rounded-[12px] text-[14px] font-medium transition-all duration-200;
+    color: #86868b;
   }
 
   .apple-nav-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
+    background: rgba(0, 0, 0, 0.03);
+    color: #1d1d1f;
   }
 
   .apple-nav-item.active {
-    background: rgba(52, 199, 89, 0.15);
-    /* Subtle green tint */
-    color: #34c759;
-    /* Apple Green */
+    background: rgba(45, 90, 39, 0.08);
+    color: #2d5a27;
     font-weight: 600;
   }
 
@@ -198,14 +198,14 @@
   }
 
   .apple-button-primary {
-    background-color: #34c759 !important;
-    /* Apple System Green */
+    background-color: #2d5a27 !important;
+    /* Golf Green Primary */
     color: white !important;
   }
 
   .apple-button-primary:hover {
-    background-color: #30b753 !important;
-    box-shadow: 0 8px 20px rgba(52, 199, 89, 0.3);
+    background-color: #24491f !important;
+    box-shadow: 0 8px 20px rgba(45, 90, 39, 0.3);
   }
 
   .apple-button-secondary {
@@ -220,48 +220,48 @@
 
   /* Gradients */
   .primary-gradient {
-    @apply bg-linear-to-br from-primary-light via-primary to-accent;
+    @apply bg-linear-to-br from-primary via-primary-light to-success;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/60;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-[#1d1d1f] via-[#1d1d1f] to-[#1d1d1f]/60;
   }
 
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-primary-light to-primary;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-success;
   }
 
   .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-accent-light to-accent;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-accent to-accent-light;
   }
 
   /* Buttons */
   .btn-primary {
     @apply relative px-6 py-3 font-bold rounded-xl transition-all duration-300;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: #06140d;
+    color: white;
     box-shadow:
-      0 4px 14px rgba(193, 255, 114, 0.4),
+      0 4px 14px rgba(45, 90, 39, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 8px 25px rgba(193, 255, 114, 0.5),
+      0 8px 25px rgba(45, 90, 39, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .btn-secondary {
     @apply relative px-6 py-3 font-semibold rounded-xl transition-all duration-300;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
   }
 
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
   }
 
@@ -271,10 +271,10 @@
   }
 
   .badge-success {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(45, 90, 39, 0.2) 0%, rgba(45, 90, 39, 0.1) 100%);
+    border: 1px solid rgba(45, 90, 39, 0.3);
     color: #34d399;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 20px rgba(45, 90, 39, 0.2);
   }
 
   .badge-warning {
@@ -298,39 +298,40 @@
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
   }
 
-  /* Data Table */
+  /* Data Table Light */
   .data-table {
     @apply w-full text-left;
   }
 
   .data-table thead tr {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
 
   .data-table th {
-    @apply px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-400;
+    @apply px-6 py-4 text-[10px] font-black uppercase tracking-[0.1em] text-[#86868b];
   }
 
   .data-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.02);
     transition: all 0.2s ease;
   }
 
   .data-table tbody tr:hover {
-    background: linear-gradient(90deg, rgba(193, 255, 114, 0.05) 0%, rgba(16, 185, 129, 0.03) 100%);
+    background: rgba(45, 90, 39, 0.03);
   }
 
   .data-table td {
-    @apply px-6 py-4;
+    @apply px-6 py-4 text-[13px] text-[#1d1d1f] font-medium;
   }
 
-  /* Stat Cards */
+  /* Stat Cards Light */
   .stat-card {
     @apply relative p-6 rounded-2xl overflow-hidden;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     backdrop-filter: blur(28px) saturate(180%) !important;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05) !important;
   }
 
   .stat-card::before {
@@ -345,56 +346,47 @@
     transition: opacity 0.3s ease;
   }
 
+  .stat-card:hover {
+    box-shadow: 0 8px 30px -5px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px);
+  }
+
   .stat-card:hover::before {
     opacity: 1;
   }
 
-  /* Navigation Items */
+  /* Navigation Items Light */
   .nav-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200;
-    color: rgba(148, 163, 184, 1);
+    color: #86868b;
   }
 
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
+    background: rgba(0, 0, 0, 0.03);
+    color: #1d1d1f;
   }
 
   .nav-item.active {
-    background: linear-gradient(135deg, rgba(193, 255, 114, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
-    border: 1px solid rgba(193, 255, 114, 0.2);
-    color: white;
-    box-shadow: 0 0 30px rgba(193, 255, 114, 0.1);
+    background: rgba(45, 90, 39, 0.08);
+    border: 1px solid rgba(45, 90, 39, 0.1);
+    color: #2d5a27;
   }
 
-  .nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 60%;
-    background: linear-gradient(180deg, var(--primary), var(--accent));
-    border-radius: 0 2px 2px 0;
-  }
-
-  /* Page Header */
+  /* Page Header Light */
   .page-header {
     @apply mb-8;
   }
 
   .page-header h1 {
-    @apply text-3xl font-bold text-white mb-2;
-    text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+    @apply text-3xl font-black text-[#1d1d1f] mb-1 tracking-tight;
   }
 
   .page-header p {
-    @apply text-gray-400;
+    @apply text-[#86868b] font-medium text-sm;
   }
 }
 
-/* ===== BACKGROUND EFFECTS ===== */
+/* ===== BACKGROUND EFFECTS LIGHT ===== */
 .bg-mesh {
   position: fixed;
   top: 0;
@@ -404,9 +396,9 @@
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(at 0% 0%, rgba(193, 255, 114, 0.12) 0, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(193, 255, 114, 0.08) 0, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(45, 90, 39, 0.05) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(0, 113, 227, 0.03) 0, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(45, 90, 39, 0.02) 0, transparent 50%);
   background-color: var(--background);
 }
 
@@ -418,8 +410,8 @@
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
@@ -431,9 +423,10 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  opacity: 0.03;
+  opacity: 0.02;
   pointer-events: none;
   background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  mix-blend-mode: multiply;
 }
 
 .hero-glow {
@@ -478,11 +471,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(193, 255, 114, 0.3);
+    box-shadow: 0 0 20px rgba(76, 124, 68, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 40px rgba(193, 255, 114, 0.5);
+    box-shadow: 0 0 40px rgba(76, 124, 68, 0.5);
   }
 }
 
@@ -510,9 +503,9 @@
 
 .skeleton {
   background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.05) 25%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0.05) 75%);
+      rgba(0, 0, 0, 0.03) 25%,
+      rgba(0, 0, 0, 0.06) 50%,
+      rgba(0, 0, 0, 0.03) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }

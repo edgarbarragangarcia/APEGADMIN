@@ -465,7 +465,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                     <div className="min-w-0">
                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                             <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-[150px] sm:max-w-none">{course.name}</h1>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold border ${course.status === 'active' ? 'bg-[#2d5a27]/10 text-[#4c7c44] border-[#2d5a27]/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
                                 {course.status === 'active' ? 'Activo' : course.status.toUpperCase()}
                             </span>
                         </div>
@@ -722,7 +722,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                                             <p className="text-[11px] md:text-sm font-black text-red-500 uppercase">Bloqueado</p>
                                                         </div>
                                                     </div>
-                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-emerald-500/10 text-gray-600 hover:text-emerald-500 transition-all active:scale-90">
+                                                    <button onClick={() => unblockDay(b.id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-[#2d5a27]/10 text-gray-600 hover:text-[#2d5a27] transition-all active:scale-90">
                                                         <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
@@ -781,7 +781,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                             </div>
                                         </div>
                                         <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${res.payment_status === 'paid' ? 'bg-[#2d5a27]/10 text-[#4c7c44]' : 'bg-amber-500/10 text-amber-400'}`}>
                                                 {res.payment_status === 'paid' ? 'Pagado' : 'Pendiente'}
                                             </span>
                                             <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Ver detalles</button>
@@ -801,7 +801,7 @@ export default function CourseManagementPage({ params }: { params: Promise<{ id:
                                     <div className="bg-red-500/20 text-red-500 p-1 rounded-md shrink-0"><ArrowRight className="w-3 h-3 rotate-45" /></div> PDF
                                 </button>
                                 <button onClick={downloadExcel} className="py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                                    <div className="bg-emerald-500/20 text-emerald-500 p-1 rounded-md shrink-0"><List className="w-3 h-3" /></div> Excel
+                                    <div className="bg-[#2d5a27]/20 text-[#2d5a27] p-1 rounded-md shrink-0"><List className="w-3 h-3" /></div> Excel
                                 </button>
                             </div>
                             <div className="grid grid-cols-2 gap-2">

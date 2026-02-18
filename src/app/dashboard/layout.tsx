@@ -54,36 +54,36 @@ export default function DashboardLayout({
     }, [isMobileMenuOpen])
 
     return (
-        <div className="min-h-screen bg-background text-white flex overflow-hidden font-outfit">
-            {/* 1. MODERN GOLF BACKGROUND */}
+        <div className="min-h-screen bg-background text-foreground flex overflow-hidden font-outfit">
+            {/* 1. MODERN GOLF BACKGROUND LIGHT */}
             <div
-                className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 pointer-events-none"
+                className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
                 style={{ backgroundImage: `url('/images/bg-golf.png')` }}
             />
 
-            {/* Dark Overlay for Readability */}
-            <div className="fixed inset-0 z-0 bg-black/60 pointer-events-none" />
+            {/* Light Overlay for Softness */}
+            <div className="fixed inset-0 z-0 bg-white/40 pointer-events-none" />
 
-            {/* 2. FLOATING GREEN ORBS */}
-            <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
+            {/* 2. SOFT ORBS */}
+            <div className="fixed inset-0 z-0 opacity-10 pointer-events-none">
                 {mounted && [...Array(4)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute rounded-full blur-[80px]"
+                        className="absolute rounded-full blur-[100px]"
                         style={{
                             width: 300 + i * 100,
                             height: 300 + i * 100,
                             left: `${[10, 70, 20, 80][i]}%`,
                             top: `${[20, 10, 80, 60][i]}%`,
-                            background: i % 2 === 0 ? 'rgba(52, 199, 89, 0.4)' : 'rgba(193, 255, 114, 0.3)', // Apple Green & Lime
+                            background: i % 2 === 0 ? 'rgba(45, 90, 39, 0.2)' : 'rgba(0, 113, 227, 0.1)',
                         }}
                         animate={{
-                            y: [0, -40, 0],
-                            x: [0, 20, 0],
-                            scale: [1, 1.1, 1],
+                            y: [0, -30, 0],
+                            x: [0, 15, 0],
+                            scale: [1, 1.05, 1],
                         }}
                         transition={{
-                            duration: 20 + i * 5,
+                            duration: 25 + i * 5,
                             repeat: Infinity,
                             ease: "easeInOut"
                         }}
@@ -91,19 +91,19 @@ export default function DashboardLayout({
                 ))}
             </div>
 
-            {/* Existing background utility classes */}
-            <div className="bg-mesh opacity-20" />
-            <div className="bg-noise opacity-[0.02]" />
+            {/* Background utility classes */}
+            <div className="bg-mesh opacity-40" />
+            <div className="bg-noise opacity-[0.03]" />
 
-            {/* Mobile Header */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 h-16 px-6 flex items-center justify-between z-80 bg-black/40 backdrop-blur-xl border-b border-white/5">
+            {/* Mobile Header Light */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-16 px-6 flex items-center justify-between z-80 bg-white/80 backdrop-blur-xl border-b border-black/5">
                 <div className="flex items-center gap-2">
                     <img src="/images/logo.png" alt="APEG Logo" className="w-8 h-8 object-contain" />
-                    <span className="font-black text-sm tracking-tighter">APEG ADMIN</span>
+                    <span className="font-black text-sm tracking-tighter text-[#1d1d1f]">APEG ADMIN</span>
                 </div>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-95 transition-all relative z-100"
+                    className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-[#1d1d1f] active:scale-95 transition-all relative z-100"
                 >
                     {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
@@ -124,19 +124,16 @@ export default function DashboardLayout({
                 {isMobileMenuOpen && (
                     <motion.div
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        animate={{ opacity: 0.3 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-90 lg:hidden"
+                        className="fixed inset-0 bg-black z-90 lg:hidden blur-sm"
                     />
                 )}
             </AnimatePresence>
 
             {/* Main Content Area */}
             <main className="flex-1 transition-all duration-300 ml-0 flex flex-col h-screen relative overflow-hidden z-10 pt-16 lg:pt-0">
-                {/* Content gradient overlay */}
-                <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/2 pointer-events-none" />
-
                 <div className="flex-1 flex flex-col relative overflow-hidden">
                     {children}
                 </div>

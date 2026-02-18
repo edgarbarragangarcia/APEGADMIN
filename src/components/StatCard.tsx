@@ -43,7 +43,7 @@ export default function StatCard({
                     <div className="flex items-center gap-3 pt-4 border-t border-white/5">
                         {trend && (
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositive
-                                ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20'
+                                ? 'bg-[#4c7c44]/10 text-[#4c7c44] border border-[#4c7c44]/20'
                                 : 'bg-red-400/10 text-red-400 border border-red-400/20'
                                 }`}>
                                 {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}

@@ -120,7 +120,7 @@ export default function UserDetailsPage() {
                                                 <p className="text-[9px] text-gray-600 font-bold uppercase">{new Date(order.created_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
-                                        <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 rounded-full">{order.status}</span>
+                                        <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-[#2d5a27]/10 text-[#4c7c44] border border-[#2d5a27]/10 rounded-full">{order.status}</span>
                                     </div>
                                 ))
                             )}
@@ -145,7 +145,7 @@ export default function UserDetailsPage() {
 
                 {/* FOOTER METRICS COMPACT */}
                 <div className="px-6 py-3 bg-white/2 border border-white/5 rounded-2xl flex items-center justify-between shrink-0">
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Sincronización de Perfil <span className="text-emerald-400">— ACTIVE</span></p>
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Sincronización de Perfil <span className="text-[#4c7c44]">— ACTIVE</span></p>
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 uppercase"><Calendar className="w-3 h-3" /> Registrado: {new Date(profile.created_at).toLocaleDateString()}</div>
                         <div className="w-px h-3 bg-white/10" />
