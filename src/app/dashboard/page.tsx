@@ -120,9 +120,9 @@ export default function DashboardPage() {
                     supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
                     supabase.from('profiles').select('*', { count: 'exact' }).limit(50),
                     supabase.from('tournaments').select('*', { count: 'exact' }),
-                    supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').order('created_at', { ascending: false }).limit(50),
-                    supabase.from('product_likes').select('*, product:products(id, name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100),
-                    supabase.from('user_interactions').select('*, user:profiles(full_name)').eq('item_type', 'product').order('last_interacted_at', { ascending: false }).limit(100)
+                    supabase.from('offers').select('*, product:products(id, name, image_url)').order('created_at', { ascending: false }).limit(50),
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url)').order('created_at', { ascending: false }).limit(100),
+                    supabase.from('user_interactions').select('*').eq('item_type', 'product').order('last_interacted_at', { ascending: false }).limit(100)
                 ])
 
                 // Calculate revenue from orders
@@ -130,15 +130,13 @@ export default function DashboardPage() {
                 const paidOrders = allOrders?.filter(o => ['paid', 'pagado', 'completed'].includes(o.status?.toLowerCase())) || []
                 const paidRevenue = paidOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0)
 
-                setOrders(allOrders || [])
-                setUsers(allUsers || [])
-                setOffers(allOffers || [])
-
-                // Enrich likes with user names (product_likes.user_id FK is to auth.users, not profiles)
+                // Enrich all data with user names from profiles (FKs go to auth.users, not profiles)
+                const offersData = allOffers || []
                 const likesData = allLikes || []
                 const interactionsData = allInteractions || []
                 const allUserIds = [
                     ...new Set([
+                        ...offersData.map((o: any) => o.buyer_id),
                         ...likesData.map((l: any) => l.user_id),
                         ...interactionsData.map((i: any) => i.user_id)
                     ].filter(Boolean))
@@ -149,17 +147,20 @@ export default function DashboardPage() {
                         .select('id, full_name')
                         .in('id', allUserIds)
                     const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    offersData.forEach((o: any) => {
+                        o.buyer = { full_name: profileMap.get(o.buyer_id) || 'Alguien' }
+                    })
                     likesData.forEach((l: any) => {
-                        if (!l.user || !l.user.full_name) {
-                            l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
-                        }
+                        l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
                     })
                     interactionsData.forEach((i: any) => {
-                        if (!i.user || !i.user.full_name) {
-                            i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
-                        }
+                        i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
                     })
                 }
+
+                setOrders(allOrders || [])
+                setUsers(allUsers || [])
+                setOffers(offersData)
                 setLikes(likesData)
                 setInteractions(interactionsData)
                 setStats({
@@ -188,21 +189,20 @@ export default function DashboardPage() {
                     { data: sellerInteractions }
                 ] = await Promise.all([
                     supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
-                    supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
-                    supabase.from('product_likes').select('*, product:products(id, name, image_url, seller_id), user:profiles(full_name)').in('product_id', myProductIds).order('created_at', { ascending: false }).limit(200),
-                    supabase.from('user_interactions').select('*, user:profiles(full_name)').eq('item_type', 'product').in('item_name', myProductNames).order('last_interacted_at', { ascending: false }).limit(500)
+                    supabase.from('offers').select('*, product:products(id, name, image_url)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url)').in('product_id', myProductIds.length > 0 ? myProductIds : ['00000000-0000-0000-0000-000000000000']).order('created_at', { ascending: false }).limit(200),
+                    supabase.from('user_interactions').select('*').eq('item_type', 'product').in('item_name', myProductNames.length > 0 ? myProductNames : ['__none__']).order('last_interacted_at', { ascending: false }).limit(500)
                 ])
 
                 const totalRevenue = sellerOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
 
-                setOrders(sellerOrders || [])
-                setOffers(sellerOffers || [])
-
-                // Enrich likes and interactions with user names
+                // Enrich all data with user names from profiles
+                const offersData = sellerOffers || []
                 const likesData = sellerLikes || []
                 const interactionsData = sellerInteractions || []
                 const allUserIds = [
                     ...new Set([
+                        ...offersData.map((o: any) => o.buyer_id),
                         ...likesData.map((l: any) => l.user_id),
                         ...interactionsData.map((i: any) => i.user_id)
                     ].filter(Boolean))
@@ -213,17 +213,19 @@ export default function DashboardPage() {
                         .select('id, full_name')
                         .in('id', allUserIds)
                     const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    offersData.forEach((o: any) => {
+                        o.buyer = { full_name: profileMap.get(o.buyer_id) || 'Alguien' }
+                    })
                     likesData.forEach((l: any) => {
-                        if (!l.user || !l.user.full_name) {
-                            l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
-                        }
+                        l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
                     })
                     interactionsData.forEach((i: any) => {
-                        if (!i.user || !i.user.full_name) {
-                            i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
-                        }
+                        i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
                     })
                 }
+                console.log('[SELLER] likes:', likesData.length, likesData.map((l: any) => ({ u: l.user?.full_name, p: l.product?.name })))
+                setOrders(sellerOrders || [])
+                setOffers(offersData)
                 setLikes(likesData)
                 setInteractions(interactionsData)
                 setStats({
