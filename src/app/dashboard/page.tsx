@@ -115,11 +115,11 @@ export default function DashboardPage() {
                     { data: allOffers },
                     { data: allLikes }
                 ] = await Promise.all([
-                    supabase.from('orders').select('*, product:products(name, image_url), order_items(product:products(name, image_url))', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
+                    supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
                     supabase.from('profiles').select('*', { count: 'exact' }).limit(50),
                     supabase.from('tournaments').select('*', { count: 'exact' }),
-                    supabase.from('offers').select('*, product:products(name, image_url), buyer:profiles(full_name)').order('created_at', { ascending: false }).limit(50),
-                    supabase.from('product_likes').select('*, product:products(name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100)
+                    supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').order('created_at', { ascending: false }).limit(50),
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100)
                 ])
 
                 // Calculate revenue from orders
@@ -146,9 +146,9 @@ export default function DashboardPage() {
                     { data: sellerOffers },
                     { data: sellerLikes }
                 ] = await Promise.all([
-                    supabase.from('orders').select('*, product:products(name, image_url), order_items(product:products(name, image_url))', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
-                    supabase.from('offers').select('*, product:products(name, image_url), buyer:profiles(full_name)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
-                    supabase.from('product_likes').select('*, product:products(name, image_url, seller_id), user:profiles(full_name)').order('created_at', { ascending: false }).limit(200)
+                    supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
+                    supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url, seller_id), user:profiles(full_name)').order('created_at', { ascending: false }).limit(200)
                 ])
 
                 // Filter likes by seller_id in JS since we can't easily deep filter with standard select
@@ -229,16 +229,26 @@ export default function DashboardPage() {
             received: 0,
             monthIndex: index,
             imageUrl: undefined as string | undefined,
-            _productActivity: {} as Record<string, { count: number, url: string }> // Tracking per-product activity
+            products: [] as any[] // Will store ProductDetail[]
         }))
 
-        const updateImageData = (month: number, p: any) => {
-            if (!p || !p.image_url) return
+        // Helper structure for internal aggregation
+        const monthlyProducts = monthNames.map(() => ({} as Record<string, any>))
 
-            if (!data[month]._productActivity[p.id]) {
-                data[month]._productActivity[p.id] = { count: 0, url: p.image_url }
+        const addInteraction = (monthIndex: number, product: any, interaction: any) => {
+            if (!product) return
+            const pId = product.id || product.name || 'unknown-product'
+            if (!monthlyProducts[monthIndex][pId]) {
+                monthlyProducts[monthIndex][pId] = {
+                    id: pId,
+                    name: product.name || 'Producto',
+                    imageUrl: product.image_url,
+                    count: 0,
+                    interactions: []
+                }
             }
-            data[month]._productActivity[p.id].count += 1
+            monthlyProducts[monthIndex][pId].count += 1
+            monthlyProducts[monthIndex][pId].interactions.push(interaction)
         }
 
         likes?.forEach(l => {
@@ -246,7 +256,11 @@ export default function DashboardPage() {
             if (d.getFullYear() === currentYear) {
                 const m = d.getMonth()
                 data[m].activity += 1
-                updateImageData(m, l.product)
+                addInteraction(m, l.product, {
+                    userName: l.user?.full_name || 'Alguien',
+                    type: 'Le gusta el producto',
+                    date: l.created_at
+                })
             }
         })
 
@@ -255,7 +269,11 @@ export default function DashboardPage() {
             if (d.getFullYear() === currentYear) {
                 const m = d.getMonth()
                 data[m].activity += 1
-                updateImageData(m, (o as any).product)
+                addInteraction(m, (o as any).product, {
+                    userName: o.buyer?.full_name || 'Alguien',
+                    type: 'Envió una oferta',
+                    date: o.created_at
+                })
             }
         })
 
@@ -266,9 +284,12 @@ export default function DashboardPage() {
                 data[m].revenue += Number(o.total_amount || 0)
                 data[m].activity += 1
 
-                // Try primary product, then fallback to first item in order_items
                 const productWithImage = o.product?.image_url ? o.product : (o.order_items?.[0]?.product || null)
-                updateImageData(m, productWithImage)
+                addInteraction(m, productWithImage, {
+                    userName: o.buyer_name || 'Anónimo',
+                    type: 'Realizó una compra',
+                    date: o.created_at
+                })
 
                 const status = (o.status || '').toLowerCase()
                 if (['shipped', 'enviado', 'on-the-way', 'camino'].some(s => status.includes(s))) {
@@ -281,19 +302,12 @@ export default function DashboardPage() {
         })
 
         // Final pass: Pick the image of the product with the HIGHEST activity count in that month
-        data.forEach(m => {
-            let maxCount = 0
-            let topUrl = ''
+        data.forEach((m, idx) => {
+            const monthProducts = Object.values(monthlyProducts[idx])
+            m.products = monthProducts.sort((a, b) => b.count - a.count)
 
-            Object.values(m._productActivity).forEach((info: any) => {
-                if (info.count > maxCount) {
-                    maxCount = info.count
-                    topUrl = info.url
-                }
-            })
-
-            if (topUrl) {
-                m.imageUrl = topUrl
+            if (m.products.length > 0 && m.products[0].imageUrl) {
+                m.imageUrl = m.products[0].imageUrl
             }
         })
 
