@@ -81,6 +81,7 @@ export default function DashboardPage() {
     const [users, setUsers] = useState<User[]>([])
     const [offers, setOffers] = useState<Offer[]>([])
     const [likes, setLikes] = useState<ProductLike[]>([])
+    const [interactions, setInteractions] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [currentTime, setCurrentTime] = useState(new Date())
     const [apiLatency, setApiLatency] = useState<number>(0)
@@ -113,13 +114,15 @@ export default function DashboardPage() {
                     { data: allUsers, count: usersCount },
                     { data: allTournaments, count: tournamentsCount },
                     { data: allOffers },
-                    { data: allLikes }
+                    { data: allLikes },
+                    { data: allInteractions }
                 ] = await Promise.all([
                     supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
                     supabase.from('profiles').select('*', { count: 'exact' }).limit(50),
                     supabase.from('tournaments').select('*', { count: 'exact' }),
                     supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').order('created_at', { ascending: false }).limit(50),
-                    supabase.from('product_likes').select('*, product:products(id, name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100)
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100),
+                    supabase.from('user_interactions').select('*, user:profiles(full_name)').eq('item_type', 'product').order('last_interacted_at', { ascending: false }).limit(100)
                 ])
 
                 // Calculate revenue from orders
@@ -130,7 +133,35 @@ export default function DashboardPage() {
                 setOrders(allOrders || [])
                 setUsers(allUsers || [])
                 setOffers(allOffers || [])
-                setLikes(allLikes || [])
+
+                // Enrich likes with user names (product_likes.user_id FK is to auth.users, not profiles)
+                const likesData = allLikes || []
+                const interactionsData = allInteractions || []
+                const allUserIds = [
+                    ...new Set([
+                        ...likesData.map((l: any) => l.user_id),
+                        ...interactionsData.map((i: any) => i.user_id)
+                    ].filter(Boolean))
+                ]
+                if (allUserIds.length > 0) {
+                    const { data: userProfiles } = await supabase
+                        .from('profiles')
+                        .select('id, full_name')
+                        .in('id', allUserIds)
+                    const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    likesData.forEach((l: any) => {
+                        if (!l.user || !l.user.full_name) {
+                            l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
+                        }
+                    })
+                    interactionsData.forEach((i: any) => {
+                        if (!i.user || !i.user.full_name) {
+                            i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
+                        }
+                    })
+                }
+                setLikes(likesData)
+                setInteractions(interactionsData)
                 setStats({
                     total_users: usersCount || 0,
                     total_orders: ordersCount || 0,
@@ -142,23 +173,59 @@ export default function DashboardPage() {
             } else {
                 // User: Fetch only their data (Seller Side Activity)
                 const [
+                    { data: sellerProducts }
+                ] = await Promise.all([
+                    supabase.from('products').select('id, name').eq('seller_id', user.id)
+                ])
+
+                const myProductIds = sellerProducts?.map(p => p.id) || []
+                const myProductNames = sellerProducts?.map(p => p.name) || []
+
+                const [
                     { data: sellerOrders, count: sellerOrdersCount },
                     { data: sellerOffers },
-                    { data: sellerLikes }
+                    { data: sellerLikes },
+                    { data: sellerInteractions }
                 ] = await Promise.all([
                     supabase.from('orders').select('*, product:products(id, name, image_url), order_items(product:products(id, name, image_url))', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
                     supabase.from('offers').select('*, product:products(id, name, image_url), buyer:profiles(full_name)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
-                    supabase.from('product_likes').select('*, product:products(id, name, image_url, seller_id), user:profiles(full_name)').order('created_at', { ascending: false }).limit(200)
+                    supabase.from('product_likes').select('*, product:products(id, name, image_url, seller_id), user:profiles(full_name)').in('product_id', myProductIds).order('created_at', { ascending: false }).limit(200),
+                    supabase.from('user_interactions').select('*, user:profiles(full_name)').eq('item_type', 'product').in('item_name', myProductNames).order('last_interacted_at', { ascending: false }).limit(500)
                 ])
-
-                // Filter likes by seller_id in JS since we can't easily deep filter with standard select
-                const filteredLikes = sellerLikes?.filter((l: any) => l.product?.seller_id === user.id) || []
 
                 const totalRevenue = sellerOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
 
                 setOrders(sellerOrders || [])
                 setOffers(sellerOffers || [])
-                setLikes(filteredLikes)
+
+                // Enrich likes and interactions with user names
+                const likesData = sellerLikes || []
+                const interactionsData = sellerInteractions || []
+                const allUserIds = [
+                    ...new Set([
+                        ...likesData.map((l: any) => l.user_id),
+                        ...interactionsData.map((i: any) => i.user_id)
+                    ].filter(Boolean))
+                ]
+                if (allUserIds.length > 0) {
+                    const { data: userProfiles } = await supabase
+                        .from('profiles')
+                        .select('id, full_name')
+                        .in('id', allUserIds)
+                    const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    likesData.forEach((l: any) => {
+                        if (!l.user || !l.user.full_name) {
+                            l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
+                        }
+                    })
+                    interactionsData.forEach((i: any) => {
+                        if (!i.user || !i.user.full_name) {
+                            i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
+                        }
+                    })
+                }
+                setLikes(likesData)
+                setInteractions(interactionsData)
                 setStats({
                     total_users: 1,
                     total_orders: sellerOrdersCount || 0,
@@ -183,15 +250,28 @@ export default function DashboardPage() {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000)
 
         // 🟢 REAL-TIME SUBSCRIPTIONS FOR DASHBOARD
+        // Debounced refresh function to avoid ThrottlerException (Too Many Requests)
+        let refreshTimeout: NodeJS.Timeout | null = null;
+        const debouncedRefresh = () => {
+            if (refreshTimeout) clearTimeout(refreshTimeout);
+            refreshTimeout = setTimeout(() => {
+                fetchAllData();
+            }, 1000); // Wait 1 second after last change
+        };
+
         const channel = supabase
             .channel('dashboard-monitor')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchAllData())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchAllData())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => fetchAllData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, debouncedRefresh)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, debouncedRefresh)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, debouncedRefresh)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, debouncedRefresh)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'product_likes' }, debouncedRefresh)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'user_interactions' }, debouncedRefresh)
             .subscribe()
 
         return () => {
             clearInterval(timer)
+            if (refreshTimeout) clearTimeout(refreshTimeout);
             supabase.removeChannel(channel)
         }
     }, [fetchAllData, supabase])
@@ -301,6 +381,31 @@ export default function DashboardPage() {
             }
         })
 
+        interactions?.forEach(i => {
+            const d = new Date(i.last_interacted_at)
+            if (d.getFullYear() === currentYear) {
+                const m = d.getMonth()
+                // Each interaction row has a view_count. We add it to activity.
+                const views = Number(i.view_count || 1)
+                data[m].activity += views
+
+                // We need to find the product object to get the image
+                // Try to find it from already seen products in THIS month, or previous
+                let productObj = null
+                // Search in current month already added products
+                const existingProd = Object.values(monthlyProducts[m]).find((p: any) => p.name === i.item_name)
+                if (existingProd) {
+                    productObj = { id: existingProd.id, name: existingProd.name, image_url: (existingProd as any).imageUrl }
+                }
+
+                addInteraction(m, productObj || { name: i.item_name, id: i.item_name }, {
+                    userName: i.user?.full_name || 'Usuario',
+                    type: `Vio el producto (${views} veces)`,
+                    date: i.last_interacted_at
+                })
+            }
+        })
+
         // Final pass: Pick the image of the product with the HIGHEST activity count in that month
         data.forEach((m, idx) => {
             const monthProducts = Object.values(monthlyProducts[idx])
@@ -312,7 +417,7 @@ export default function DashboardPage() {
         })
 
         return data
-    }, [likes, offers, orders])
+    }, [likes, offers, orders, interactions])
 
     const groupedLikes = (likes || []).reduce((acc: any, like) => {
         const prodId = like.product_id || (like as any).product?.id || 'unknown'
