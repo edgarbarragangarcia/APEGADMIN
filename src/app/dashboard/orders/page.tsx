@@ -747,7 +747,7 @@ export default function OrdersPage() {
                                                 <div className="pt-2">
                                                     <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Dirección de Envío</p>
                                                     <div className="p-3 rounded-xl bg-black/20 border border-white/10 shadow-sm">
-                                                        <p className="text-[11px] text-[#f5f5f7] leading-relaxed font-medium">
+                                                        <p className="text-[11px] text-foreground leading-relaxed font-medium">
                                                             {selectedOrder.shipping_address}
                                                         </p>
                                                     </div>

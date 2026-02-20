@@ -6,8 +6,10 @@ import {
     Users, ShoppingCart, Trophy, Activity, TrendingUp, TrendingDown,
     DollarSign, Eye, Clock, ArrowUpRight, ArrowDownRight, BarChart3,
     Zap, Shield, Database, Wifi, ChevronRight, Calendar, Star,
-    Package, CreditCard, RefreshCw, AlertCircle, Hash
+    Package, CreditCard, RefreshCw, AlertCircle, Hash, Tag
 } from 'lucide-react'
+import { useMemo } from 'react'
+import DashboardCharts from '@/components/DashboardCharts'
 
 interface DashboardStats {
     total_users: number
@@ -23,6 +25,9 @@ interface Order {
     total_amount: number
     created_at: string
     items: any[]
+    order_number?: string
+    product?: { name: string; image_url: string }
+    order_items?: { product: { name: string; image_url: string } }[]
 }
 
 interface User {
@@ -39,24 +44,49 @@ interface Product {
     stock_quantity: number
 }
 
+interface Offer {
+    id: string
+    offer_amount: number
+    status: string
+    created_at: string
+    product?: { name: string; image_url: string }
+    buyer?: { full_name: string }
+}
+
+interface ProductLike {
+    id: string
+    created_at: string
+    product?: { name: string; image_url: string; seller_id: string }
+    user: { full_name: string }
+    product_id: string
+}
+
 interface ActivityItem {
-    type: 'order' | 'user' | 'tournament'
+    type: 'order' | 'user' | 'tournament' | 'offer' | 'like'
     message: string
     detail: string
-    amount?: string
+    amount?: string | number
     time: string
     icon: any
+    color?: string
+    imageUrl?: string
+    likedBy?: { name: string; date: string }[]
+    productId?: string
+    date: Date
 }
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<any>(null)
     const [orders, setOrders] = useState<Order[]>([])
     const [users, setUsers] = useState<User[]>([])
+    const [offers, setOffers] = useState<Offer[]>([])
+    const [likes, setLikes] = useState<ProductLike[]>([])
     const [loading, setLoading] = useState(true)
     const [currentTime, setCurrentTime] = useState(new Date())
     const [apiLatency, setApiLatency] = useState<number>(0)
     const [refreshing, setRefreshing] = useState(false)
     const [userProfile, setUserProfile] = useState<{ id: string; isAdmin: boolean } | null>(null)
+    const [selectedLikes, setSelectedLikes] = useState<{ product: string; users: { name: string; date: string }[] } | null>(null)
 
     const supabase = createClient()
 
@@ -81,11 +111,15 @@ export default function DashboardPage() {
                 const [
                     { data: allOrders, count: ordersCount },
                     { data: allUsers, count: usersCount },
-                    { data: allTournaments, count: tournamentsCount }
+                    { data: allTournaments, count: tournamentsCount },
+                    { data: allOffers },
+                    { data: allLikes }
                 ] = await Promise.all([
-                    supabase.from('orders').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(20),
-                    supabase.from('profiles').select('*', { count: 'exact' }).limit(20),
-                    supabase.from('tournaments').select('*', { count: 'exact' })
+                    supabase.from('orders').select('*, product:products(name, image_url), order_items(product:products(name, image_url))', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
+                    supabase.from('profiles').select('*', { count: 'exact' }).limit(50),
+                    supabase.from('tournaments').select('*', { count: 'exact' }),
+                    supabase.from('offers').select('*, product:products(name, image_url), buyer:profiles(full_name)').order('created_at', { ascending: false }).limit(50),
+                    supabase.from('product_likes').select('*, product:products(name, image_url), user:profiles(full_name)').order('created_at', { ascending: false }).limit(100)
                 ])
 
                 // Calculate revenue from orders
@@ -95,6 +129,8 @@ export default function DashboardPage() {
 
                 setOrders(allOrders || [])
                 setUsers(allUsers || [])
+                setOffers(allOffers || [])
+                setLikes(allLikes || [])
                 setStats({
                     total_users: usersCount || 0,
                     total_orders: ordersCount || 0,
@@ -104,24 +140,32 @@ export default function DashboardPage() {
                     pending_orders: (ordersCount || 0) - paidOrders.length
                 })
             } else {
-                // User: Fetch only their data
-                const { data: userOrders, count: userOrdersCount } = await supabase
-                    .from('orders')
-                    .select('*', { count: 'exact' })
-                    .eq('buyer_id', user.id)
-                    .order('created_at', { ascending: false })
-                    .limit(20)
+                // User: Fetch only their data (Seller Side Activity)
+                const [
+                    { data: sellerOrders, count: sellerOrdersCount },
+                    { data: sellerOffers },
+                    { data: sellerLikes }
+                ] = await Promise.all([
+                    supabase.from('orders').select('*, product:products(name, image_url), order_items(product:products(name, image_url))', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
+                    supabase.from('offers').select('*, product:products(name, image_url), buyer:profiles(full_name)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(100),
+                    supabase.from('product_likes').select('*, product:products(name, image_url, seller_id), user:profiles(full_name)').order('created_at', { ascending: false }).limit(200)
+                ])
 
-                const totalRevenue = userOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
+                // Filter likes by seller_id in JS since we can't easily deep filter with standard select
+                const filteredLikes = sellerLikes?.filter((l: any) => l.product?.seller_id === user.id) || []
 
-                setOrders(userOrders || [])
+                const totalRevenue = sellerOrders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0
+
+                setOrders(sellerOrders || [])
+                setOffers(sellerOffers || [])
+                setLikes(filteredLikes)
                 setStats({
                     total_users: 1,
-                    total_orders: userOrdersCount || 0,
+                    total_orders: sellerOrdersCount || 0,
                     total_tournaments: 0,
                     total_revenue: totalRevenue,
                     paid_revenue: 0,
-                    pending_orders: userOrders?.filter(o => o.status === 'pending').length || 0
+                    pending_orders: sellerOrders?.filter(o => o.status === 'pending').length || 0
                 })
             }
 
@@ -163,23 +207,174 @@ export default function DashboardPage() {
 
     const formatRelativeTime = (dateString: string) => {
         const date = new Date(dateString)
+        if (isNaN(date.getTime())) return '...'
         const now = new Date()
         const diffMins = Math.floor((now.getTime() - date.getTime()) / 60000)
         if (diffMins < 1) return 'Ahora'
         if (diffMins < 60) return `${diffMins}m`
-        return `${Math.floor(diffMins / 60)}h`
+        const diffHours = Math.floor(diffMins / 60)
+        if (diffHours < 24) return `${diffHours}h`
+        return `${Math.floor(diffHours / 24)}d`
     }
 
-    const recentActivity: ActivityItem[] = [
-        ...orders.slice(0, 5).map(order => ({
-            type: 'order' as const,
-            message: order.status === 'pagado' || order.status === 'paid' ? 'Pago a tu favor' : 'Compra realizada',
-            detail: order.id.substring(0, 8),
-            amount: formatCurrency(Number(order.total_amount)),
-            time: formatRelativeTime(order.created_at),
-            icon: CreditCard
+    const chartData = useMemo(() => {
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        const currentYear = new Date().getFullYear()
+
+        const data = monthNames.map((name, index) => ({
+            name,
+            activity: 0,
+            revenue: 0,
+            shipped: 0,
+            received: 0,
+            monthIndex: index,
+            imageUrl: undefined as string | undefined,
+            _productActivity: {} as Record<string, { count: number, url: string }> // Tracking per-product activity
         }))
-    ].slice(0, 4)
+
+        const updateImageData = (month: number, p: any) => {
+            if (!p || !p.image_url) return
+
+            if (!data[month]._productActivity[p.id]) {
+                data[month]._productActivity[p.id] = { count: 0, url: p.image_url }
+            }
+            data[month]._productActivity[p.id].count += 1
+        }
+
+        likes?.forEach(l => {
+            const d = new Date(l.created_at)
+            if (d.getFullYear() === currentYear) {
+                const m = d.getMonth()
+                data[m].activity += 1
+                updateImageData(m, l.product)
+            }
+        })
+
+        offers?.forEach(o => {
+            const d = new Date(o.created_at)
+            if (d.getFullYear() === currentYear) {
+                const m = d.getMonth()
+                data[m].activity += 1
+                updateImageData(m, (o as any).product)
+            }
+        })
+
+        orders?.forEach(o => {
+            const d = new Date(o.created_at)
+            if (d.getFullYear() === currentYear) {
+                const m = d.getMonth()
+                data[m].revenue += Number(o.total_amount || 0)
+                data[m].activity += 1
+
+                // Try primary product, then fallback to first item in order_items
+                const productWithImage = o.product?.image_url ? o.product : (o.order_items?.[0]?.product || null)
+                updateImageData(m, productWithImage)
+
+                const status = (o.status || '').toLowerCase()
+                if (['shipped', 'enviado', 'on-the-way', 'camino'].some(s => status.includes(s))) {
+                    data[m].shipped += 1
+                }
+                if (['received', 'recibido', 'delivered', 'entregado'].some(s => status.includes(s))) {
+                    data[m].received += 1
+                }
+            }
+        })
+
+        // Final pass: Pick the image of the product with the HIGHEST activity count in that month
+        data.forEach(m => {
+            let maxCount = 0
+            let topUrl = ''
+
+            Object.values(m._productActivity).forEach((info: any) => {
+                if (info.count > maxCount) {
+                    maxCount = info.count
+                    topUrl = info.url
+                }
+            })
+
+            if (topUrl) {
+                m.imageUrl = topUrl
+            }
+        })
+
+        return data
+    }, [likes, offers, orders])
+
+    const groupedLikes = (likes || []).reduce((acc: any, like) => {
+        const prodId = like.product_id || (like as any).product?.id || 'unknown'
+        if (!acc[prodId]) {
+            acc[prodId] = {
+                product: (like as any).product?.name || 'Producto',
+                imageUrl: (like as any).product?.image_url,
+                users: [],
+                latestDate: new Date(0)
+            }
+        }
+
+        const rawDate = like.created_at || new Date().toISOString()
+        acc[prodId].users.push({ name: like.user?.full_name || 'Alguien', date: rawDate })
+
+        const likeDate = new Date(rawDate)
+        if (!isNaN(likeDate.getTime())) {
+            if (acc[prodId].latestDate.getTime() === 0 || likeDate > acc[prodId].latestDate) {
+                acc[prodId].latestDate = likeDate
+            }
+        }
+        return acc
+    }, {})
+
+    const activityData = [
+        ...orders.map(order => ({
+            type: 'order' as const,
+            message: order.status === 'pagado' || order.status === 'paid' ? 'Venta finalizada' : 'Nueva orden recibida',
+            detail: order.product?.name || order.order_number || order.id.substring(0, 8),
+            amount: formatCurrency(Number(order.total_amount)),
+            date: new Date(order.created_at),
+            icon: CreditCard,
+            color: 'text-primary',
+            imageUrl: order.product?.image_url
+        })),
+        ...offers.map(offer => ({
+            type: 'offer' as const,
+            message: `${offer.buyer?.full_name || 'Alguien'} envió una oferta`,
+            detail: (offer as any).product?.name || 'Producto',
+            amount: formatCurrency(Number(offer.offer_amount)),
+            date: new Date(offer.created_at),
+            icon: Tag,
+            color: 'text-amber-500',
+            imageUrl: (offer as any).product?.image_url
+        })),
+        ...Object.entries(groupedLikes).map(([prodId, data]: [string, any]) => ({
+            type: 'like' as const,
+            message: `${data.users.length} ${data.users.length === 1 ? 'persona le gusta' : 'personas les gusta'} tu producto`,
+            detail: data.product,
+            amount: undefined,
+            date: data.latestDate.getTime() === 0 ? new Date() : data.latestDate,
+            icon: Star,
+            color: 'text-rose-500',
+            imageUrl: data.imageUrl,
+            likedBy: data.users,
+            productId: prodId
+        }))
+    ]
+
+    const recentActivity: ActivityItem[] = activityData
+        .filter(item => item.date && !isNaN(item.date.getTime()))
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 15)
+        .map(item => ({
+            type: item.type,
+            message: item.message,
+            detail: item.detail,
+            amount: item.amount,
+            time: formatRelativeTime(item.date.toISOString()),
+            icon: item.icon,
+            color: item.color,
+            imageUrl: item.imageUrl,
+            likedBy: (item as any).likedBy,
+            productId: (item as any).productId,
+            date: item.date
+        }))
 
     const weeklyData = (() => {
         const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -226,6 +421,9 @@ export default function DashboardPage() {
 
             {/* MAIN DASHBOARD CONTENT */}
             <div className="flex-1 px-4 md:px-8 pb-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar z-10 relative">
+
+                {/* 0. ANALYTICS CHARTS */}
+                <DashboardCharts data={chartData} />
 
                 {/* 1. COMPACT STATS GRID */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
@@ -290,9 +488,25 @@ export default function DashboardPage() {
                                     {recentActivity.map((activity, i) => {
                                         const Icon = activity.icon
                                         return (
-                                            <div key={i} className="p-4 md:p-5 flex items-center gap-4 md:gap-6 group hover:bg-white/2 transition-all">
-                                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[#86868b] group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20 transition-all shrink-0">
-                                                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                                            <div
+                                                key={i}
+                                                className={`p-4 md:p-5 flex items-center gap-4 md:gap-6 group hover:bg-white/2 transition-all ${activity.type === 'like' ? 'cursor-pointer' : ''}`}
+                                                onClick={() => {
+                                                    if (activity.type === 'like' && activity.likedBy) {
+                                                        setSelectedLikes({ product: activity.detail, users: activity.likedBy })
+                                                    }
+                                                }}
+                                            >
+                                                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center ${activity.color || 'text-[#86868b]'} group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20 transition-all shrink-0 overflow-hidden`}>
+                                                    {activity.imageUrl ? (
+                                                        <img
+                                                            src={activity.imageUrl}
+                                                            alt={activity.detail}
+                                                            className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                                        />
+                                                    ) : (
+                                                        <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                                                    )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-[10px] md:text-xs font-black text-foreground uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">{activity.message}</p>
@@ -304,6 +518,9 @@ export default function DashboardPage() {
                                                     <p className="text-[10px] md:text-xs font-black text-foreground mb-1">{activity.amount || '—'}</p>
                                                     <p className="text-[8px] md:text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">{activity.time}</p>
                                                 </div>
+                                                {activity.type === 'like' && (
+                                                    <ChevronRight className="w-4 h-4 text-[#5c5c5e] group-hover:text-primary" />
+                                                )}
                                             </div>
                                         )
                                     })}
@@ -385,6 +602,48 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </div>
+
+            {/* LIKES MODAL */}
+            {selectedLikes && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedLikes(null)} />
+                    <div className="apple-card w-full max-w-md overflow-hidden z-10 animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-1">Interacciones</h3>
+                                <p className="text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest truncate max-w-[200px]">{selectedLikes.product}</p>
+                            </div>
+                            <button onClick={() => setSelectedLikes(null)} className="p-2 rounded-full hover:bg-white/5 transition-all text-[#5c5c5e] hover:text-white">
+                                <AlertCircle className="w-5 h-5 rotate-45" />
+                            </button>
+                        </div>
+                        <div className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-white/5 custom-scrollbar">
+                            {selectedLikes.users.map((u, idx) => (
+                                <div key={idx} className="p-4 flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                                        {u.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-black text-foreground uppercase truncate">{u.name}</p>
+                                        <p className="text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">{formatRelativeTime(u.date)}</p>
+                                    </div>
+                                    <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-500">
+                                        <Star className="w-3.5 h-3.5 fill-current" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="p-6 border-t border-white/5 bg-white/2">
+                            <button
+                                onClick={() => setSelectedLikes(null)}
+                                className="w-full py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-[10px] font-black text-foreground uppercase tracking-widest transition-all border border-white/5 hover:border-white/10"
+                            >
+                                Cerrar Ventana
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
