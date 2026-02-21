@@ -17,6 +17,7 @@ import { X, ChevronRight, User, MousePointer2, Calendar, Star } from 'lucide-rea
 
 interface Interaction {
     userName: string
+    avatarUrl?: string | null
     type: string
     date: string
 }
@@ -341,9 +342,18 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                             <div className="space-y-2">
                                 {selectedProduct.interactions.map((int: Interaction, i: number) => (
                                     <div key={i} className="p-5 rounded-3xl bg-white/2 border border-white/5 flex items-center gap-5 group hover:bg-white/5 hover:border-primary/20 transition-all">
-                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shrink-0 shadow-inner">
-                                            <User className="w-6 h-6" />
-                                        </div>
+                                        {int.avatarUrl ? (
+                                            <div className="w-12 h-12 rounded-full border-2 border-primary/30 overflow-hidden shrink-0 shadow-[0_0_12px_rgba(140,249,2,0.2)]">
+                                                <img src={int.avatarUrl} alt={int.userName} className="w-full h-full object-cover" />
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-white font-black text-lg border-2 border-white/10"
+                                                style={{ backgroundColor: `hsl(${int.userName.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 360}, 60%, 35%)` }}
+                                            >
+                                                {int.userName.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-black text-foreground truncate uppercase tracking-tight">{int.userName}</p>
                                             <div className="flex items-center gap-2.5 mt-1.5">

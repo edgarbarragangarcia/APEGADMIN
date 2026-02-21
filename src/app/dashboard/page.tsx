@@ -144,17 +144,20 @@ export default function DashboardPage() {
                 if (allUserIds.length > 0) {
                     const { data: userProfiles } = await supabase
                         .from('profiles')
-                        .select('id, full_name')
+                        .select('id, full_name, avatar_url, id_photo_url')
                         .in('id', allUserIds)
-                    const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    const profileMap = new Map(userProfiles?.map(p => [p.id, { name: p.full_name, avatar: p.id_photo_url || p.avatar_url || null }]) || [])
                     offersData.forEach((o: any) => {
-                        o.buyer = { full_name: profileMap.get(o.buyer_id) || 'Alguien' }
+                        const prof = profileMap.get(o.buyer_id)
+                        o.buyer = { full_name: prof?.name || 'Alguien', avatar_url: prof?.avatar || null }
                     })
                     likesData.forEach((l: any) => {
-                        l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
+                        const prof = profileMap.get(l.user_id)
+                        l.user = { full_name: prof?.name || 'Usuario', avatar_url: prof?.avatar || null }
                     })
                     interactionsData.forEach((i: any) => {
-                        i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
+                        const prof = profileMap.get(i.user_id)
+                        i.user = { full_name: prof?.name || 'Usuario', avatar_url: prof?.avatar || null }
                     })
                 }
 
@@ -210,17 +213,20 @@ export default function DashboardPage() {
                 if (allUserIds.length > 0) {
                     const { data: userProfiles } = await supabase
                         .from('profiles')
-                        .select('id, full_name')
+                        .select('id, full_name, avatar_url, id_photo_url')
                         .in('id', allUserIds)
-                    const profileMap = new Map(userProfiles?.map(p => [p.id, p.full_name]) || [])
+                    const profileMap = new Map(userProfiles?.map(p => [p.id, { name: p.full_name, avatar: p.id_photo_url || p.avatar_url || null }]) || [])
                     offersData.forEach((o: any) => {
-                        o.buyer = { full_name: profileMap.get(o.buyer_id) || 'Alguien' }
+                        const prof = profileMap.get(o.buyer_id)
+                        o.buyer = { full_name: prof?.name || 'Alguien', avatar_url: prof?.avatar || null }
                     })
                     likesData.forEach((l: any) => {
-                        l.user = { full_name: profileMap.get(l.user_id) || 'Usuario' }
+                        const prof = profileMap.get(l.user_id)
+                        l.user = { full_name: prof?.name || 'Usuario', avatar_url: prof?.avatar || null }
                     })
                     interactionsData.forEach((i: any) => {
-                        i.user = { full_name: profileMap.get(i.user_id) || 'Usuario' }
+                        const prof = profileMap.get(i.user_id)
+                        i.user = { full_name: prof?.name || 'Usuario', avatar_url: prof?.avatar || null }
                     })
                 }
                 console.log('[SELLER] likes:', likesData.length, likesData.map((l: any) => ({ u: l.user?.full_name, p: l.product?.name })))
@@ -339,7 +345,8 @@ export default function DashboardPage() {
                 const m = d.getMonth()
                 data[m].activity += 1
                 addInteraction(m, l.product, {
-                    userName: l.user?.full_name || 'Alguien',
+                    userName: (l as any).user?.full_name || 'Alguien',
+                    avatarUrl: (l as any).user?.avatar_url || null,
                     type: 'Le gusta el producto',
                     date: l.created_at
                 })
@@ -353,6 +360,7 @@ export default function DashboardPage() {
                 data[m].activity += 1
                 addInteraction(m, (o as any).product, {
                     userName: o.buyer?.full_name || 'Alguien',
+                    avatarUrl: (o.buyer as any)?.avatar_url || null,
                     type: 'Envió una oferta',
                     date: o.created_at
                 })
@@ -369,6 +377,7 @@ export default function DashboardPage() {
                 const productWithImage = o.product?.image_url ? o.product : (o.order_items?.[0]?.product || null)
                 addInteraction(m, productWithImage, {
                     userName: o.buyer_name || 'Anónimo',
+                    avatarUrl: null,
                     type: 'Realizó una compra',
                     date: o.created_at
                 })
@@ -402,6 +411,7 @@ export default function DashboardPage() {
 
                 addInteraction(m, productObj || { name: i.item_name, id: i.item_name }, {
                     userName: i.user?.full_name || 'Usuario',
+                    avatarUrl: i.user?.avatar_url || null,
                     type: `Vio el producto (${views} veces)`,
                     date: i.last_interacted_at
                 })
