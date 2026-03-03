@@ -466,7 +466,7 @@ export default function TournamentsPage() {
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="text-xs font-black text-foreground uppercase tracking-tight leading-none">{selectedTournament.creator_full_name || 'APEG Admin'}</p>
+                                                <p className="text-xs font-black text-foreground uppercase tracking-tight leading-none">{selectedTournament.creator_full_name || 'Organizador'}</p>
                                                 <p className="text-[9px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Organizador Autorizado</p>
                                             </div>
                                         </div>
