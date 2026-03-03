@@ -5,7 +5,8 @@ import { createClient } from '@/utils/supabase/client'
 import {
     Trophy, Plus, Search, Filter, Calendar, MapPin,
     Users, ChevronLeft, ChevronRight, Eye, Settings,
-    ArrowRight, Star, Clock, Share2, TrendingUp
+    ArrowRight, Star, Clock, Share2, TrendingUp,
+    CheckCircle, XCircle, AlertCircle, User
 } from 'lucide-react'
 
 interface Tournament {
@@ -21,13 +22,20 @@ interface Tournament {
     image_url: string
     game_mode: string
     address: string
+    approval_status: 'pending' | 'approved' | 'rejected'
+    creator_full_name?: string
+    creator_avatar_url?: string
+    budget_per_player?: number
+    budget_prizes?: number
+    budget_operational?: number
 }
 
 export default function TournamentsPage() {
     const [tournaments, setTournaments] = useState<Tournament[]>([])
     const [loading, setLoading] = useState(true)
+    const [actionLoading, setActionLoading] = useState<string | null>(null)
     const [filter, setFilter] = useState('Todos')
-    const [activeTab, setActiveTab] = useState<'list' | 'finance'>('list')
+    const [activeTab, setActiveTab] = useState<'list' | 'finance' | 'requests'>('list')
     const supabase = createClient()
 
     const fetchTournaments = useCallback(async () => {
@@ -41,6 +49,22 @@ export default function TournamentsPage() {
         fetchTournaments()
     }, [fetchTournaments])
 
+    const handleUpdateStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
+        setActionLoading(id)
+        const { error } = await supabase
+            .from('tournaments')
+            .update({ approval_status: newStatus })
+            .eq('id', id)
+
+        if (error) {
+            console.error('Error updating tournament status:', error)
+            alert('Error al actualizar el estado: ' + error.message)
+        } else {
+            await fetchTournaments()
+        }
+        setActionLoading(null)
+    }
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('es-MX', {
             day: 'numeric',
@@ -50,8 +74,10 @@ export default function TournamentsPage() {
     }
 
     const filteredTournaments = tournaments.filter(t =>
-        filter === 'Todos' || t.status === filter
-    ).slice(0, 3) // Only show 3 cards to fit in one page without scroll
+        t.approval_status === 'approved' && (filter === 'Todos' || t.status === filter)
+    )
+
+    const pendingRequests = tournaments.filter(t => t.approval_status === 'pending')
 
     // Finance Calculations
     const totalPotentialRevenue = tournaments.reduce((sum, t) => sum + (Number(t.price) * t.participants_limit), 0)
@@ -89,6 +115,12 @@ export default function TournamentsPage() {
                             className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
                         >
                             Listado
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('requests')}
+                            className={`px-3 md:px-4 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all ${activeTab === 'requests' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-[#86868b] hover:text-foreground'}`}
+                        >
+                            Solicitudes {pendingRequests.length > 0 && <span className="ml-1 inline-flex items-center justify-center w-4 h-4 bg-red-500 text-white rounded-full text-[8px]">{pendingRequests.length}</span>}
                         </button>
                         <button
                             onClick={() => setActiveTab('finance')}
@@ -191,6 +223,91 @@ export default function TournamentsPage() {
                             </div>
                         </div>
                     </>
+                ) : activeTab === 'requests' ? (
+                    /* TOURNAMENT REQUESTS */
+                    <div className="flex-1 flex flex-col gap-6 overflow-hidden">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Solicitudes Pendientes</h3>
+                                <p className="text-[9px] md:text-xs text-[#5c5c5e] font-bold uppercase tracking-tight">Propuestas de torneos creadas por usuarios</p>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-auto custom-scrollbar pr-1 md:pr-2 pb-10">
+                            {pendingRequests.length === 0 ? (
+                                <div className="apple-card flex flex-col items-center justify-center py-20 text-center border-dashed border-white/10">
+                                    <div className="p-4 rounded-full bg-white/5 mb-4">
+                                        <CheckCircle className="w-8 h-8 text-[#5c5c5e]" />
+                                    </div>
+                                    <h4 className="text-lg font-black text-foreground uppercase tracking-tight mb-2">No hay solicitudes pendientes</h4>
+                                    <p className="text-xs text-[#5c5c5e] font-bold uppercase tracking-widest">Buen trabajo! Todas las propuestas han sido revisadas.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 gap-4">
+                                    {pendingRequests.map((request) => (
+                                        <div key={request.id} className="apple-card p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between group hover:border-primary/30 transition-all">
+                                            <div className="flex-1 flex gap-4 min-w-0">
+                                                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                                    {request.creator_avatar_url ? (
+                                                        <img src={request.creator_avatar_url} alt="" className="w-full h-full rounded-xl object-cover" />
+                                                    ) : (
+                                                        <User className="w-5 h-5 text-primary" />
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h4 className="text-base font-black text-foreground uppercase tracking-tighter truncate">{request.name}</h4>
+                                                        <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[8px] font-black text-[#86868b] uppercase tracking-widest">PROPUESTA</span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
+                                                        <div className="flex items-center gap-1.5 text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">
+                                                            <Calendar className="w-3 h-3 text-primary/50" /> {formatDate(request.date)}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">
+                                                            <MapPin className="w-3 h-3 text-primary/50" /> {request.club}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 text-[9px] text-[#5c5c5e] font-bold uppercase tracking-widest">
+                                                            <User className="w-3 h-3 text-primary/50" /> {request.creator_full_name || 'Usuario desconocido'}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[10px] text-[#86868b] line-clamp-2 leading-relaxed">
+                                                        {request.description || 'Sin descripción proporcionada.'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-2 w-full md:w-auto shrink-0">
+                                                <button
+                                                    onClick={() => handleUpdateStatus(request.id, 'rejected')}
+                                                    disabled={actionLoading === request.id}
+                                                    className={`flex-1 md:flex-none h-11 px-6 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 group/btn ${actionLoading === request.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    {actionLoading === request.id ? (
+                                                        <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                                    ) : (
+                                                        <XCircle className="w-4 h-4" />
+                                                    )}
+                                                    Rechazar
+                                                </button>
+                                                <button
+                                                    onClick={() => handleUpdateStatus(request.id, 'approved')}
+                                                    disabled={actionLoading === request.id}
+                                                    className={`flex-1 md:flex-none h-11 px-6 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group/btn ${actionLoading === request.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    {actionLoading === request.id ? (
+                                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                    ) : (
+                                                        <CheckCircle className="w-4 h-4" />
+                                                    )}
+                                                    Aceptar Propuesta
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 ) : (
                     /* FINANCE DASHBOARD */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
