@@ -36,6 +36,8 @@ export default function TournamentsPage() {
     const [actionLoading, setActionLoading] = useState<string | null>(null)
     const [filter, setFilter] = useState('Todos')
     const [activeTab, setActiveTab] = useState<'list' | 'finance' | 'requests'>('list')
+    const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const supabase = createClient()
 
     const fetchTournaments = useCallback(async () => {
@@ -213,7 +215,13 @@ export default function TournamentsPage() {
                                                 </div>
                                             </div>
 
-                                            <button className="w-full py-3.5 md:py-4 rounded-2xl bg-white/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-white/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTournament(t)
+                                                    setIsDetailsModalOpen(true)
+                                                }}
+                                                className="w-full py-3.5 md:py-4 rounded-2xl bg-white/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-white/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg"
+                                            >
                                                 Ver Detalles
                                                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                             </button>
@@ -254,7 +262,13 @@ export default function TournamentsPage() {
                                                         <User className="w-5 h-5 text-primary" />
                                                     )}
                                                 </div>
-                                                <div className="min-w-0">
+                                                <div
+                                                    className="min-w-0 cursor-pointer"
+                                                    onClick={() => {
+                                                        setSelectedTournament(request)
+                                                        setIsDetailsModalOpen(true)
+                                                    }}
+                                                >
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <h4 className="text-base font-black text-foreground uppercase tracking-tighter truncate">{request.name}</h4>
                                                         <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[8px] font-black text-[#86868b] uppercase tracking-widest">PROPUESTA</span>
@@ -359,6 +373,149 @@ export default function TournamentsPage() {
                     </div>
                 )}
             </div>
+
+            {/* DETAILS MODAL */}
+            {isDetailsModalOpen && selectedTournament && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsDetailsModalOpen(false)} />
+                    <div className="apple-card w-full max-w-2xl max-h-[90vh] border-white/10 p-0 relative overflow-hidden shadow-2xl flex flex-col z-50">
+                        {/* Modal Header Image */}
+                        <div className="h-48 w-full relative shrink-0">
+                            {selectedTournament.image_url ? (
+                                <img src={selectedTournament.image_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full bg-linear-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                                    <Trophy className="w-16 h-16 text-primary" />
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
+                            <button
+                                onClick={() => setIsDetailsModalOpen(false)}
+                                className="absolute top-4 right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all backdrop-blur-sm"
+                            >
+                                <XCircle className="w-5 h-5" />
+                            </button>
+                            <div className="absolute bottom-6 left-8 right-8">
+                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-lg border mb-2 w-fit tracking-widest inline-block ${selectedTournament.approval_status === 'pending'
+                                    ? 'bg-amber-500/20 text-amber-500 border-amber-500/20'
+                                    : 'bg-primary/20 text-primary border-primary/20'
+                                    }`}>
+                                    {selectedTournament.status || (selectedTournament.approval_status === 'pending' ? 'PROPUESTA' : 'ACTIVO')}
+                                </span>
+                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">{selectedTournament.name}</h3>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div>
+                                        <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Descripción General</h4>
+                                        <p className="text-xs text-[#5c5c5e] font-medium leading-relaxed">
+                                            {selectedTournament.description || 'Sin descripción proporcionada.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mb-1">Fecha</p>
+                                            <p className="text-xs font-black text-foreground uppercase truncate tracking-tighter">{formatDate(selectedTournament.date)}</p>
+                                        </div>
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mb-1">Costo</p>
+                                            <p className="text-xs font-black text-primary uppercase truncate tracking-tighter">${Number(selectedTournament.price).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                        <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mb-2">Ubicación</p>
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="w-3.5 h-3.5 text-primary" />
+                                            <p className="text-xs font-black text-foreground uppercase tracking-tighter truncate">{selectedTournament.club}</p>
+                                        </div>
+                                        <p className="text-[10px] text-[#86868b] font-bold mt-1 ml-5">{selectedTournament.address || 'Ubicación no especificada'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Detalles de Participación</h4>
+                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-[10px] font-black text-foreground uppercase tracking-tight">Cupo de Jugadores</span>
+                                                <span className="text-[10px] font-black text-primary uppercase">{selectedTournament.current_participants}/{selectedTournament.participants_limit}</span>
+                                            </div>
+                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden mb-4">
+                                                <div className="h-full bg-primary" style={{ width: `${(selectedTournament.current_participants / (selectedTournament.participants_limit || 1)) * 100}%` }} />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Users className="w-3.5 h-3.5 text-[#5c5c5e]" />
+                                                <span className="text-[10px] font-bold text-[#5c5c5e] uppercase tracking-widest">Modo de Juego: {selectedTournament.game_mode || 'Stroke Play'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Información del Organizador</h4>
+                                        <div className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/5">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                                {selectedTournament.creator_avatar_url ? (
+                                                    <img src={selectedTournament.creator_avatar_url} alt="" className="w-full h-full rounded-xl object-cover" />
+                                                ) : (
+                                                    <User className="w-5 h-5 text-primary" />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-black text-foreground uppercase tracking-tight leading-none">{selectedTournament.creator_full_name || 'APEG Admin'}</p>
+                                                <p className="text-[9px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Organizador Autorizado</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {(selectedTournament.budget_per_player || selectedTournament.budget_prizes) && (
+                                        <div>
+                                            <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Presupuesto Estimado</h4>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2 border-b border-white/5">
+                                                    <span className="text-[#5c5c5e]">Por Jugador</span>
+                                                    <span className="text-foreground">${Number(selectedTournament.budget_per_player || 0).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2 border-b border-white/5">
+                                                    <span className="text-[#5c5c5e]">Premios</span>
+                                                    <span className="text-foreground">${Number(selectedTournament.budget_prizes || 0).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2">
+                                                    <span className="text-[#5c5c5e]">Operacional</span>
+                                                    <span className="text-foreground">${Number(selectedTournament.budget_operational || 0).toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {selectedTournament.approval_status === 'pending' && (
+                            <div className="p-6 bg-black/20 border-t border-white/10 flex gap-4 shrink-0">
+                                <button
+                                    disabled={actionLoading === selectedTournament.id}
+                                    onClick={() => handleUpdateStatus(selectedTournament.id, 'rejected')}
+                                    className="flex-1 h-12 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[11px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
+                                >
+                                    Rechazar Propuesta
+                                </button>
+                                <button
+                                    disabled={actionLoading === selectedTournament.id}
+                                    onClick={() => handleUpdateStatus(selectedTournament.id, 'approved')}
+                                    className="flex-1 h-12 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group/btn"
+                                >
+                                    Aprobar y Publicar
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
