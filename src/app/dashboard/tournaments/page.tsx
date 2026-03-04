@@ -35,6 +35,12 @@ interface Tournament {
     budget_prizes?: number
     budget_operational?: number
     guests?: string
+    budget_items?: any[]
+}
+
+interface RegistrationCount {
+    total: number
+    paid: number
 }
 
 export default function TournamentsPage() {
@@ -46,12 +52,34 @@ export default function TournamentsPage() {
     const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [selectedFinanceTournament, setSelectedFinanceTournament] = useState<string>('Global')
+    const [regCounts, setRegCounts] = useState<Record<string, RegistrationCount>>({})
     const supabase = createClient()
 
     const fetchTournaments = useCallback(async (silent = false) => {
         if (!silent) setLoading(true)
-        const { data } = await supabase.rpc('get_all_tournaments')
-        if (data) setTournaments(data)
+        const { data: tourneys } = await supabase.rpc('get_all_tournaments')
+
+        if (tourneys) {
+            setTournaments(tourneys)
+
+            // Fetch registration counts for all tourneys
+            const { data: regs } = await supabase
+                .from('tournament_registrations')
+                .select('tournament_id, registration_status')
+
+            if (regs) {
+                const counts: Record<string, RegistrationCount> = {}
+                regs.forEach(r => {
+                    if (!counts[r.tournament_id]) counts[r.tournament_id] = { total: 0, paid: 0 }
+                    counts[r.tournament_id].total += 1
+                    // Consideramos 'paid' y 'Confirmado' como pagados
+                    if (['paid', 'Confirmado', 'completado', 'Completado'].includes(r.registration_status)) {
+                        counts[r.tournament_id].paid += 1
+                    }
+                })
+                setRegCounts(counts)
+            }
+        }
         if (!silent) setLoading(false)
     }, [supabase])
 
@@ -143,21 +171,34 @@ export default function TournamentsPage() {
     // Advanced Finance Metrics for Selected Tournament
     const getFinanceMetrics = (tournamentId: string) => {
         if (tournamentId === 'Global') {
-            const totalFixedCosts = tournaments.reduce((sum, t) => sum + (Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)), 0)
-            const totalVariableCosts = tournaments.reduce((sum, t) => sum + (Number(t.budget_per_player || 0) * t.current_participants), 0)
-            const totalGuests = tournaments.reduce((sum, t) => sum + (t.guests ? t.guests.split('\n').filter(g => g.trim()).length : 0), 0)
+            const totalFixedCosts = tournaments.reduce((sum, t) => {
+                const itemsFixed = t.budget_items?.filter((i: any) => i.type === 'fixed').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0
+                return sum + itemsFixed + Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
+            }, 0)
+
+            const totalVariableCosts = tournaments.reduce((sum, t) => {
+                const itemsVar = t.budget_items?.filter((i: any) => i.type === 'per_player').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0
+                const players = regCounts[t.id]?.total || t.current_participants
+                const guests = t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0
+                return sum + ((itemsVar + Number(t.budget_per_player || 0)) * (players + guests))
+            }, 0)
+
+            const totalGuests = tournaments.reduce((sum, t) => sum + (t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0), 0)
+            const income = tournaments.reduce((sum, t) => sum + (Number(t.price) * (regCounts[t.id]?.paid || 0)), 0)
             const totalCosts = totalFixedCosts + totalVariableCosts
-            const balance = currentRevenue - totalCosts
+            const balance = income - totalCosts
 
             return {
                 totalFixedCosts,
                 totalVariableCosts,
                 totalGuests,
                 totalCosts,
+                income,
                 balance,
-                breakEvenPercent: totalCosts > 0 ? Math.min(Math.round((currentRevenue / totalCosts) * 100), 100) : 0,
+                breakEvenPercent: totalCosts > 0 ? Math.min(Math.round((income / totalCosts) * 100), 100) : 0,
                 breakEvenPlayers: 0,
-                participants: totalParticipants,
+                participants: tournaments.reduce((sum, t) => sum + (regCounts[t.id]?.total || t.current_participants), 0),
+                paid: tournaments.reduce((sum, t) => sum + (regCounts[t.id]?.paid || 0), 0),
                 guests: totalGuests,
                 limit: tournaments.reduce((sum, t) => sum + t.participants_limit, 0)
             }
@@ -166,25 +207,36 @@ export default function TournamentsPage() {
         const t = tournaments.find(tourney => tourney.id === tournamentId)
         if (!t) return null
 
-        const fixedCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
-        const variableCosts = Number(t.budget_per_player || 0) * t.current_participants
-        const guests = t.guests ? t.guests.split('\n').filter(g => g.trim()).length : 0
-        const totalCosts = fixedCosts + (Number(t.budget_per_player || 0) * (t.current_participants + guests))
-        const income = Number(t.price) * t.current_participants
+        const currentRegs = regCounts[t.id] || { total: t.current_participants, paid: 0 }
+
+        // Sumar costos fijos desde budget_items y campos legacy
+        const fixedCosts = (t.budget_items?.filter((i: any) => i.type === 'fixed').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0) +
+            Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
+
+        // Sumar costos variables por jugador
+        const varPerPlayer = (t.budget_items?.filter((i: any) => i.type === 'per_player').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0) +
+            Number(t.budget_per_player || 0)
+
+        const guests = t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0
+        const totalVariableCosts = varPerPlayer * (currentRegs.total + guests)
+        const totalCosts = fixedCosts + totalVariableCosts
+        const income = Number(t.price) * currentRegs.paid
         const balance = income - totalCosts
-        const netPerPlayer = Number(t.price) - Number(t.budget_per_player || 0)
+
+        const netPerPlayer = Number(t.price) - varPerPlayer
         const breakEvenCount = netPerPlayer > 0 ? Math.ceil(fixedCosts / netPerPlayer) : 0
 
         return {
             fixedCosts,
-            variableCosts,
+            variableCosts: totalVariableCosts,
             guests,
             totalCosts,
             income,
             balance,
             breakEvenCount,
             netPerPlayer,
-            participants: t.current_participants,
+            participants: currentRegs.total,
+            paid: currentRegs.paid,
             limit: t.participants_limit
         }
     }
@@ -677,17 +729,17 @@ export default function TournamentsPage() {
 
                                     {/* Stats Grid from Image */}
                                     <div className="grid grid-cols-3 gap-2 mb-4">
-                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[16px] font-black text-foreground leading-none">{(metrics as any).participants + (metrics as any).guests}</p>
-                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Total Jug.</p>
+                                        <div className="flex-1 apple-card p-3 flex flex-col items-center justify-center border border-white/5">
+                                            <p className="text-[14px] font-black text-white">{metrics?.participants || 0}</p>
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1">Total Jug.</p>
                                         </div>
-                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[16px] font-black text-primary leading-none">{(metrics as any).participants}</p>
-                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Pagados</p>
+                                        <div className="flex-1 apple-card p-3 flex flex-col items-center justify-center border border-white/5">
+                                            <p className="text-[14px] font-black text-primary/80">{metrics?.paid || 0}</p>
+                                            <p className="text-[8px] font-black text-[#5c5c5e] uppercase tracking-widest mt-1">Pagados</p>
                                         </div>
-                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[16px] font-black text-amber-500 leading-none">{(metrics as any).guests}</p>
-                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Invitados</p>
+                                        <div className="flex-1 apple-card p-3 flex flex-col items-center justify-center border border-white/5">
+                                            <p className="text-[14px] font-black text-orange-500">{metrics?.guests || 0}</p>
+                                            <p className="text-[8px] font-black text-[#5c5c5e] uppercase tracking-widest mt-1">Invitados</p>
                                         </div>
                                     </div>
 
