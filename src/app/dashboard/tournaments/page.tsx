@@ -350,7 +350,7 @@ export default function TournamentsPage() {
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                                 <p className="text-[10px] font-bold text-white uppercase tracking-tight">
-                                    {entry.name === 'revenue' ? 'Recaudo' : 'Gastos/Meta'}
+                                    {entry.name === 'revenue' ? '' : 'Gastos/Meta'}
                                 </p>
                             </div>
                             <p className="text-[10px] font-black" style={{ color: entry.color }}>
@@ -361,7 +361,7 @@ export default function TournamentsPage() {
                     {/* Lógica de Ganancia según el punto */}
                     {label === 'Recaudado' && (
                         <div className="mt-2 pt-2 border-t border-white/5">
-                            <p className="text-[8px] font-bold text-[#5c5c5e] uppercase tracking-tighter mb-2 italic">
+                            <p className="text-[8px] font-bold text-white/70 uppercase tracking-tighter mb-2 italic">
                                 Desglose: ${((metrics?.paid || 0) * (Number(financeBase[0]?.price) || 0)).toLocaleString()} (Inscrip.) + ${metrics?.projectedOtherIncome.toLocaleString()} (Patrocinios)
                             </p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">
@@ -703,7 +703,7 @@ export default function TournamentsPage() {
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
                                     <div className="flex flex-col mt-1.5 text-[#5c5c5e]">
-                                        <span className="text-[10px] font-bold uppercase tracking-tight italic text-primary/70 mb-0.5">
+                                        <span className="text-[10px] font-bold uppercase tracking-tight italic text-white/70 mb-0.5">
                                             ${((financeBase[0]?.participants_limit || 0) * (Number(financeBase[0]?.price) || 0)).toLocaleString()} JUG. + ${metrics?.projectedOtherIncome.toLocaleString()} PATROCINIOS
                                         </span>
                                         <span className="text-[10px] font-bold uppercase tracking-tight">Capacidad Máxima</span>
@@ -727,7 +727,7 @@ export default function TournamentsPage() {
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {/* MAIN FINANCIAL CHART */}
-                            <div className="lg:col-span-2 apple-card p-4 flex flex-col min-h-[320px]">
+                            <div className="lg:col-span-2 apple-card p-4 flex flex-col min-h-[400px]">
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
                                         <h3 className="text-base font-black text-foreground uppercase tracking-tight">{chartTitle}</h3>
@@ -741,32 +741,95 @@ export default function TournamentsPage() {
 
                                 <div className="flex-1 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={tourneyChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#8cf902" stopOpacity={0.4} />
-                                                    <stop offset="95%" stopColor="#8cf902" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                            <XAxis
-                                                dataKey="name"
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
-                                                dy={10}
-                                            />
-                                            <YAxis
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
-                                                tickFormatter={(value) => `$${value / 1000}k`}
-                                                domain={[0, maxTourneyRev * 1.1]}
-                                            />
-                                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+                                        {selectedFinanceTournament === 'Global' ? (
+                                            <BarChart data={tourneyChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }} barGap={8}>
+                                                <defs>
+                                                    <linearGradient id="colorRevenueBar" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#8cf902" stopOpacity={1} />
+                                                        <stop offset="95%" stopColor="#8cf902" stopOpacity={0.6} />
+                                                    </linearGradient>
+                                                    <linearGradient id="colorTargetBar" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                                <XAxis
+                                                    dataKey="name"
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                    dy={10}
+                                                />
+                                                <YAxis
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                    tickFormatter={(value) => `$${value / 1000}k`}
+                                                    domain={[0, 'auto']}
+                                                />
+                                                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                                                <Legend
+                                                    verticalAlign="top"
+                                                    align="right"
+                                                    iconType="circle"
+                                                    content={(props) => {
+                                                        const { payload } = props;
+                                                        return (
+                                                            <div className="flex justify-end gap-4 mb-4">
+                                                                {payload?.map((entry: any, index: number) => (
+                                                                    <div key={index} className="flex items-center gap-1.5">
+                                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                                        <span className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">
+                                                                            {entry.value === 'revenue' ? 'Recaudado' : 'Gastos'}
+                                                                        </span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        );
+                                                    }}
+                                                />
+                                                <Bar
+                                                    dataKey="target"
+                                                    fill="url(#colorTargetBar)"
+                                                    radius={[4, 4, 0, 0]}
+                                                    barSize={30}
+                                                    animationDuration={1500}
+                                                />
+                                                <Bar
+                                                    dataKey="revenue"
+                                                    fill="url(#colorRevenueBar)"
+                                                    radius={[4, 4, 0, 0]}
+                                                    barSize={30}
+                                                    animationDuration={1500}
+                                                />
+                                            </BarChart>
+                                        ) : (
+                                            <AreaChart data={tourneyChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                                                <defs>
+                                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#8cf902" stopOpacity={0.4} />
+                                                        <stop offset="95%" stopColor="#8cf902" stopOpacity={0} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                                <XAxis
+                                                    dataKey="name"
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                    dy={10}
+                                                />
+                                                <YAxis
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                    tickFormatter={(value) => `$${value / 1000}k`}
+                                                    domain={[0, maxTourneyRev * 1.1]}
+                                                />
+                                                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
 
-                                            {/* ÁREA DE GANANCIA (DASHED) */}
-                                            {selectedFinanceTournament !== 'Global' && (
+                                                {/* ÁREA DE GANANCIA (DASHED) */}
                                                 <ReferenceArea
                                                     x1="Punto de equilibrio"
                                                     x2="Potencial"
@@ -785,28 +848,28 @@ export default function TournamentsPage() {
                                                         offset: 15
                                                     }}
                                                 />
-                                            )}
 
-                                            {/* ÁREA DE INGRESOS (VERDE) */}
-                                            <Area
-                                                type="monotone"
-                                                dataKey="revenue"
-                                                stroke="#8cf902"
-                                                strokeWidth={4}
-                                                fillOpacity={1}
-                                                fill="url(#colorRevenue)"
-                                                animationDuration={1500}
-                                                dot={<CustomDot />}
-                                                activeDot={{ r: 6, strokeWidth: 0, fill: '#8cf902' }}
-                                            />
-                                        </AreaChart>
+                                                {/* ÁREA DE INGRESOS (VERDE) */}
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="revenue"
+                                                    stroke="#8cf902"
+                                                    strokeWidth={4}
+                                                    fillOpacity={1}
+                                                    fill="url(#colorRevenue)"
+                                                    animationDuration={1500}
+                                                    dot={<CustomDot />}
+                                                    activeDot={{ r: 6, strokeWidth: 0, fill: '#8cf902' }}
+                                                />
+                                            </AreaChart>
+                                        )}
                                     </ResponsiveContainer>
                                 </div>
                             </div>
 
                             {/* ACCOUNTING SUMMARY (AS REQUESTED) */}
-                            <div className="flex flex-col gap-4">
-                                <div className="apple-card p-4 flex flex-col border-white/10 shadow-xl relative overflow-hidden bg-linear-to-br from-white/5 to-transparent">
+                            <div className="flex flex-col gap-4 h-full">
+                                <div className="apple-card p-4 flex flex-col border-white/10 shadow-xl relative overflow-hidden bg-linear-to-br from-white/5 to-transparent flex-1 min-h-[400px]">
                                     <div className="flex items-center gap-2 mb-4 border-b border-white/5 pb-2">
                                         <Receipt className="w-4 h-4 text-primary" />
                                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest">Resumen Contable</h3>
@@ -876,18 +939,7 @@ export default function TournamentsPage() {
                                     </div>
                                 </div>
 
-                                <div className="apple-card p-3 flex items-center justify-between border-white/10 shadow-sm bg-linear-to-r from-primary/10 via-transparent to-transparent">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                                            <Wallet className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[8px] font-bold text-[#86868b] uppercase tracking-widest leading-none mb-0.5">Costo Total Estimado</p>
-                                            <h4 className="text-base font-black text-foreground leading-tight">${metrics?.totalCosts.toLocaleString()}</h4>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-[#5c5c5e]" />
-                                </div>
+
                             </div>
                         </div>
                     </div>
