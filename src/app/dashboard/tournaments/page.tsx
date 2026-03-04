@@ -12,7 +12,7 @@ import {
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis,
     CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell,
-    ReferenceLine
+    ReferenceLine, ReferenceArea
 } from 'recharts'
 
 interface Tournament {
@@ -157,16 +157,9 @@ export default function TournamentsPage() {
     }
     const financeBase = getFinanceBase();
 
-    // Potential revenue should be 0 if it's still at the default limit (100) and no one has registered, 
-    // indicating it hasn't been configured yet.
-    const calculatePotential = (t: any) => {
-        if (t.current_participants === 0 && t.participants_limit === 100) return 0;
-        return Number(t.price) * t.participants_limit;
-    }
-
-    const totalPotentialRevenue = financeBase.reduce((sum, t) => sum + calculatePotential(t), 0)
-    const currentRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * t.current_participants), 0)
-    const totalParticipants = financeBase.reduce((sum, t) => sum + t.current_participants, 0)
+    const totalPotentialRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * t.participants_limit), 0)
+    const currentRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * (regCounts[t.id]?.paid || 0)), 0)
+    const totalParticipants = financeBase.reduce((sum, t) => sum + (regCounts[t.id]?.total || 0), 0)
 
     // Advanced Finance Metrics for Selected Tournament
     const getFinanceMetrics = (tournamentId: string) => {
@@ -209,6 +202,9 @@ export default function TournamentsPage() {
 
         const currentRegs = regCounts[t.id] || { total: t.current_participants, paid: 0 }
 
+        const priceNum = Number(t.price) || 0
+        const limitNum = Number(t.participants_limit) || 0
+
         // Sumar costos fijos desde budget_items y campos legacy
         const fixedCosts = (t.budget_items?.filter((i: any) => i.type === 'fixed').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0) +
             Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
@@ -218,26 +214,32 @@ export default function TournamentsPage() {
             Number(t.budget_per_player || 0)
 
         const guests = t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0
+
         const totalVariableCosts = varPerPlayer * (currentRegs.total + guests)
         const totalCosts = fixedCosts + totalVariableCosts
-        const income = Number(t.price) * currentRegs.paid
+        const income = priceNum * currentRegs.paid
         const balance = income - totalCosts
 
-        const netPerPlayer = Number(t.price) - varPerPlayer
-        const breakEvenCount = netPerPlayer > 0 ? Math.ceil(fixedCosts / netPerPlayer) : 0
+        // El usuario define el "Punto de Equilibrio" como el total de "Gastos Meta" (costos a capacidad máxima)
+        const totalMaxCosts = fixedCosts + (varPerPlayer * (limitNum + guests))
+        const breakEvenRevenue = totalMaxCosts
+        const breakEvenCount = priceNum > 0 ? Math.ceil(breakEvenRevenue / priceNum) : 0
+        const netPerPlayer = priceNum - varPerPlayer
 
         return {
             fixedCosts,
             variableCosts: totalVariableCosts,
             guests,
             totalCosts,
+            totalMaxCosts,
             income,
             balance,
             breakEvenCount,
+            breakEvenRevenue,
             netPerPlayer,
             participants: currentRegs.total,
             paid: currentRegs.paid,
-            limit: t.participants_limit
+            limit: limitNum
         }
     }
 
@@ -246,7 +248,7 @@ export default function TournamentsPage() {
     const tourneyChartData = selectedFinanceTournament === 'Global'
         ? tournaments.slice(0, 7).map(t => ({
             name: t.name.length > 12 ? t.name.substring(0, 10) + '...' : t.name,
-            revenue: Number(t.price) * t.current_participants,
+            revenue: Number(t.price) * (regCounts[t.id]?.total || t.current_participants),
             target: 0 // No se muestra meta en global para no ensuciar
         }))
         : [
@@ -256,21 +258,23 @@ export default function TournamentsPage() {
                 target: metrics?.fixedCosts || 0
             },
             {
-                name: 'Actual',
+                name: 'Recaudado',
                 revenue: metrics?.income || 0,
-                target: (metrics?.fixedCosts || 0) + (metrics?.variableCosts || 0)
-            },
-            {
-                name: 'Equilibrio',
-                revenue: metrics?.totalCosts || 0,
                 target: metrics?.totalCosts || 0
             },
             {
+                name: 'Punto de equilibrio',
+                revenue: metrics?.breakEvenRevenue || 0,
+                target: metrics?.breakEvenRevenue || 0
+            },
+            {
                 name: 'Potencial',
-                revenue: totalPotentialRevenue,
-                target: (metrics?.fixedCosts || 0) + (Number(financeBase[0]?.budget_per_player || 0) * (metrics?.limit || 0))
+                revenue: (financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0),
+                target: metrics?.totalMaxCosts || 0
             }
         ];
+
+    const projectedGain = (financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0) - (metrics?.breakEvenRevenue || 0)
 
     const maxTourneyRev = Math.max(...tourneyChartData.map(d => Math.max(d.revenue, d.target)), 1)
     const chartTitle = selectedFinanceTournament === 'Global' ? 'Rendimiento por Torneo' : `Análisis: ${financeBase[0]?.name}`;
@@ -294,12 +298,32 @@ export default function TournamentsPage() {
                             </p>
                         </div>
                     ))}
-                    {payload.length > 1 && (
-                        <div className="mt-3 pt-3 border-t border-white/5">
+                    {/* Lógica de Ganancia según el punto */}
+                    {label === 'Recaudado' && (
+                        <div className="mt-2 pt-2 border-t border-white/5">
                             <p className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">
-                                Balance: <span className={payload[0].value - payload[1].value >= 0 ? 'text-primary' : 'text-red-500'}>
-                                    ${(payload[0].value - payload[1].value).toLocaleString()}
+                                Estado Actual: <span className={metrics?.balance && metrics.balance >= 0 ? 'text-primary' : 'text-red-500'}>
+                                    {metrics?.balance && metrics.balance >= 0 ? `Ganancia $${metrics.balance.toLocaleString()}` : `Déficit $${Math.abs(metrics?.balance || 0).toLocaleString()}`}
                                 </span>
+                            </p>
+                        </div>
+                    )}
+
+                    {label === 'Punto de equilibrio' && (
+                        <div className="mt-2 pt-2 border-t border-white/5">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-primary">
+                                Balance: $0 (Punto Critico)
+                            </p>
+                        </div>
+                    )}
+
+                    {label === 'Potencial' && (projectedGain > 0) && (
+                        <div className="mt-3 p-2 rounded-xl bg-[#3b82f6]/10 border border-[#3b82f6]/20">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-[#3b82f6] mb-1">
+                                Ganancia Proyectada
+                            </p>
+                            <p className="text-sm font-black text-[#3b82f6]">
+                                ${projectedGain.toLocaleString()}
                             </p>
                         </div>
                     )}
@@ -657,10 +681,6 @@ export default function TournamentsPage() {
                                                     <stop offset="5%" stopColor="#8cf902" stopOpacity={0.4} />
                                                     <stop offset="95%" stopColor="#8cf902" stopOpacity={0} />
                                                 </linearGradient>
-                                                <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                                </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                             <XAxis
@@ -679,19 +699,27 @@ export default function TournamentsPage() {
                                             />
                                             <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
 
-                                            {/* ÁREA DE GASTOS/META (AZUL) */}
-                                            <Area
-                                                type="monotone"
-                                                dataKey="target"
-                                                stroke="#3b82f6"
-                                                strokeWidth={2}
-                                                strokeDasharray="5 5"
-                                                fillOpacity={1}
-                                                fill="url(#colorTarget)"
-                                                animationDuration={1500}
-                                                dot={false}
-                                                activeDot={{ r: 4, fill: '#3b82f6' }}
-                                            />
+                                            {/* ÁREA DE GANANCIA (DASHED) */}
+                                            {selectedFinanceTournament !== 'Global' && (
+                                                <ReferenceArea
+                                                    x1="Punto de equilibrio"
+                                                    x2="Potencial"
+                                                    y1={metrics?.breakEvenRevenue}
+                                                    y2={(financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0)}
+                                                    fill="#3b82f6"
+                                                    fillOpacity={0.1}
+                                                    stroke="#3b82f6"
+                                                    strokeDasharray="4 4"
+                                                    label={{
+                                                        value: `GANANCIA: $${projectedGain.toLocaleString()}`,
+                                                        position: 'right',
+                                                        fill: '#3b82f6',
+                                                        fontSize: 9,
+                                                        fontWeight: 900,
+                                                        offset: 15
+                                                    }}
+                                                />
+                                            )}
 
                                             {/* ÁREA DE INGRESOS (VERDE) */}
                                             <Area
@@ -705,15 +733,6 @@ export default function TournamentsPage() {
                                                 dot={<CustomDot />}
                                                 activeDot={{ r: 6, strokeWidth: 0, fill: '#8cf902' }}
                                             />
-
-                                            {selectedFinanceTournament !== 'Global' && metrics?.totalCosts && (
-                                                <ReferenceLine
-                                                    y={metrics.totalCosts}
-                                                    stroke="#3b82f6"
-                                                    strokeDasharray="3 3"
-                                                    label={{ position: 'right', value: 'Umbral Costos', fill: '#3b82f6', fontSize: 8, fontWeight: 900 }}
-                                                />
-                                            )}
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -730,7 +749,7 @@ export default function TournamentsPage() {
                                     {/* Stats Grid from Image */}
                                     <div className="grid grid-cols-3 gap-2 mb-4">
                                         <div className="flex-1 apple-card p-3 flex flex-col items-center justify-center border border-white/5">
-                                            <p className="text-[14px] font-black text-white">{metrics?.participants || 0}</p>
+                                            <p className="text-[14px] font-black text-white">{(metrics?.participants || 0) + (metrics?.guests || 0)}</p>
                                             <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1">Total Jug.</p>
                                         </div>
                                         <div className="flex-1 apple-card p-3 flex flex-col items-center justify-center border border-white/5">
@@ -750,7 +769,7 @@ export default function TournamentsPage() {
                                                 <span className="text-[#86868b]">Pagos Recibidos:</span>
                                                 <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).limit}</span>
                                             </div>
-                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-px">
                                                 <div
                                                     className="h-full bg-linear-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-1000"
                                                     style={{ width: `${Math.round((((metrics as any).participants || 0) / ((metrics as any).limit || 1)) * 100)}%` }}
@@ -764,7 +783,7 @@ export default function TournamentsPage() {
                                                     <span className="text-[#86868b]">Punto de Equilibrio:</span>
                                                     <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).breakEvenCount}</span>
                                                 </div>
-                                                <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                                <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-px">
                                                     <div
                                                         className="h-full bg-linear-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
                                                         style={{ width: `${Math.min(Math.round(((metrics as any).participants) / ((metrics as any).breakEvenCount || 1) * 100), 100)}%` }}
