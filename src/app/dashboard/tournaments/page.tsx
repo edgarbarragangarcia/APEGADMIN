@@ -6,8 +6,13 @@ import {
     Trophy, Plus, Search, Filter, Calendar, MapPin,
     Users, ChevronLeft, ChevronRight, Eye, Settings,
     ArrowRight, Star, Clock, Share2, TrendingUp,
-    CheckCircle, XCircle, AlertCircle, User
+    CheckCircle, XCircle, AlertCircle, User,
+    DollarSign, TrendingDown, Target, Wallet, Receipt
 } from 'lucide-react'
+import {
+    AreaChart, Area, BarChart, Bar, XAxis, YAxis,
+    CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell
+} from 'recharts'
 
 interface Tournament {
     id: string
@@ -28,6 +33,7 @@ interface Tournament {
     budget_per_player?: number
     budget_prizes?: number
     budget_operational?: number
+    guests?: string
 }
 
 export default function TournamentsPage() {
@@ -38,31 +44,65 @@ export default function TournamentsPage() {
     const [activeTab, setActiveTab] = useState<'list' | 'finance' | 'requests'>('list')
     const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+    const [selectedFinanceTournament, setSelectedFinanceTournament] = useState<string>('Global')
     const supabase = createClient()
 
-    const fetchTournaments = useCallback(async () => {
-        setLoading(true)
+    const fetchTournaments = useCallback(async (silent = false) => {
+        if (!silent) setLoading(true)
         const { data } = await supabase.rpc('get_all_tournaments')
         if (data) setTournaments(data)
-        setLoading(false)
+        if (!silent) setLoading(false)
     }, [supabase])
 
     useEffect(() => {
         fetchTournaments()
-    }, [fetchTournaments])
+
+        // Suscripción en tiempo real para mantener sincronía
+        const channel = supabase
+            .channel('tournaments_changes')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'tournaments' },
+                () => fetchTournaments(true)
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [fetchTournaments, supabase])
 
     const handleUpdateStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
         setActionLoading(id)
         const { error } = await supabase
             .from('tournaments')
-            .update({ approval_status: newStatus })
+            .update({
+                approval_status: newStatus,
+                // Si se aprueba, nos aseguramos que el status sea correcto
+                ...(newStatus === 'approved' ? { status: 'Abierto' } : {})
+            })
             .eq('id', id)
 
         if (error) {
             console.error('Error updating tournament status:', error)
             alert('Error al actualizar el estado: ' + error.message)
         } else {
-            await fetchTournaments()
+            // Actualización local inmediata para mejor UX
+            setTournaments(prev => prev.map(t =>
+                t.id === id ? { ...t, approval_status: newStatus, status: newStatus === 'approved' ? 'Abierto' : t.status } : t
+            ))
+
+            // Si el modal está abierto con el torneo actualizado, lo actualizamos o cerramos
+            if (selectedTournament?.id === id) {
+                if (newStatus === 'approved' || newStatus === 'rejected') {
+                    setIsDetailsModalOpen(false)
+                    setSelectedTournament(null)
+                } else {
+                    setSelectedTournament(prev => prev ? { ...prev, approval_status: newStatus } : null)
+                }
+            }
+
+            // Refrescar datos del servidor para asegurar sincronía final
+            await fetchTournaments(true)
         }
         setActionLoading(null)
     }
@@ -92,6 +132,93 @@ export default function TournamentsPage() {
     }))
 
     const maxTourneyRev = Math.max(...tourneyChartData.map(d => d.revenue), 1)
+
+    // Advanced Finance Metrics for Selected Tournament
+    const getFinanceMetrics = (tournamentId: string) => {
+        if (tournamentId === 'Global') {
+            const totalFixedCosts = tournaments.reduce((sum, t) => sum + (Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)), 0)
+            const totalVariableCosts = tournaments.reduce((sum, t) => sum + (Number(t.budget_per_player || 0) * t.current_participants), 0)
+            const totalGuests = tournaments.reduce((sum, t) => sum + (t.guests ? t.guests.split('\n').filter(g => g.trim()).length : 0), 0)
+            const totalCosts = totalFixedCosts + totalVariableCosts
+            const balance = currentRevenue - totalCosts
+
+            return {
+                totalFixedCosts,
+                totalVariableCosts,
+                totalGuests,
+                totalCosts,
+                balance,
+                breakEvenPercent: totalCosts > 0 ? Math.min(Math.round((currentRevenue / totalCosts) * 100), 100) : 0,
+                breakEvenPlayers: 0,
+                participants: totalParticipants,
+                guests: totalGuests,
+                limit: tournaments.reduce((sum, t) => sum + t.participants_limit, 0)
+            }
+        }
+
+        const t = tournaments.find(tourney => tourney.id === tournamentId)
+        if (!t) return null
+
+        const fixedCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
+        const variableCosts = Number(t.budget_per_player || 0) * t.current_participants
+        const guests = t.guests ? t.guests.split('\n').filter(g => g.trim()).length : 0
+        const totalCosts = fixedCosts + (Number(t.budget_per_player || 0) * (t.current_participants + guests))
+        const income = Number(t.price) * t.current_participants
+        const balance = income - totalCosts
+        const netPerPlayer = Number(t.price) - Number(t.budget_per_player || 0)
+        const breakEvenCount = netPerPlayer > 0 ? Math.ceil(fixedCosts / netPerPlayer) : 0
+
+        return {
+            fixedCosts,
+            variableCosts,
+            guests,
+            totalCosts,
+            income,
+            balance,
+            breakEvenCount,
+            netPerPlayer,
+            participants: t.current_participants,
+            limit: t.participants_limit
+        }
+    }
+
+    const metrics = getFinanceMetrics(selectedFinanceTournament)
+
+    const CustomTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-[#1d1d1f] border border-white/10 p-4 rounded-2xl shadow-xl backdrop-blur-md z-50">
+                    <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">{label}</p>
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center gap-3 mb-1">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                            <p className="text-xs font-bold text-white uppercase tracking-tight">
+                                {entry.name === 'revenue' ? 'Ingresos' : 'Meta'}:
+                                <span className="ml-2 text-primary">
+                                    ${entry.value.toLocaleString()}
+                                </span>
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            )
+        }
+    }
+
+    const CustomDot = (props: any) => {
+        const { cx, cy } = props
+        if (!cx || !cy) return null
+        return (
+            <circle
+                cx={cx}
+                cy={cy}
+                r={4}
+                fill="#8cf902"
+                stroke="#1d1d1f"
+                strokeWidth={2}
+            />
+        )
+    }
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
@@ -323,51 +450,236 @@ export default function TournamentsPage() {
                         </div>
                     </div>
                 ) : (
-                    /* FINANCE DASHBOARD */
+                    /* FINANCE DASHBOARD - PREMIUM VERSION */
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden overflow-y-auto no-scrollbar pb-10">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 shrink-0 font-bold tracking-tight">
-                            <div className="apple-card p-6 border-l-4 border-l-primary border-white/10">
-                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Recaudación Actual</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-foreground">${currentRevenue.toLocaleString()}</h3>
-                                <p className="text-[10px] text-primary mt-2 font-bold flex items-center gap-1">
-                                    <TrendingUp className="w-3.5 h-3.5" /> Ingresos confirmados
-                                </p>
+
+                        {/* SELECTOR DE TORNEO PARA FINANZAS */}
+                        <div className="flex items-center justify-between shrink-0 mb-2">
+                            <div className="flex gap-1 bg-black/5 p-1 rounded-xl border border-black/5">
+                                <button
+                                    onClick={() => setSelectedFinanceTournament('Global')}
+                                    className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${selectedFinanceTournament === 'Global' ? 'bg-primary text-white' : 'text-[#86868b] hover:text-foreground'}`}
+                                >
+                                    Global
+                                </button>
+                                {tournaments.slice(0, 3).map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setSelectedFinanceTournament(t.id)}
+                                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all truncate max-w-[120px] ${selectedFinanceTournament === t.id ? 'bg-primary text-white' : 'text-[#86868b] hover:text-foreground'}`}
+                                    >
+                                        {t.name}
+                                    </button>
+                                ))}
                             </div>
-                            <div className="apple-card p-6 border-white/10">
-                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Potencial Proyectado</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
-                                <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">Basado en cupos totales</p>
-                            </div>
-                            <div className="apple-card p-6 sm:col-span-2 lg:col-span-1 border-white/10">
-                                <p className="text-[10px] md:text-[11px] font-black text-[#86868b] uppercase tracking-widest mb-1">Total Jugadores</p>
-                                <h3 className="text-2xl md:text-3xl font-black text-foreground">{totalParticipants}</h3>
-                                <p className="text-[10px] text-[#5c5c5e] mt-2 font-bold uppercase tracking-tight">En {tournaments.length} torneos</p>
-                            </div>
+                            <p className="text-[10px] font-black text-[#5c5c5e] uppercase tracking-widest hidden sm:block">Filtro de Análisis Financiero</p>
                         </div>
 
-                        <div className="flex-1 apple-card p-5 md:p-8 flex flex-col overflow-hidden min-h-[400px] border-white/10">
-                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8 text-center sm:text-left">
+                        {/* STATS HIGHLIGHTS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
+                            <div className="apple-card p-6 flex flex-col justify-between border-l-4 border-l-primary relative overflow-hidden group">
+                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <DollarSign size={120} />
+                                </div>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Ingresos Totales</p>
                                 <div>
-                                    <h3 className="text-base md:text-lg font-black text-foreground uppercase tracking-tight">Ingresos por Torneo</h3>
-                                    <p className="text-[9px] md:text-xs text-[#5c5c5e] font-bold uppercase tracking-tight">Rendimiento financiero por evento</p>
+                                    <h3 className="text-2xl md:text-3xl font-black text-foreground">${currentRevenue.toLocaleString()}</h3>
+                                    <div className="flex items-center gap-1.5 mt-2 text-primary">
+                                        <TrendingUp className="w-3.5 h-3.5" />
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">Confirmado</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex-1 flex items-end gap-4 md:gap-10 px-2 md:px-6 pb-4 overflow-x-auto no-scrollbar">
-                                {tourneyChartData.map((d, i) => (
-                                    <div key={i} className="min-w-[60px] md:min-w-[80px] flex-1 flex flex-col items-center gap-4 h-full justify-end group">
-                                        <div className="w-full relative flex-1 flex flex-col justify-end">
-                                            <div
-                                                className="w-full bg-linear-to-t from-primary/40 to-primary transition-all duration-300 rounded-t-lg md:rounded-t-xl group-hover:scale-x-105"
-                                                style={{ height: `${(d.revenue / maxTourneyRev) * 100}%`, minHeight: '8px' }}
-                                            />
-                                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl">
-                                                ${d.revenue.toLocaleString()}
-                                            </div>
-                                        </div>
-                                        <span className="text-[8px] md:text-[9px] font-black text-[#5c5c5e] uppercase text-center max-w-[80px] line-clamp-2 tracking-tighter leading-tight">{d.name}</span>
+                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <TrendingDown size={120} />
+                                </div>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Gastos Operativos</p>
+                                <div>
+                                    <h3 className="text-2xl md:text-3xl font-black text-foreground">${metrics?.totalCosts.toLocaleString()}</h3>
+                                    <div className="flex items-center gap-1.5 mt-2 text-red-500">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                        <span className="text-[10px] font-bold uppercase tracking-tight flex items-center gap-1">Proyectado {(metrics as any)?.balance < 0 ? 'Déficit' : 'Controlado'}</span>
                                     </div>
-                                ))}
+                                </div>
+                            </div>
+
+                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <Target size={120} />
+                                </div>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Potencial Total</p>
+                                <div>
+                                    <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
+                                    <div className="flex items-center gap-1.5 mt-2 text-[#5c5c5e]">
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">Capacidad Máxima</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <Users size={120} />
+                                </div>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Jugadores Activos</p>
+                                <div>
+                                    <h3 className="text-2xl md:text-3xl font-black text-foreground">{totalParticipants + (metrics?.totalGuests || 0)}</h3>
+                                    <div className="flex items-center gap-1.5 mt-2 text-[#5c5c5e]">
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">{totalParticipants} Pago + {(metrics as any).guests || (metrics as any).totalGuests} Invitados</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* MAIN FINANCIAL CHART */}
+                            <div className="lg:col-span-2 apple-card p-8 flex flex-col min-h-[450px]">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div>
+                                        <h3 className="text-base font-black text-foreground uppercase tracking-tight">Rendimiento Financiero</h3>
+                                        <p className="text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest">Ingresos confirmados por torneo</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                        <span className="text-[9px] font-black text-primary uppercase tracking-widest">Live Updates</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={tourneyChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                                            <defs>
+                                                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#8cf902" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#8cf902" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                            <XAxis
+                                                dataKey="name"
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                dy={10}
+                                            />
+                                            <YAxis
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
+                                                tickFormatter={(value) => `$${value / 1000}k`}
+                                            />
+                                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#8cf902', strokeWidth: 1 }} />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="revenue"
+                                                stroke="#8cf902"
+                                                strokeWidth={4}
+                                                fillOpacity={1}
+                                                fill="url(#colorRevenue)"
+                                                animationDuration={1500}
+                                                dot={<CustomDot />}
+                                                activeDot={{ r: 6, strokeWidth: 0, fill: '#8cf902' }}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                            {/* ACCOUNTING SUMMARY (AS REQUESTED) */}
+                            <div className="flex flex-col gap-6">
+                                <div className="apple-card p-6 flex flex-col border-white/10 shadow-xl relative overflow-hidden bg-linear-to-br from-white/5 to-transparent">
+                                    <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-3">
+                                        <Receipt className="w-4 h-4 text-primary" />
+                                        <h3 className="text-xs font-black text-foreground uppercase tracking-widest">Resumen Contable</h3>
+                                    </div>
+
+                                    {/* Stats Grid from Image */}
+                                    <div className="grid grid-cols-3 gap-3 mb-8">
+                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[18px] font-black text-foreground leading-none">{(metrics as any).participants + (metrics as any).guests}</p>
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Total Jug.</p>
+                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">{(metrics as any).participants} insc. + {(metrics as any).guests} inv.</p>
+                                        </div>
+                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[18px] font-black text-primary leading-none">{(metrics as any).participants}</p>
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Pagados</p>
+                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">de {(metrics as any).limit} cupos</p>
+                                        </div>
+                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[18px] font-black text-amber-500 leading-none">{(metrics as any).guests}</p>
+                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Invitados</p>
+                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">sin costo</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Progress Bars (Pagos Recibidos) */}
+                                    <div className="space-y-6">
+                                        <div>
+                                            <div className="flex justify-between text-[10px] font-black uppercase tracking-tight mb-2">
+                                                <span className="text-[#86868b]">Pagos Recibidos:</span>
+                                                <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).limit} jugadores</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                                <div
+                                                    className="h-full bg-linear-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-1000"
+                                                    style={{ width: `${Math.round(((metrics as any).participants || totalParticipants) / ((metrics as any).limit || 1) * 100)}%` }}
+                                                />
+                                            </div>
+                                            <p className="text-[9px] text-amber-500 font-bold uppercase tracking-widest mt-2 flex items-center gap-1.5">
+                                                <Clock className="w-3 h-3" /> Faltan {((metrics as any).limit || 0) - ((metrics as any).participants || 0)} pagos por recibir
+                                            </p>
+                                        </div>
+
+                                        {selectedFinanceTournament !== 'Global' && (
+                                            <div>
+                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-tight mb-2">
+                                                    <span className="text-[#86868b]">Punto de Equilibrio:</span>
+                                                    <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).breakEvenCount} Pagos</span>
+                                                </div>
+                                                <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                                    <div
+                                                        className="h-full bg-linear-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
+                                                        style={{ width: `${Math.min(Math.round(((metrics as any).participants) / ((metrics as any).breakEvenCount || 1) * 100), 100)}%` }}
+                                                    />
+                                                </div>
+                                                <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                                                    <p className="text-[10px] text-[#86868b] leading-relaxed">
+                                                        Faltan <span className="text-blue-400 font-black">{Math.max(0, (metrics as any).breakEvenCount - (metrics as any).participants)}</span> pagos para cubrir los gastos del torneo completo ({(metrics as any).limit} cupos + {(metrics as any).guests} invitados).
+                                                    </p>
+                                                    <p className="text-[10px] text-primary font-bold mt-2 flex items-center gap-1.5">
+                                                        <Star className="w-3 h-3" /> Cada pago aporta ${(metrics as any).netPerPlayer.toLocaleString()} netos.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className={`p-4 rounded-2xl border transition-all ${(metrics as any).balance >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest">Balance Real:</p>
+                                                <p className={`text-xl font-black ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                                                    ${(metrics as any).balance.toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <p className={`text-[9px] font-black uppercase tracking-widest text-right ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                                                {(metrics as any).balance >= 0 ? '✓ Superávit Actual' : '✗ Déficit / Pendiente'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="apple-card p-6 flex items-center justify-between border-white/10 shadow-sm bg-linear-to-r from-primary/10 via-transparent to-transparent">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                                            <Wallet className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-widest leading-none mb-1">Costo Total Estimado</p>
+                                            <h4 className="text-lg font-black text-foreground leading-tight">${metrics?.totalCosts.toLocaleString()}</h4>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-[#5c5c5e]" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -381,7 +693,7 @@ export default function TournamentsPage() {
                     <div className="apple-card w-full max-w-2xl max-h-[90vh] border-white/10 p-0 relative overflow-hidden shadow-2xl flex flex-col z-50">
                         {/* Modal Header Image */}
                         <div className="h-48 w-full relative shrink-0">
-                            {selectedTournament.image_url ? (
+                            {selectedTournament?.image_url ? (
                                 <img src={selectedTournament.image_url} alt="" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full bg-linear-to-br from-primary/20 to-primary/40 flex items-center justify-center">
@@ -396,13 +708,13 @@ export default function TournamentsPage() {
                                 <XCircle className="w-5 h-5" />
                             </button>
                             <div className="absolute bottom-6 left-8 right-8">
-                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-lg border mb-2 w-fit tracking-widest inline-block ${selectedTournament.approval_status === 'pending'
+                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-lg border mb-2 w-fit tracking-widest inline-block ${selectedTournament?.approval_status === 'pending'
                                     ? 'bg-amber-500/20 text-amber-500 border-amber-500/20'
                                     : 'bg-primary/20 text-primary border-primary/20'
                                     }`}>
-                                    {selectedTournament.status || (selectedTournament.approval_status === 'pending' ? 'PROPUESTA' : 'ACTIVO')}
+                                    {selectedTournament?.status || (selectedTournament?.approval_status === 'pending' ? 'PROPUESTA' : 'ACTIVO')}
                                 </span>
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">{selectedTournament.name}</h3>
+                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">{selectedTournament?.name}</h3>
                             </div>
                         </div>
 
@@ -412,7 +724,7 @@ export default function TournamentsPage() {
                                     <div>
                                         <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Descripción General</h4>
                                         <p className="text-xs text-[#5c5c5e] font-medium leading-relaxed">
-                                            {selectedTournament.description || 'Sin descripción proporcionada.'}
+                                            {selectedTournament?.description || 'Sin descripción proporcionada.'}
                                         </p>
                                     </div>
 
@@ -443,14 +755,14 @@ export default function TournamentsPage() {
                                         <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-[10px] font-black text-foreground uppercase tracking-tight">Cupo de Jugadores</span>
-                                                <span className="text-[10px] font-black text-primary uppercase">{selectedTournament.current_participants}/{selectedTournament.participants_limit}</span>
+                                                <span className="text-[10px] font-black text-primary uppercase">{selectedTournament?.current_participants}/{selectedTournament?.participants_limit}</span>
                                             </div>
                                             <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden mb-4">
-                                                <div className="h-full bg-primary" style={{ width: `${(selectedTournament.current_participants / (selectedTournament.participants_limit || 1)) * 100}%` }} />
+                                                <div className="h-full bg-primary" style={{ width: `${((selectedTournament?.current_participants || 0) / (selectedTournament?.participants_limit || 1)) * 100}%` }} />
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Users className="w-3.5 h-3.5 text-[#5c5c5e]" />
-                                                <span className="text-[10px] font-bold text-[#5c5c5e] uppercase tracking-widest">Modo de Juego: {selectedTournament.game_mode || 'Stroke Play'}</span>
+                                                <span className="text-[10px] font-bold text-[#5c5c5e] uppercase tracking-widest">Modo de Juego: {selectedTournament?.game_mode || 'Stroke Play'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -459,54 +771,54 @@ export default function TournamentsPage() {
                                         <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Información del Organizador</h4>
                                         <div className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/5">
                                             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                                                {selectedTournament.creator_avatar_url ? (
+                                                {selectedTournament?.creator_avatar_url ? (
                                                     <img src={selectedTournament.creator_avatar_url} alt="" className="w-full h-full rounded-xl object-cover" />
                                                 ) : (
                                                     <User className="w-5 h-5 text-primary" />
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="text-xs font-black text-foreground uppercase tracking-tight leading-none">{selectedTournament.creator_full_name || 'Organizador'}</p>
+                                                <p className="text-xs font-black text-foreground uppercase tracking-tight leading-none">{selectedTournament?.creator_full_name || 'Organizador'}</p>
                                                 <p className="text-[9px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Organizador Autorizado</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {(selectedTournament.budget_per_player || selectedTournament.budget_prizes) && (
+                                    {selectedTournament?.budget_per_player || selectedTournament?.budget_prizes ? (
                                         <div>
                                             <h4 className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">Presupuesto Estimado</h4>
                                             <div className="space-y-2">
                                                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2 border-b border-white/5">
                                                     <span className="text-[#5c5c5e]">Por Jugador</span>
-                                                    <span className="text-foreground">${Number(selectedTournament.budget_per_player || 0).toLocaleString()}</span>
+                                                    <span className="text-foreground">${Number(selectedTournament?.budget_per_player || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2 border-b border-white/5">
                                                     <span className="text-[#5c5c5e]">Premios</span>
-                                                    <span className="text-foreground">${Number(selectedTournament.budget_prizes || 0).toLocaleString()}</span>
+                                                    <span className="text-foreground">${Number(selectedTournament?.budget_prizes || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest p-2">
                                                     <span className="text-[#5c5c5e]">Operacional</span>
-                                                    <span className="text-foreground">${Number(selectedTournament.budget_operational || 0).toLocaleString()}</span>
+                                                    <span className="text-foreground">${Number(selectedTournament?.budget_operational || 0).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
 
-                        {selectedTournament.approval_status === 'pending' && (
+                        {selectedTournament?.approval_status === 'pending' && (
                             <div className="p-6 bg-black/20 border-t border-white/10 flex gap-4 shrink-0">
                                 <button
                                     disabled={actionLoading === selectedTournament.id}
-                                    onClick={() => handleUpdateStatus(selectedTournament.id, 'rejected')}
+                                    onClick={() => handleUpdateStatus(selectedTournament!.id, 'rejected')}
                                     className="flex-1 h-12 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[11px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
                                 >
                                     Rechazar Propuesta
                                 </button>
                                 <button
                                     disabled={actionLoading === selectedTournament.id}
-                                    onClick={() => handleUpdateStatus(selectedTournament.id, 'approved')}
+                                    onClick={() => handleUpdateStatus(selectedTournament!.id, 'approved')}
                                     className="flex-1 h-12 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group/btn"
                                 >
                                     Aprobar y Publicar
