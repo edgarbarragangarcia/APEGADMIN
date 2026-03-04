@@ -11,7 +11,8 @@ import {
 } from 'lucide-react'
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis,
-    CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell
+    CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell,
+    ReferenceLine
 } from 'recharts'
 
 interface Tournament {
@@ -122,16 +123,22 @@ export default function TournamentsPage() {
     const pendingRequests = tournaments.filter(t => t.approval_status === 'pending')
 
     // Finance Calculations
-    const totalPotentialRevenue = tournaments.reduce((sum, t) => sum + (Number(t.price) * t.participants_limit), 0)
-    const currentRevenue = tournaments.reduce((sum, t) => sum + (Number(t.price) * t.current_participants), 0)
-    const totalParticipants = tournaments.reduce((sum, t) => sum + t.current_participants, 0)
+    const getFinanceBase = () => {
+        if (selectedFinanceTournament === 'Global') return tournaments;
+        return tournaments.filter(t => t.id === selectedFinanceTournament);
+    }
+    const financeBase = getFinanceBase();
 
-    const tourneyChartData = tournaments.slice(0, 7).map(t => ({
-        name: t.name.substring(0, 10),
-        revenue: Number(t.price) * t.current_participants
-    }))
+    // Potential revenue should be 0 if it's still at the default limit (100) and no one has registered, 
+    // indicating it hasn't been configured yet.
+    const calculatePotential = (t: any) => {
+        if (t.current_participants === 0 && t.participants_limit === 100) return 0;
+        return Number(t.price) * t.participants_limit;
+    }
 
-    const maxTourneyRev = Math.max(...tourneyChartData.map(d => d.revenue), 1)
+    const totalPotentialRevenue = financeBase.reduce((sum, t) => sum + calculatePotential(t), 0)
+    const currentRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * t.current_participants), 0)
+    const totalParticipants = financeBase.reduce((sum, t) => sum + t.current_participants, 0)
 
     // Advanced Finance Metrics for Selected Tournament
     const getFinanceMetrics = (tournamentId: string) => {
@@ -184,22 +191,66 @@ export default function TournamentsPage() {
 
     const metrics = getFinanceMetrics(selectedFinanceTournament)
 
+    const tourneyChartData = selectedFinanceTournament === 'Global'
+        ? tournaments.slice(0, 7).map(t => ({
+            name: t.name.length > 12 ? t.name.substring(0, 10) + '...' : t.name,
+            revenue: Number(t.price) * t.current_participants,
+            target: 0 // No se muestra meta en global para no ensuciar
+        }))
+        : [
+            {
+                name: 'Inicio',
+                revenue: 0,
+                target: metrics?.fixedCosts || 0
+            },
+            {
+                name: 'Actual',
+                revenue: metrics?.income || 0,
+                target: (metrics?.fixedCosts || 0) + (metrics?.variableCosts || 0)
+            },
+            {
+                name: 'Equilibrio',
+                revenue: metrics?.totalCosts || 0,
+                target: metrics?.totalCosts || 0
+            },
+            {
+                name: 'Potencial',
+                revenue: totalPotentialRevenue,
+                target: (metrics?.fixedCosts || 0) + (Number(financeBase[0]?.budget_per_player || 0) * (metrics?.limit || 0))
+            }
+        ];
+
+    const maxTourneyRev = Math.max(...tourneyChartData.map(d => Math.max(d.revenue, d.target)), 1)
+    const chartTitle = selectedFinanceTournament === 'Global' ? 'Rendimiento por Torneo' : `Análisis: ${financeBase[0]?.name}`;
+    const chartSubtitle = selectedFinanceTournament === 'Global' ? 'Ingresos confirmados de la plataforma' : 'Intersección de Ingresos vs Punto de Equilibrio (Gastos)';
+
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-[#1d1d1f] border border-white/10 p-4 rounded-2xl shadow-xl backdrop-blur-md z-50">
-                    <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">{label}</p>
+                    <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-3">{label}</p>
                     {payload.map((entry: any, index: number) => (
-                        <div key={index} className="flex items-center gap-3 mb-1">
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                            <p className="text-xs font-bold text-white uppercase tracking-tight">
-                                {entry.name === 'revenue' ? 'Ingresos' : 'Meta'}:
-                                <span className="ml-2 text-primary">
-                                    ${entry.value.toLocaleString()}
-                                </span>
+                        <div key={index} className="flex items-center justify-between gap-6 mb-2 last:mb-0">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <p className="text-[10px] font-bold text-white uppercase tracking-tight">
+                                    {entry.name === 'revenue' ? 'Ingresos' : 'Gastos/Meta'}
+                                </p>
+                            </div>
+                            <p className="text-[10px] font-black" style={{ color: entry.color }}>
+                                ${entry.value.toLocaleString()}
                             </p>
                         </div>
                     ))}
+                    {payload.length > 1 && (
+                        <div className="mt-3 pt-3 border-t border-white/5">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">
+                                Balance: <span className={payload[0].value - payload[1].value >= 0 ? 'text-primary' : 'text-red-500'}>
+                                    ${(payload[0].value - payload[1].value).toLocaleString()}
+                                </span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             )
         }
@@ -477,55 +528,55 @@ export default function TournamentsPage() {
 
                         {/* STATS HIGHLIGHTS */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
-                            <div className="apple-card p-6 flex flex-col justify-between border-l-4 border-l-primary relative overflow-hidden group">
-                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                    <DollarSign size={120} />
+                            <div className="apple-card p-4 flex flex-col justify-between border-l-4 border-l-primary relative overflow-hidden group">
+                                <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <DollarSign size={80} />
                                 </div>
-                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Ingresos Totales</p>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">Ingresos Totales</p>
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">${currentRevenue.toLocaleString()}</h3>
-                                    <div className="flex items-center gap-1.5 mt-2 text-primary">
-                                        <TrendingUp className="w-3.5 h-3.5" />
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-primary">
+                                        <TrendingUp className="w-3 h-3" />
                                         <span className="text-[10px] font-bold uppercase tracking-tight">Confirmado</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
-                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                    <TrendingDown size={120} />
+                            <div className="apple-card p-4 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <TrendingDown size={80} />
                                 </div>
-                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Gastos Operativos</p>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">Gastos Operativos</p>
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">${metrics?.totalCosts.toLocaleString()}</h3>
-                                    <div className="flex items-center gap-1.5 mt-2 text-red-500">
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-red-500">
                                         <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
                                         <span className="text-[10px] font-bold uppercase tracking-tight flex items-center gap-1">Proyectado {(metrics as any)?.balance < 0 ? 'Déficit' : 'Controlado'}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
-                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                    <Target size={120} />
+                            <div className="apple-card p-4 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <Target size={80} />
                                 </div>
-                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Potencial Total</p>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">Potencial Total</p>
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
-                                    <div className="flex items-center gap-1.5 mt-2 text-[#5c5c5e]">
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-[#5c5c5e]">
                                         <span className="text-[10px] font-bold uppercase tracking-tight">Capacidad Máxima</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="apple-card p-6 flex flex-col justify-between border-white/10 relative overflow-hidden group">
-                                <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                    <Users size={120} />
+                            <div className="apple-card p-4 flex flex-col justify-between border-white/10 relative overflow-hidden group">
+                                <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                    <Users size={80} />
                                 </div>
-                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-4">Jugadores Activos</p>
+                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">Jugadores Activos</p>
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">{totalParticipants + (metrics?.totalGuests || 0)}</h3>
-                                    <div className="flex items-center gap-1.5 mt-2 text-[#5c5c5e]">
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-[#5c5c5e]">
                                         <span className="text-[10px] font-bold uppercase tracking-tight">{totalParticipants} Pago + {(metrics as any).guests || (metrics as any).totalGuests} Invitados</span>
                                     </div>
                                 </div>
@@ -534,11 +585,11 @@ export default function TournamentsPage() {
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {/* MAIN FINANCIAL CHART */}
-                            <div className="lg:col-span-2 apple-card p-8 flex flex-col min-h-[450px]">
-                                <div className="flex items-center justify-between mb-8">
+                            <div className="lg:col-span-2 apple-card p-4 flex flex-col min-h-[320px]">
+                                <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <h3 className="text-base font-black text-foreground uppercase tracking-tight">Rendimiento Financiero</h3>
-                                        <p className="text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest">Ingresos confirmados por torneo</p>
+                                        <h3 className="text-base font-black text-foreground uppercase tracking-tight">{chartTitle}</h3>
+                                        <p className="text-[10px] text-[#5c5c5e] font-bold uppercase tracking-widest">{chartSubtitle}</p>
                                     </div>
                                     <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -551,8 +602,12 @@ export default function TournamentsPage() {
                                         <AreaChart data={tourneyChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                                             <defs>
                                                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#8cf902" stopOpacity={0.3} />
+                                                    <stop offset="5%" stopColor="#8cf902" stopOpacity={0.4} />
                                                     <stop offset="95%" stopColor="#8cf902" stopOpacity={0} />
+                                                </linearGradient>
+                                                <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -568,8 +623,25 @@ export default function TournamentsPage() {
                                                 tickLine={false}
                                                 tick={{ fill: '#86868b', fontSize: 9, fontWeight: 900 }}
                                                 tickFormatter={(value) => `$${value / 1000}k`}
+                                                domain={[0, maxTourneyRev * 1.1]}
                                             />
-                                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#8cf902', strokeWidth: 1 }} />
+                                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+
+                                            {/* ÁREA DE GASTOS/META (AZUL) */}
+                                            <Area
+                                                type="monotone"
+                                                dataKey="target"
+                                                stroke="#3b82f6"
+                                                strokeWidth={2}
+                                                strokeDasharray="5 5"
+                                                fillOpacity={1}
+                                                fill="url(#colorTarget)"
+                                                animationDuration={1500}
+                                                dot={false}
+                                                activeDot={{ r: 4, fill: '#3b82f6' }}
+                                            />
+
+                                            {/* ÁREA DE INGRESOS (VERDE) */}
                                             <Area
                                                 type="monotone"
                                                 dataKey="revenue"
@@ -581,104 +653,96 @@ export default function TournamentsPage() {
                                                 dot={<CustomDot />}
                                                 activeDot={{ r: 6, strokeWidth: 0, fill: '#8cf902' }}
                                             />
+
+                                            {selectedFinanceTournament !== 'Global' && metrics?.totalCosts && (
+                                                <ReferenceLine
+                                                    y={metrics.totalCosts}
+                                                    stroke="#3b82f6"
+                                                    strokeDasharray="3 3"
+                                                    label={{ position: 'right', value: 'Umbral Costos', fill: '#3b82f6', fontSize: 8, fontWeight: 900 }}
+                                                />
+                                            )}
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
 
                             {/* ACCOUNTING SUMMARY (AS REQUESTED) */}
-                            <div className="flex flex-col gap-6">
-                                <div className="apple-card p-6 flex flex-col border-white/10 shadow-xl relative overflow-hidden bg-linear-to-br from-white/5 to-transparent">
-                                    <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-3">
+                            <div className="flex flex-col gap-4">
+                                <div className="apple-card p-4 flex flex-col border-white/10 shadow-xl relative overflow-hidden bg-linear-to-br from-white/5 to-transparent">
+                                    <div className="flex items-center gap-2 mb-4 border-b border-white/5 pb-2">
                                         <Receipt className="w-4 h-4 text-primary" />
                                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest">Resumen Contable</h3>
                                     </div>
 
                                     {/* Stats Grid from Image */}
-                                    <div className="grid grid-cols-3 gap-3 mb-8">
-                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[18px] font-black text-foreground leading-none">{(metrics as any).participants + (metrics as any).guests}</p>
-                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Total Jug.</p>
-                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">{(metrics as any).participants} insc. + {(metrics as any).guests} inv.</p>
+                                    <div className="grid grid-cols-3 gap-2 mb-4">
+                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[16px] font-black text-foreground leading-none">{(metrics as any).participants + (metrics as any).guests}</p>
+                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Total Jug.</p>
                                         </div>
-                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[18px] font-black text-primary leading-none">{(metrics as any).participants}</p>
-                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Pagados</p>
-                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">de {(metrics as any).limit} cupos</p>
+                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[16px] font-black text-primary leading-none">{(metrics as any).participants}</p>
+                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Pagados</p>
                                         </div>
-                                        <div className="bg-white/5 p-3 rounded-2xl border border-white/5 flex flex-col items-center">
-                                            <p className="text-[18px] font-black text-amber-500 leading-none">{(metrics as any).guests}</p>
-                                            <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Invitados</p>
-                                            <p className="text-[7px] text-[#5c5c5e] mt-1 font-bold">sin costo</p>
+                                        <div className="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                                            <p className="text-[16px] font-black text-amber-500 leading-none">{(metrics as any).guests}</p>
+                                            <p className="text-[7px] font-black text-[#86868b] uppercase tracking-widest mt-1 text-center">Invitados</p>
                                         </div>
                                     </div>
 
                                     {/* Progress Bars (Pagos Recibidos) */}
-                                    <div className="space-y-6">
+                                    <div className="space-y-4">
                                         <div>
-                                            <div className="flex justify-between text-[10px] font-black uppercase tracking-tight mb-2">
+                                            <div className="flex justify-between text-[9px] font-black uppercase tracking-tight mb-1">
                                                 <span className="text-[#86868b]">Pagos Recibidos:</span>
-                                                <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).limit} jugadores</span>
+                                                <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).limit}</span>
                                             </div>
-                                            <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
                                                 <div
                                                     className="h-full bg-linear-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-1000"
-                                                    style={{ width: `${Math.round(((metrics as any).participants || totalParticipants) / ((metrics as any).limit || 1) * 100)}%` }}
+                                                    style={{ width: `${Math.round((((metrics as any).participants || 0) / ((metrics as any).limit || 1)) * 100)}%` }}
                                                 />
                                             </div>
-                                            <p className="text-[9px] text-amber-500 font-bold uppercase tracking-widest mt-2 flex items-center gap-1.5">
-                                                <Clock className="w-3 h-3" /> Faltan {((metrics as any).limit || 0) - ((metrics as any).participants || 0)} pagos por recibir
-                                            </p>
                                         </div>
 
                                         {selectedFinanceTournament !== 'Global' && (
                                             <div>
-                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-tight mb-2">
+                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-tight mb-1">
                                                     <span className="text-[#86868b]">Punto de Equilibrio:</span>
-                                                    <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).breakEvenCount} Pagos</span>
+                                                    <span className="text-foreground">{(metrics as any).participants} / {(metrics as any).breakEvenCount}</span>
                                                 </div>
-                                                <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                                <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5 p-[1px]">
                                                     <div
                                                         className="h-full bg-linear-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000"
                                                         style={{ width: `${Math.min(Math.round(((metrics as any).participants) / ((metrics as any).breakEvenCount || 1) * 100), 100)}%` }}
                                                     />
                                                 </div>
-                                                <div className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5">
-                                                    <p className="text-[10px] text-[#86868b] leading-relaxed">
-                                                        Faltan <span className="text-blue-400 font-black">{Math.max(0, (metrics as any).breakEvenCount - (metrics as any).participants)}</span> pagos para cubrir los gastos del torneo completo ({(metrics as any).limit} cupos + {(metrics as any).guests} invitados).
-                                                    </p>
-                                                    <p className="text-[10px] text-primary font-bold mt-2 flex items-center gap-1.5">
-                                                        <Star className="w-3 h-3" /> Cada pago aporta ${(metrics as any).netPerPlayer.toLocaleString()} netos.
-                                                    </p>
-                                                </div>
                                             </div>
                                         )}
 
-                                        <div className={`p-4 rounded-2xl border transition-all ${(metrics as any).balance >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-red-500/5 border-red-500/20'}`}>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest">Balance Real:</p>
-                                                <p className={`text-xl font-black ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                                        <div className={`p-3 rounded-xl border transition-all ${(metrics as any).balance >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                                            <div className="flex justify-between items-center">
+                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Balance:</p>
+                                                <p className={`text-lg font-black ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
                                                     ${(metrics as any).balance.toLocaleString()}
                                                 </p>
                                             </div>
-                                            <p className={`text-[9px] font-black uppercase tracking-widest text-right ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
-                                                {(metrics as any).balance >= 0 ? '✓ Superávit Actual' : '✗ Déficit / Pendiente'}
-                                            </p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="apple-card p-6 flex items-center justify-between border-white/10 shadow-sm bg-linear-to-r from-primary/10 via-transparent to-transparent">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                                            <Wallet className="w-5 h-5" />
+                                <div className="apple-card p-3 flex items-center justify-between border-white/10 shadow-sm bg-linear-to-r from-primary/10 via-transparent to-transparent">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                                            <Wallet className="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-widest leading-none mb-1">Costo Total Estimado</p>
-                                            <h4 className="text-lg font-black text-foreground leading-tight">${metrics?.totalCosts.toLocaleString()}</h4>
+                                            <p className="text-[8px] font-bold text-[#86868b] uppercase tracking-widest leading-none mb-0.5">Costo Total Estimado</p>
+                                            <h4 className="text-base font-black text-foreground leading-tight">${metrics?.totalCosts.toLocaleString()}</h4>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-[#5c5c5e]" />
+                                    <ChevronRight className="w-4 h-4 text-[#5c5c5e]" />
                                 </div>
                             </div>
                         </div>
