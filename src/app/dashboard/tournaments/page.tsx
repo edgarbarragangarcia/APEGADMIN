@@ -53,6 +53,7 @@ export default function TournamentsPage() {
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [selectedFinanceTournament, setSelectedFinanceTournament] = useState<string>('Global')
     const [regCounts, setRegCounts] = useState<Record<string, RegistrationCount>>({})
+    const [finances, setFinances] = useState<any[]>([])
     const supabase = createClient()
 
     const fetchTournaments = useCallback(async (silent = false) => {
@@ -72,13 +73,16 @@ export default function TournamentsPage() {
                 regs.forEach(r => {
                     if (!counts[r.tournament_id]) counts[r.tournament_id] = { total: 0, paid: 0 }
                     counts[r.tournament_id].total += 1
-                    // Consideramos 'paid' y 'Confirmado' como pagados
                     if (['paid', 'Confirmado', 'completado', 'Completado'].includes(r.registration_status)) {
                         counts[r.tournament_id].paid += 1
                     }
                 })
                 setRegCounts(counts)
             }
+
+            // Cargar finanzas desde la nueva tabla formal
+            const { data: finData } = await supabase.from('tournament_finances').select('*')
+            if (finData) setFinances(finData)
         }
         if (!silent) setLoading(false)
     }, [supabase])
@@ -89,10 +93,8 @@ export default function TournamentsPage() {
         // Suscripción en tiempo real para mantener sincronía
         const channel = supabase
             .channel('tournaments_changes')
-            .on('postgres_changes',
-                { event: '*', schema: 'public', table: 'tournaments' },
-                () => fetchTournaments(true)
-            )
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'tournaments' }, () => fetchTournaments(true))
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_finances' }, () => fetchTournaments(true))
             .subscribe()
 
         return () => {
@@ -157,105 +159,164 @@ export default function TournamentsPage() {
     }
     const financeBase = getFinanceBase();
 
-    const totalPotentialRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * t.participants_limit), 0)
-    const currentRevenue = financeBase.reduce((sum, t) => sum + (Number(t.price) * (regCounts[t.id]?.paid || 0)), 0)
-    const totalParticipants = financeBase.reduce((sum, t) => sum + (regCounts[t.id]?.total || 0), 0)
+    const totalParticipantsRaw = financeBase.reduce((sum, t) => sum + (regCounts[t.id]?.total || 0), 0)
 
     // Advanced Finance Metrics for Selected Tournament
     const getFinanceMetrics = (tournamentId: string) => {
         if (tournamentId === 'Global') {
-            const totalFixedCosts = tournaments.reduce((sum, t) => {
-                const itemsFixed = t.budget_items?.filter((i: any) => i.type === 'fixed').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0
-                return sum + itemsFixed + Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
-            }, 0)
+            let totalIncome = 0;
+            let totalCosts = 0;
+            let totalParticipantsVisible = 0;
+            let totalPaid = 0;
+            let totalGuestsCount = 0;
+            let totalLimitCount = 0;
+            let totalProjectedCosts = 0;
+            let totalProjectedOtherIncomeTotal = 0;
+            let totalPotentialPlayerRev = 0;
 
-            const totalVariableCosts = tournaments.reduce((sum, t) => {
-                const itemsVar = t.budget_items?.filter((i: any) => i.type === 'per_player').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0
-                const players = regCounts[t.id]?.total || t.current_participants
-                const guests = t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0
-                return sum + ((itemsVar + Number(t.budget_per_player || 0)) * (players + guests))
-            }, 0)
+            tournaments.forEach(t => {
+                const regs = regCounts[t.id] || { total: t.current_participants, paid: 0 };
+                const guestsCount = t.guests ? t.guests.split(/\n/).filter((g: string) => g.trim()).length : 0;
+                const totalPlayers = regs.total + guestsCount;
+                const projectedTotalPlayers = t.participants_limit + guestsCount;
+                const tPrice = Number(t.price) || 0;
 
-            const totalGuests = tournaments.reduce((sum, t) => sum + (t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0), 0)
-            const income = tournaments.reduce((sum, t) => sum + (Number(t.price) * (regCounts[t.id]?.paid || 0)), 0)
-            const totalCosts = totalFixedCosts + totalVariableCosts
-            const balance = income - totalCosts
+                let tIncome = tPrice * regs.paid;
+                let tCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0);
+                let tProjCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0);
+                let tProjOtherIncome = 0;
+
+                const tFinances = finances.filter(f => f.tournament_id === t.id);
+                tFinances.forEach(item => {
+                    const val = Number(item.amount || 0);
+                    if (item.category === 'income') {
+                        tIncome += item.amount_type === 'per_player' ? val * regs.paid : val;
+                        tProjOtherIncome += item.amount_type === 'per_player' ? val * t.participants_limit : val;
+                    } else {
+                        tCosts += item.amount_type === 'per_player' ? val * totalPlayers : val;
+                        tProjCosts += item.amount_type === 'per_player' ? val * projectedTotalPlayers : val;
+                    }
+                });
+
+                totalIncome += tIncome;
+                totalCosts += tCosts;
+                totalParticipantsVisible += regs.total;
+                totalPaid += regs.paid;
+                totalGuestsCount += guestsCount;
+                totalLimitCount += t.participants_limit;
+                totalProjectedCosts += tProjCosts;
+                totalProjectedOtherIncomeTotal += tProjOtherIncome;
+                totalPotentialPlayerRev += tPrice * t.participants_limit;
+            });
 
             return {
-                totalFixedCosts,
-                totalVariableCosts,
-                totalGuests,
+                totalFixedCosts: 0,
+                totalVariableCosts: 0,
+                totalGuests: totalGuestsCount,
                 totalCosts,
-                income,
-                balance,
-                breakEvenPercent: totalCosts > 0 ? Math.min(Math.round((income / totalCosts) * 100), 100) : 0,
+                totalMaxCosts: totalProjectedCosts,
+                income: totalIncome,
+                balance: totalIncome - totalCosts,
+                breakEvenPercent: totalProjectedCosts > 0 ? Math.min(Math.round((totalIncome / totalProjectedCosts) * 100), 100) : 0,
                 breakEvenPlayers: 0,
-                participants: tournaments.reduce((sum, t) => sum + (regCounts[t.id]?.total || t.current_participants), 0),
-                paid: tournaments.reduce((sum, t) => sum + (regCounts[t.id]?.paid || 0), 0),
-                guests: totalGuests,
-                limit: tournaments.reduce((sum, t) => sum + t.participants_limit, 0)
-            }
+                participants: totalParticipantsVisible,
+                paid: totalPaid,
+                guests: totalGuestsCount,
+                limit: totalLimitCount,
+                projectedOtherIncome: totalProjectedOtherIncomeTotal,
+                breakEvenRevenue: totalProjectedCosts,
+                potentialRevenue: totalPotentialPlayerRev + totalProjectedOtherIncomeTotal
+            };
         }
 
-        const t = tournaments.find(tourney => tourney.id === tournamentId)
-        if (!t) return null
+        const t = tournaments.find(tourney => tourney.id === tournamentId);
+        if (!t) return null;
 
-        const currentRegs = regCounts[t.id] || { total: t.current_participants, paid: 0 }
+        const currentRegs = regCounts[t.id] || { total: t.current_participants, paid: 0 };
+        const priceNum = Number(t.price) || 0;
+        const limitNum = Number(t.participants_limit) || 0;
+        const guests = t.guests ? t.guests.split(/\n/).filter((g: string) => g.trim()).length : 0;
+        const totalPlayers = currentRegs.total + guests;
+        const projectedTotalPlayers = limitNum + guests;
 
-        const priceNum = Number(t.price) || 0
-        const limitNum = Number(t.participants_limit) || 0
+        let income = priceNum * currentRegs.paid;
+        let otherRealIncome = 0;
+        let currentCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0);
 
-        // Sumar costos fijos desde budget_items y campos legacy
-        const fixedCosts = (t.budget_items?.filter((i: any) => i.type === 'fixed').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0) +
-            Number(t.budget_prizes || 0) + Number(t.budget_operational || 0)
+        let projectedTotalCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0);
+        let projectedOtherIncome = 0;
 
-        // Sumar costos variables por jugador
-        const varPerPlayer = (t.budget_items?.filter((i: any) => i.type === 'per_player').reduce((s: number, i: any) => s + Number(i.amount || 0), 0) || 0) +
-            Number(t.budget_per_player || 0)
+        const tFinances = finances.filter(f => f.tournament_id === t.id);
+        tFinances.forEach(item => {
+            const val = Number(item.amount || 0);
+            if (item.category === 'income') {
+                income += item.amount_type === 'per_player' ? val * currentRegs.paid : val;
+                projectedOtherIncome += item.amount_type === 'per_player' ? val * limitNum : val;
+            } else {
+                currentCosts += item.amount_type === 'per_player' ? val * totalPlayers : val;
+                projectedTotalCosts += item.amount_type === 'per_player' ? val * projectedTotalPlayers : val;
+            }
+        });
 
-        const guests = t.guests ? t.guests.split(/\\n|\n/).filter((g: string) => g.trim()).length : 0
-
-        const totalVariableCosts = varPerPlayer * (currentRegs.total + guests)
-        const totalCosts = fixedCosts + totalVariableCosts
-        const income = priceNum * currentRegs.paid
-        const balance = income - totalCosts
-
-        // El usuario define el "Punto de Equilibrio" como el total de "Gastos Meta" (costos a capacidad máxima)
-        const totalMaxCosts = fixedCosts + (varPerPlayer * (limitNum + guests))
-        const breakEvenRevenue = totalMaxCosts
-        const breakEvenCount = priceNum > 0 ? Math.ceil(breakEvenRevenue / priceNum) : 0
-        const netPerPlayer = priceNum - varPerPlayer
+        const balance = income - currentCosts;
+        const breakEvenRevenue = projectedTotalCosts;
+        const breakEvenCount = priceNum > 0 ? Math.ceil((projectedTotalCosts - projectedOtherIncome) / priceNum) : 0;
 
         return {
-            fixedCosts,
-            variableCosts: totalVariableCosts,
+            fixedCosts: 0,
+            variableCosts: 0,
             guests,
-            totalCosts,
-            totalMaxCosts,
+            totalCosts: currentCosts,
+            totalMaxCosts: projectedTotalCosts,
             income,
             balance,
             breakEvenCount,
             breakEvenRevenue,
-            netPerPlayer,
+            netPerPlayer: 0,
             participants: currentRegs.total,
             paid: currentRegs.paid,
-            limit: limitNum
-        }
+            limit: limitNum,
+            projectedOtherIncome,
+            potentialRevenue: (priceNum * limitNum) + projectedOtherIncome
+        };
     }
 
     const metrics = getFinanceMetrics(selectedFinanceTournament)
+    const currentRevenue = metrics?.income || 0
+    const totalPotentialRevenue = metrics?.potentialRevenue || 0
+    const totalParticipants = metrics?.participants || 0
+    const projectedGain = (metrics?.potentialRevenue || 0) - (metrics?.totalMaxCosts || 0)
 
     const tourneyChartData = selectedFinanceTournament === 'Global'
-        ? tournaments.slice(0, 7).map(t => ({
-            name: t.name.length > 12 ? t.name.substring(0, 10) + '...' : t.name,
-            revenue: Number(t.price) * (regCounts[t.id]?.total || t.current_participants),
-            target: 0 // No se muestra meta en global para no ensuciar
-        }))
+        ? tournaments.slice(0, 7).map(t => {
+            const regs = regCounts[t.id] || { total: t.current_participants, paid: 0 };
+            const guestsCount = t.guests ? t.guests.split(/\n/).filter((g: string) => g.trim()).length : 0;
+            const totalPlayers = regs.total + guestsCount;
+
+            let tIncome = Number(t.price) * regs.paid;
+            let tCosts = Number(t.budget_prizes || 0) + Number(t.budget_operational || 0);
+
+            const tFinances = finances.filter(f => f.tournament_id === t.id);
+            tFinances.forEach(item => {
+                const val = Number(item.amount || 0);
+                if (item.category === 'income') {
+                    tIncome += item.amount_type === 'per_player' ? val * regs.paid : val;
+                } else {
+                    tCosts += item.amount_type === 'per_player' ? val * totalPlayers : val;
+                }
+            });
+
+            return {
+                name: t.name.length > 12 ? t.name.substring(0, 10) + '...' : t.name,
+                revenue: tIncome,
+                target: tCosts
+            };
+        })
         : [
             {
                 name: 'Inicio',
                 revenue: 0,
-                target: metrics?.fixedCosts || 0
+                target: 0
             },
             {
                 name: 'Recaudado',
@@ -269,12 +330,11 @@ export default function TournamentsPage() {
             },
             {
                 name: 'Potencial',
-                revenue: (financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0),
+                revenue: metrics?.potentialRevenue || 0,
                 target: metrics?.totalMaxCosts || 0
             }
         ];
 
-    const projectedGain = (financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0) - (metrics?.breakEvenRevenue || 0)
 
     const maxTourneyRev = Math.max(...tourneyChartData.map(d => Math.max(d.revenue, d.target)), 1)
     const chartTitle = selectedFinanceTournament === 'Global' ? 'Rendimiento por Torneo' : `Análisis: ${financeBase[0]?.name}`;
@@ -290,7 +350,7 @@ export default function TournamentsPage() {
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                                 <p className="text-[10px] font-bold text-white uppercase tracking-tight">
-                                    {entry.name === 'revenue' ? 'Ingresos' : 'Gastos/Meta'}
+                                    {entry.name === 'revenue' ? 'Recaudo' : 'Gastos/Meta'}
                                 </p>
                             </div>
                             <p className="text-[10px] font-black" style={{ color: entry.color }}>
@@ -301,6 +361,9 @@ export default function TournamentsPage() {
                     {/* Lógica de Ganancia según el punto */}
                     {label === 'Recaudado' && (
                         <div className="mt-2 pt-2 border-t border-white/5">
+                            <p className="text-[8px] font-bold text-[#5c5c5e] uppercase tracking-tighter mb-2 italic">
+                                Desglose: ${((metrics?.paid || 0) * (Number(financeBase[0]?.price) || 0)).toLocaleString()} (Inscrip.) + ${metrics?.projectedOtherIncome.toLocaleString()} (Patrocinios)
+                            </p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">
                                 Estado Actual: <span className={metrics?.balance && metrics.balance >= 0 ? 'text-primary' : 'text-red-500'}>
                                     {metrics?.balance && metrics.balance >= 0 ? `Ganancia $${metrics.balance.toLocaleString()}` : `Déficit $${Math.abs(metrics?.balance || 0).toLocaleString()}`}
@@ -639,7 +702,10 @@ export default function TournamentsPage() {
                                 <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2">Potencial Total</p>
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-foreground">${totalPotentialRevenue.toLocaleString()}</h3>
-                                    <div className="flex items-center gap-1.5 mt-1.5 text-[#5c5c5e]">
+                                    <div className="flex flex-col mt-1.5 text-[#5c5c5e]">
+                                        <span className="text-[10px] font-bold uppercase tracking-tight italic text-primary/70 mb-0.5">
+                                            ${((financeBase[0]?.participants_limit || 0) * (Number(financeBase[0]?.price) || 0)).toLocaleString()} JUG. + ${metrics?.projectedOtherIncome.toLocaleString()} PATROCINIOS
+                                        </span>
                                         <span className="text-[10px] font-bold uppercase tracking-tight">Capacidad Máxima</span>
                                     </div>
                                 </div>
@@ -705,7 +771,7 @@ export default function TournamentsPage() {
                                                     x1="Punto de equilibrio"
                                                     x2="Potencial"
                                                     y1={metrics?.breakEvenRevenue}
-                                                    y2={(financeBase[0] ? (Number(financeBase[0].price) * financeBase[0].participants_limit) : 0)}
+                                                    y2={metrics?.potentialRevenue}
                                                     fill="#3b82f6"
                                                     fillOpacity={0.1}
                                                     stroke="#3b82f6"
@@ -793,12 +859,19 @@ export default function TournamentsPage() {
                                         )}
 
                                         <div className={`p-3 rounded-xl border transition-all ${(metrics as any).balance >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-red-500/5 border-red-500/20'}`}>
-                                            <div className="flex justify-between items-center">
-                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Balance:</p>
-                                                <p className={`text-lg font-black ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
-                                                    ${(metrics as any).balance.toLocaleString()}
+                                            <div className="flex justify-between items-center mb-1">
+                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Balance Actual:</p>
+                                                <p className={`text-sm font-black ${(metrics as any).balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                                                    +${(metrics as any).balance.toLocaleString()}
                                                 </p>
                                             </div>
+                                            <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">Ganancia Proyectada:</p>
+                                                <p className="text-sm font-black text-blue-400">
+                                                    ${projectedGain.toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <p className="text-[7px] text-[#5c5c5e] font-bold uppercase mt-1 tracking-tighter">* Cupo lleno (120 jug.) + Patrocinios</p>
                                         </div>
                                     </div>
                                 </div>
