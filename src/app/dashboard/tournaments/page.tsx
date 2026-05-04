@@ -51,6 +51,18 @@ export default function TournamentsPage() {
     const [activeTab, setActiveTab] = useState<'list' | 'finance' | 'requests'>('list')
     const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [newTournament, setNewTournament] = useState({
+        name: '',
+        description: '',
+        date: '',
+        club: '',
+        price: '',
+        participants_limit: 120,
+        game_mode: 'Stroke Play',
+        address: '',
+        image_url: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2000'
+    })
     const [selectedFinanceTournament, setSelectedFinanceTournament] = useState<string>('Global')
     const [regCounts, setRegCounts] = useState<Record<string, RegistrationCount>>({})
     const [finances, setFinances] = useState<any[]>([])
@@ -101,6 +113,44 @@ export default function TournamentsPage() {
             supabase.removeChannel(channel)
         }
     }, [fetchTournaments, supabase])
+
+    const handleCreateTournament = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setActionLoading('create')
+
+        const { data: userData } = await supabase.auth.getUser()
+        
+        const { error } = await supabase
+            .from('tournaments')
+            .insert([{
+                ...newTournament,
+                price: Number(newTournament.price) || 0,
+                status: 'Abierto (Inscripciones)',
+                approval_status: 'approved',
+                current_participants: 0,
+                creator_id: userData.user?.id
+            }])
+
+        if (error) {
+            console.error('Error creating tournament:', error)
+            alert('Error al crear el torneo: ' + error.message)
+        } else {
+            setIsCreateModalOpen(false)
+            setNewTournament({
+                name: '',
+                description: '',
+                date: '',
+                club: '',
+                price: '',
+                participants_limit: 120,
+                game_mode: 'Stroke Play',
+                address: '',
+                image_url: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2000'
+            })
+            await fetchTournaments()
+        }
+        setActionLoading(null)
+    }
 
     const handleUpdateStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
         setActionLoading(id)
@@ -451,7 +501,10 @@ export default function TournamentsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                    <button className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 text-white font-bold">
+                    <button 
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="apple-button apple-button-primary apple-button-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 text-white font-bold"
+                    >
                         <Plus className="w-4 h-4 text-white" /> <span>Programar Torneo</span>
                     </button>
                 </div>
@@ -1085,6 +1138,149 @@ export default function TournamentsPage() {
                                 </button>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* CREATE TOURNAMENT MODAL */}
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsCreateModalOpen(false)} />
+                    <div className="apple-card w-full max-w-xl max-h-[90vh] border-white/10 p-0 relative overflow-hidden shadow-2xl flex flex-col z-50 animate-fade-up">
+                        <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-black/20">
+                            <div>
+                                <h3 className="text-lg font-black text-white uppercase tracking-tighter">Programar Nuevo Torneo</h3>
+                                <p className="text-[10px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Configura los detalles del evento</p>
+                            </div>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="p-2 rounded-full hover:bg-white/5 text-[#86868b] transition-all">
+                                <XCircle className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCreateTournament} className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Nombre del Torneo</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="Ej. Torneo Apertura 2024"
+                                        className="apple-input w-full"
+                                        value={newTournament.name}
+                                        onChange={e => setNewTournament({ ...newTournament, name: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Fecha</label>
+                                        <input
+                                            required
+                                            type="date"
+                                            className="apple-input w-full"
+                                            value={newTournament.date}
+                                            onChange={e => setNewTournament({ ...newTournament, date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Costo Inscripción ($)</label>
+                                        <input
+                                            required
+                                            type="number"
+                                            placeholder="0"
+                                            className="apple-input w-full"
+                                            value={newTournament.price}
+                                            onChange={e => setNewTournament({ ...newTournament, price: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Club / Sede</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="Ej. Club Militar de Golf"
+                                        className="apple-input w-full"
+                                        value={newTournament.club}
+                                        onChange={e => setNewTournament({ ...newTournament, club: e.target.value })}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Dirección</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="Dirección completa"
+                                        className="apple-input w-full"
+                                        value={newTournament.address}
+                                        onChange={e => setNewTournament({ ...newTournament, address: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Límite Jugadores</label>
+                                        <input
+                                            required
+                                            type="number"
+                                            className="apple-input w-full"
+                                            value={newTournament.participants_limit}
+                                            onChange={e => setNewTournament({ ...newTournament, participants_limit: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Modo de Juego</label>
+                                        <select
+                                            className="apple-input w-full"
+                                            value={newTournament.game_mode}
+                                            onChange={e => setNewTournament({ ...newTournament, game_mode: e.target.value })}
+                                        >
+                                            <option value="Stroke Play">Stroke Play</option>
+                                            <option value="Stableford">Stableford</option>
+                                            <option value="Match Play">Match Play</option>
+                                            <option value="Scramble">Scramble</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Descripción</label>
+                                    <textarea
+                                        rows={3}
+                                        placeholder="Detalles del torneo, premios, etc."
+                                        className="apple-input w-full py-3 resize-none"
+                                        value={newTournament.description}
+                                        onChange={e => setNewTournament({ ...newTournament, description: e.target.value })}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">URL Imagen de Portada</label>
+                                    <input
+                                        type="text"
+                                        placeholder="https://..."
+                                        className="apple-input w-full"
+                                        value={newTournament.image_url}
+                                        onChange={e => setNewTournament({ ...newTournament, image_url: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={actionLoading === 'create'}
+                                className="w-full h-12 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group/btn mt-8"
+                            >
+                                {actionLoading === 'create' ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <Plus className="w-4 h-4" />
+                                )}
+                                Crear y Publicar Torneo
+                            </button>
+                        </form>
                     </div>
                 </div>
             )}
