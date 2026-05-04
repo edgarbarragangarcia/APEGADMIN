@@ -58,6 +58,9 @@ const formatRelativeTime = (dateString: string) => {
 
 const CustomDot = (props: any) => {
     const { cx, cy, payload, onClick } = props
+    
+    // Safety check for coordinates to prevent SVG path errors
+    if (cx === undefined || cy === undefined || isNaN(cx) || isNaN(cy)) return null;
     if (!payload.imageUrl) return (
         <circle
             cx={cx}
@@ -153,7 +156,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                 </div>
 
                 <div className="flex-1 w-full h-full min-h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                         <AreaChart
                             data={data}
                             margin={{ top: 20, right: 30, left: -10, bottom: 10 }}
@@ -203,7 +206,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                 </div>
 
                 <div className="flex-1 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                         <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barGap={8}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                             <XAxis

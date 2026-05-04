@@ -229,7 +229,6 @@ export default function DashboardPage() {
                         i.user = { full_name: prof?.name || 'Usuario', avatar_url: prof?.avatar || null }
                     })
                 }
-                console.log('[SELLER] likes:', likesData.length, likesData.map((l: any) => ({ u: l.user?.full_name, p: l.product?.name })))
                 setOrders(sellerOrders || [])
                 setOffers(offersData)
                 setLikes(likesData)
@@ -245,7 +244,7 @@ export default function DashboardPage() {
             }
 
         } catch (error) {
-            console.error('Error fetching dashboard data:', error)
+            // Silently handle error
         }
         const endTime = performance.now()
         setApiLatency(Math.round(endTime - startTime))
