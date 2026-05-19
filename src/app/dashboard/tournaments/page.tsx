@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import Link from 'next/link'
 import {
     Trophy, Plus, Search, Filter, Calendar, MapPin,
     Users, ChevronLeft, ChevronRight, Eye, Settings,
@@ -585,16 +586,13 @@ export default function TournamentsPage() {
                                                 </div>
                                             </div>
 
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedTournament(t)
-                                                    setIsDetailsModalOpen(true)
-                                                }}
+                                            <Link
+                                                href={`/dashboard/tournaments/${t.id}`}
                                                 className="w-full py-3.5 md:py-4 rounded-2xl bg-white/5 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-white border border-white/10 transition-all flex items-center justify-center gap-3 group/btn shadow-lg"
                                             >
                                                 Ver Detalles
                                                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                            </button>
+                                            </Link>
                                         </div>
                                     ))
                                 )}
@@ -632,12 +630,9 @@ export default function TournamentsPage() {
                                                         <User className="w-5 h-5 text-primary" />
                                                     )}
                                                 </div>
-                                                <div
-                                                    className="min-w-0 cursor-pointer"
-                                                    onClick={() => {
-                                                        setSelectedTournament(request)
-                                                        setIsDetailsModalOpen(true)
-                                                    }}
+                                                <Link
+                                                    href={`/dashboard/tournaments/${request.id}`}
+                                                    className="min-w-0 cursor-pointer flex-1"
                                                 >
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <h4 className="text-base font-black text-foreground uppercase tracking-tighter truncate">{request.name}</h4>
@@ -655,9 +650,8 @@ export default function TournamentsPage() {
                                                         </div>
                                                     </div>
                                                     <p className="text-[10px] text-[#86868b] line-clamp-2 leading-relaxed">
-                                                        {request.description || 'Sin descripción proporcionada.'}
-                                                    </p>
-                                                </div>
+                                                        {request.description || 'Sin descripción proporcionada.'}</p>
+                                                </Link>
                                             </div>
 
                                             <div className="flex gap-2 w-full md:w-auto shrink-0">
