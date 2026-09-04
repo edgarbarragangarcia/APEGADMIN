@@ -252,6 +252,134 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
     // Break even logic
     const breakEvenCount = price > 0 ? Math.ceil(totalCosts / price) : 0
 
+    // ─── MODELO DE NEGOCIO: VIAJE ───────────────────────────────
+    // Un viaje se rige por costo por viajero (hotel, comidas, golf, traslados,
+    // kit) + costos fijos (acompañante, logística, imprevistos). No hay bolsa
+    // de premios. La utilidad viene del margen por viajero.
+    const fixedExpenseItems = finances
+        .filter(i => i.category === 'expense' && i.amount_type === 'fixed')
+        .reduce((a, i) => a + (Number(i.amount) || 0), 0)
+    const perTravelerExpenseItems = finances
+        .filter(i => i.category === 'expense' && i.amount_type === 'per_player')
+        .reduce((a, i) => a + (Number(i.amount) || 0), 0)
+    // budget_per_player = costo operativo APEG por persona; budget_operational = costos fijos del viaje
+    const unitCost = Number(tournament?.budget_per_player || 0) + perTravelerExpenseItems
+    const fixedTripCosts = Number(tournament?.budget_operational || 0) + fixedExpenseItems
+    const avgPaidAmount = paidRegCount > 0 ? incomeFromRegistrations / paidRegCount : 0
+    const marginPerTraveler = avgPaidAmount - unitCost
+    const tripVariableCosts = unitCost * paidRegCount
+    const tripTotalCosts = tripVariableCosts + fixedTripCosts
+    const tripNet = incomeFromRegistrations + otherIncome - tripTotalCosts
+    const tripBreakEven = marginPerTraveler > 0 ? Math.ceil(fixedTripCosts / marginPerTraveler) : 0
+    const fmtM = (n: number) => `$${Math.round(n).toLocaleString('es-CO')}`
+
+    const renderTripFinance = () => (
+        <>
+            {/* Resumen económico del viaje */}
+            <div className="apple-card p-6 border-white/5 bg-white/5 backdrop-blur-md flex flex-col justify-between lg:col-span-1 min-h-[300px]">
+                <div>
+                    <div className="flex items-center gap-2 mb-4 border-b border-white/5 pb-3">
+                        <Receipt className="w-5 h-5 text-primary" />
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest">Economía del Viaje</h3>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="space-y-1 pb-2">
+                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Paquetes (por persona)</span>
+                            {tPackages.length === 0 && <p className="text-xs text-white/40">Sin paquetes configurados</p>}
+                            {tPackages.map((p, i) => (
+                                <div key={i} className="flex justify-between items-center">
+                                    <span className="text-[11px] text-white/70">{p.name}</span>
+                                    <span className="text-xs font-black text-white">{(p.currency || 'USD').toUpperCase()} {Number(p.price).toLocaleString()}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-t border-white/5 pt-3">
+                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Ingreso viajeros ({paidRegCount} pagados):</span>
+                            <span className="text-sm font-black text-primary">+{fmtM(incomeFromRegistrations)} COP</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-t border-white/5 pt-3">
+                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Otros ingresos:</span>
+                            <span className="text-sm font-black text-primary">+{fmtM(otherIncome)} COP</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-t border-white/5 pt-3">
+                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Costo por viajero ({fmtM(unitCost)}) × {paidRegCount}:</span>
+                            <span className="text-sm font-black text-red-500">-{fmtM(tripVariableCosts)} COP</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-t border-white/5 pt-3">
+                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Costos fijos del viaje:</span>
+                            <span className="text-sm font-black text-red-500">-{fmtM(fixedTripCosts)} COP</span>
+                        </div>
+                    </div>
+                </div>
+                <div className={`p-4 rounded-xl border mt-6 ${tripNet >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                    <div className="flex justify-between items-center">
+                        <p className="text-[10px] font-black text-[#86868b] uppercase tracking-widest">Utilidad Neta:</p>
+                        <p className={`text-lg font-black ${tripNet >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                            {tripNet >= 0 ? '+' : ''}{fmtM(tripNet)} COP
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Margen y punto de equilibrio del viaje */}
+            <div className="apple-card p-6 border-white/5 bg-white/5 backdrop-blur-md lg:col-span-2 flex flex-col justify-between min-h-[300px]">
+                <div>
+                    <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-3">
+                        <Target className="w-5 h-5 text-blue-400" />
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest">Rentabilidad del Viaje</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Precio promedio pagado</p>
+                            <span className="text-2xl font-black text-white">{fmtM(avgPaidAmount)}</span>
+                            <p className="text-[9px] text-[#86868b] uppercase mt-1">COP / viajero</p>
+                        </div>
+                        <div>
+                            <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Margen por viajero</p>
+                            <span className={`text-2xl font-black ${marginPerTraveler >= 0 ? 'text-primary' : 'text-red-500'}`}>{marginPerTraveler >= 0 ? '+' : ''}{fmtM(marginPerTraveler)}</span>
+                            <p className="text-[9px] text-[#86868b] uppercase mt-1">precio − costo</p>
+                        </div>
+                        <div>
+                            <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Punto de equilibrio</p>
+                            <span className="text-2xl font-black text-white">{marginPerTraveler > 0 ? tripBreakEven : '—'}</span>
+                            <p className="text-[9px] text-[#86868b] uppercase mt-1">viajeros para cubrir fijos</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-white/2 rounded-2xl border border-white/5">
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-wider mb-2">
+                            <span className="text-[#86868b]">Progreso ({paidRegCount} / {marginPerTraveler > 0 ? tripBreakEven : '?'} viajeros)</span>
+                            <span className={tripNet >= 0 ? 'text-primary' : 'text-amber-400'}>
+                                {marginPerTraveler > 0 ? `${Math.min(Math.round((paidRegCount / Math.max(tripBreakEven, 1)) * 100), 100)}%` : 'Define el costo por viajero'}
+                            </span>
+                        </div>
+                        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className={`h-full ${tripNet >= 0 ? 'bg-primary' : 'bg-amber-500'}`} style={{ width: `${marginPerTraveler > 0 ? Math.min((paidRegCount / Math.max(tripBreakEven, 1)) * 100, 100) : 0}%` }} />
+                        </div>
+                        <p className="text-[9px] font-bold text-[#86868b] uppercase tracking-widest mt-3">
+                            {marginPerTraveler <= 0
+                                ? 'Configura "Costo Op. por Jugador" y "Presupuesto Operativo" en Configuración para calcular la rentabilidad.'
+                                : paidRegCount >= tripBreakEven
+                                    ? `¡Cubierto! Cada viajero adicional deja ${fmtM(marginPerTraveler)} de utilidad.`
+                                    : `Faltan ${tripBreakEven - paidRegCount} viajeros pagados para cubrir los costos fijos.`}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-white/2 rounded-xl border border-white/5">
+                        <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest">Pendientes de pago</p>
+                        <p className="text-lg font-black text-amber-400">{pendingRegCount}</p>
+                    </div>
+                    <div className="p-3 bg-white/2 rounded-xl border border-white/5">
+                        <p className="text-[8px] font-black text-[#86868b] uppercase tracking-widest">Pagos rechazados</p>
+                        <p className="text-lg font-black text-red-400">{rejectedRegCount}</p>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+
     // Handlers for Registration status
     const handleTogglePayment = async (regId: string, currentStatus: string) => {
         setActionLoading(regId)
@@ -738,6 +866,7 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
                         {/* FINANCIAL DASHBOARD */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {isViaje ? renderTripFinance() : (<>
                             {/* Summary Card */}
                             <div className="apple-card p-6 border-white/5 bg-white/5 backdrop-blur-md flex flex-col justify-between lg:col-span-1 min-h-[300px]">
                                 <div>
@@ -879,6 +1008,7 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                     </div>
                                 </div>
                             </div>
+                            </>)}
                         </div>
 
                         {/* Extra general tournament guidelines read only info */}
