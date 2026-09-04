@@ -37,6 +37,9 @@ interface Tournament {
     budget_operational?: number
     guests?: string
     budget_items?: any[]
+    event_type?: 'torneo' | 'viaje'
+    packages?: { id: string; name: string; price: number; currency: string }[]
+    slug?: string
 }
 
 interface RegistrationCount {
@@ -53,17 +56,20 @@ export default function TournamentsPage() {
     const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    const [newTournament, setNewTournament] = useState({
+    const emptyNewTournament = {
         name: '',
         description: '',
         date: '',
         club: '',
+        event_type: 'torneo' as 'torneo' | 'viaje',
         price: '',
+        packages: [] as { id: string; name: string; price: number; currency: string }[],
         participants_limit: 120,
         game_mode: 'Stroke Play',
         address: '',
         image_url: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2000'
-    })
+    }
+    const [newTournament, setNewTournament] = useState(emptyNewTournament)
     const [selectedFinanceTournament, setSelectedFinanceTournament] = useState<string>('Global')
     const [regCounts, setRegCounts] = useState<Record<string, RegistrationCount>>({})
     const [finances, setFinances] = useState<any[]>([])
@@ -121,11 +127,18 @@ export default function TournamentsPage() {
 
         const { data: userData } = await supabase.auth.getUser()
         
+        const isViaje = newTournament.event_type === 'viaje'
+        const cleanPackages = (newTournament.packages || [])
+            .map(p => ({ id: p.id, name: (p.name || '').trim(), price: Number(p.price) || 0, currency: (p.currency || 'USD').toUpperCase() }))
+            .filter(p => p.name && p.price > 0)
+
         const { error } = await supabase
             .from('tournaments')
             .insert([{
                 ...newTournament,
-                price: Number(newTournament.price) || 0,
+                event_type: isViaje ? 'viaje' : 'torneo',
+                price: isViaje ? 0 : (Number(newTournament.price) || 0),
+                packages: isViaje ? cleanPackages : [],
                 status: 'Abierto (Inscripciones)',
                 approval_status: 'approved',
                 current_participants: 0,
@@ -134,20 +147,10 @@ export default function TournamentsPage() {
 
         if (error) {
             console.error('Error creating tournament:', error)
-            alert('Error al crear el torneo: ' + error.message)
+            alert('Error al crear el evento: ' + error.message)
         } else {
             setIsCreateModalOpen(false)
-            setNewTournament({
-                name: '',
-                description: '',
-                date: '',
-                club: '',
-                price: '',
-                participants_limit: 120,
-                game_mode: 'Stroke Play',
-                address: '',
-                image_url: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2000'
-            })
+            setNewTournament(emptyNewTournament)
             await fetchTournaments()
         }
         setActionLoading(null)
@@ -555,12 +558,17 @@ export default function TournamentsPage() {
                                             <div>
                                                 <div className="flex justify-between items-start mb-6">
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className={`text-[8px] md:text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border mb-3 w-fit tracking-widest ${t.status === 'Inscripciones Abiertas'
-                                                            ? 'bg-primary/10 text-primary border-primary/20'
-                                                            : 'bg-white/5 text-[#86868b] border-white/5'
-                                                            }`}>
-                                                            {t.status || 'ABIERTO'}
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5 mb-3">
+                                                            <span className={`text-[8px] md:text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border w-fit tracking-widest ${t.status === 'Inscripciones Abiertas'
+                                                                ? 'bg-primary/10 text-primary border-primary/20'
+                                                                : 'bg-white/5 text-[#86868b] border-white/5'
+                                                                }`}>
+                                                                {t.status || 'ABIERTO'}
+                                                            </span>
+                                                            {(t as any).event_type === 'viaje' && (
+                                                                <span className="text-[8px] md:text-[9px] font-black uppercase px-2 py-1 rounded-lg border bg-blue-500/10 text-blue-400 border-blue-500/20 tracking-widest">Viaje</span>
+                                                            )}
+                                                        </div>
                                                         <h3 className="text-lg md:text-xl font-black text-foreground group-hover:text-primary transition-colors leading-tight mb-2 uppercase tracking-tighter truncate">
                                                             {t.name}
                                                         </h3>
@@ -1154,7 +1162,24 @@ export default function TournamentsPage() {
                         <form onSubmit={handleCreateTournament} className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Nombre del Torneo</label>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Tipo de Evento</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {(['torneo', 'viaje'] as const).map(t => (
+                                            <button
+                                                key={t}
+                                                type="button"
+                                                onClick={() => setNewTournament({ ...newTournament, event_type: t })}
+                                                className={`px-3 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wide transition-all border
+                                                    ${newTournament.event_type === t ? 'bg-primary text-white border-primary' : 'bg-white/5 text-[#86868b] border-white/10 hover:text-white'}`}
+                                            >
+                                                {t === 'torneo' ? 'Torneo (precio único)' : 'Viaje (por paquetes)'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Nombre del Evento</label>
                                     <input
                                         required
                                         type="text"
@@ -1176,10 +1201,10 @@ export default function TournamentsPage() {
                                             onChange={e => setNewTournament({ ...newTournament, date: e.target.value })}
                                         />
                                     </div>
+                                    {newTournament.event_type !== 'viaje' && (
                                     <div>
                                         <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Costo Inscripción ($)</label>
                                         <input
-                                            required
                                             type="number"
                                             placeholder="0"
                                             className="apple-input w-full"
@@ -1187,7 +1212,41 @@ export default function TournamentsPage() {
                                             onChange={e => setNewTournament({ ...newTournament, price: e.target.value })}
                                         />
                                     </div>
+                                    )}
                                 </div>
+
+                                {newTournament.event_type === 'viaje' && (
+                                    <div className="rounded-xl border border-white/10 bg-white/2 p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[9px] font-black text-primary uppercase tracking-widest">Paquetes / Habitaciones</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewTournament({ ...newTournament, packages: [...newTournament.packages, { id: Date.now().toString(), name: '', price: 0, currency: 'USD' }] })}
+                                                className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[9px] font-black"
+                                            >+ Agregar</button>
+                                        </div>
+                                        <p className="text-[9px] text-[#86868b] leading-relaxed">Los paquetes en USD se cobran en pesos (COP) a la TRM oficial del día.</p>
+                                        {newTournament.packages.map((pkg, idx) => (
+                                            <div key={pkg.id} className="grid grid-cols-[1fr_90px_70px_28px] gap-2 items-center">
+                                                <input type="text" placeholder="Habitación Doble" className="apple-input w-full text-xs"
+                                                    value={pkg.name}
+                                                    onChange={e => { const n = [...newTournament.packages]; n[idx] = { ...n[idx], name: e.target.value }; setNewTournament({ ...newTournament, packages: n }); }} />
+                                                <input type="number" placeholder="Precio" className="apple-input w-full text-xs"
+                                                    value={pkg.price || ''}
+                                                    onChange={e => { const n = [...newTournament.packages]; n[idx] = { ...n[idx], price: Number(e.target.value) }; setNewTournament({ ...newTournament, packages: n }); }} />
+                                                <select className="apple-input w-full text-xs" value={pkg.currency}
+                                                    onChange={e => { const n = [...newTournament.packages]; n[idx] = { ...n[idx], currency: e.target.value }; setNewTournament({ ...newTournament, packages: n }); }}>
+                                                    <option value="USD">USD</option>
+                                                    <option value="COP">COP</option>
+                                                </select>
+                                                <button type="button" className="p-1.5 rounded-lg text-[#86868b] hover:text-red-500 hover:bg-red-500/10"
+                                                    onClick={() => setNewTournament({ ...newTournament, packages: newTournament.packages.filter((_, i) => i !== idx) })}>
+                                                    <XCircle className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
                                 <div>
                                     <label className="text-[10px] font-black text-[#86868b] uppercase tracking-widest mb-2 block">Club / Sede</label>

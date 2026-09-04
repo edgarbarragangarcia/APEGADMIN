@@ -25,9 +25,21 @@ interface Registration {
     player_phone: string
     player_federation_code: string
     player_handicap: number
+    player_document: string
+    player_birthdate: string | null
+    player_nationality: string | null
     registration_status: string
     payment_date: string | null
     created_at: string
+    // Contabilidad / Mercado Pago
+    selected_package: string | null
+    package_price: number | null
+    payment_currency: string | null
+    mp_status: string | null
+    mp_status_detail: string | null
+    mp_amount: number | null
+    mp_payment_id: string | null
+    mp_reference: string | null
 }
 
 interface Tournament {
@@ -57,6 +69,8 @@ interface Tournament {
     payment_phone: string
     payment_key: string
     slug: string
+    event_type: 'torneo' | 'viaje'
+    packages: { id: string; name: string; price: number; currency: string }[]
 }
 
 interface FinanceItem {
@@ -83,7 +97,7 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
     // Filter & Search states for players tab
     const [playerSearch, setPlayerSearch] = useState('')
-    const [playerFilter, setPlayerFilter] = useState<'all' | 'paid' | 'pending' | 'guests'>('all')
+    const [playerFilter, setPlayerFilter] = useState<'all' | 'paid' | 'pending' | 'rejected' | 'guests'>('all')
 
     // Modal States
     const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false)
@@ -135,9 +149,20 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                     player_phone: r.player_phone || 'Sin teléfono',
                     player_federation_code: r.player_federation_code || '',
                     player_handicap: Number(r.player_handicap) || 0,
+                    player_document: r.player_document || '',
+                    player_birthdate: r.player_birthdate || null,
+                    player_nationality: r.player_nationality || null,
                     registration_status: r.registration_status || 'registered',
                     payment_date: r.payment_date || null,
-                    created_at: r.created_at
+                    created_at: r.created_at,
+                    selected_package: r.selected_package || null,
+                    package_price: r.package_price != null ? Number(r.package_price) : null,
+                    payment_currency: r.payment_currency || null,
+                    mp_status: r.mp_status || null,
+                    mp_status_detail: r.mp_status_detail || null,
+                    mp_amount: r.mp_amount != null ? Number(r.mp_amount) : null,
+                    mp_payment_id: r.mp_payment_id || null,
+                    mp_reference: r.mp_reference || null,
                 })))
             }
 
@@ -179,16 +204,33 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
         ? tournament.guests.split('\n').map(g => g.trim()).filter(g => g.length > 0)
         : []
 
+    // Tipo de evento
+    const isViaje = tournament?.event_type === 'viaje'
+    const tPackages = Array.isArray(tournament?.packages) ? tournament!.packages : []
+
+    // Estados de pago
+    const PAID_STATES = ['paid', 'Confirmado', 'completado', 'Completado']
+    const REJECTED_STATES = ['Rechazado', 'rejected', 'cancelled', 'Cancelado']
+    const isRegPaid = (r: Registration) => PAID_STATES.includes(r.registration_status)
+    const isRegRejected = (r: Registration) => REJECTED_STATES.includes(r.registration_status) || r.mp_status === 'rejected' || r.mp_status === 'cancelled'
+    const isRegPending = (r: Registration) => !isRegPaid(r) && !isRegRejected(r) && r.registration_status !== 'Invitado'
+
     // Helper counts
     const totalRegCount = registrations.length
-    const paidRegCount = registrations.filter(r => ['paid', 'Confirmado', 'completado', 'Completado'].includes(r.registration_status)).length
-    const pendingRegCount = totalRegCount - paidRegCount
+    const paidRegCount = registrations.filter(isRegPaid).length
+    const pendingRegCount = registrations.filter(isRegPending).length
+    const rejectedRegCount = registrations.filter(isRegRejected).length
     const guestsCount = guestList.length
     const totalPlayersCount = paidRegCount + guestsCount // Paid players + Invited guests (actual fields/confirmed attendees)
 
+    // Monto pagado real de una inscripción (COP)
+    const regAmount = (r: Registration) => Number(r.mp_amount) || Number(r.package_price) || (Number(tournament?.price) || 0)
+
     // Financial Metrics
     const price = Number(tournament?.price) || 0
-    const incomeFromRegistrations = paidRegCount * price
+    const incomeFromRegistrations = isViaje
+        ? registrations.filter(isRegPaid).reduce((acc, r) => acc + regAmount(r), 0)
+        : paidRegCount * price
 
     // Parse extra income/expenses
     let otherIncome = 0
@@ -333,7 +375,9 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                 description: editForm.description,
                 date: editForm.date,
                 club: editForm.club,
-                price: Number(editForm.price) || 0,
+                event_type: editForm.event_type === 'viaje' ? 'viaje' : 'torneo',
+                price: editForm.event_type === 'viaje' ? 0 : (Number(editForm.price) || 0),
+                packages: (editForm.event_type === 'viaje' ? (editForm.packages || []) : []) as any,
                 participants_limit: Number(editForm.participants_limit) || 120,
                 game_mode: editForm.game_mode,
                 address: editForm.address,
@@ -488,13 +532,17 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
     // Filter players list
     const filteredPlayers = registrations.filter(r => {
+        const q = playerSearch.toLowerCase()
         const matchSearch =
-            r.player_name.toLowerCase().includes(playerSearch.toLowerCase()) ||
-            r.player_email.toLowerCase().includes(playerSearch.toLowerCase()) ||
-            r.player_federation_code.toLowerCase().includes(playerSearch.toLowerCase())
+            r.player_name.toLowerCase().includes(q) ||
+            r.player_email.toLowerCase().includes(q) ||
+            r.player_federation_code.toLowerCase().includes(q) ||
+            (r.player_document || '').toLowerCase().includes(q) ||
+            (r.player_phone || '').toLowerCase().includes(q)
 
-        if (playerFilter === 'paid') return matchSearch && ['paid', 'Confirmado', 'completado', 'Completado'].includes(r.registration_status)
-        if (playerFilter === 'pending') return matchSearch && !['paid', 'Confirmado', 'completado', 'Completado'].includes(r.registration_status)
+        if (playerFilter === 'paid') return matchSearch && isRegPaid(r)
+        if (playerFilter === 'pending') return matchSearch && isRegPending(r)
+        if (playerFilter === 'rejected') return matchSearch && isRegRejected(r)
         if (playerFilter === 'guests') return false // Guests are separated
         return matchSearch
     })
@@ -673,17 +721,17 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                 </div>
                             </div>
 
-                            {/* KPI 4: Invited guests */}
+                            {/* KPI 4: Invitados (torneo) / Pagos rechazados (viaje) */}
                             <div className="apple-card p-5 border-white/5 bg-white/5 backdrop-blur-md flex flex-col justify-between group overflow-hidden relative min-h-[140px]">
                                 <div className="absolute -top-4 -right-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                    <Award size={90} className="text-blue-500" />
+                                    {isViaje ? <X size={90} className="text-red-500" /> : <Award size={90} className="text-blue-500" />}
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1">Invitados Directos</p>
-                                    <h3 className="text-3xl font-black text-blue-400">{guestsCount}</h3>
+                                    <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1">{isViaje ? 'Pagos Rechazados' : 'Invitados Directos'}</p>
+                                    <h3 className={`text-3xl font-black ${isViaje ? 'text-red-400' : 'text-blue-400'}`}>{isViaje ? rejectedRegCount : guestsCount}</h3>
                                 </div>
                                 <div className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider mt-3">
-                                    Cupos especiales autorizados
+                                    {isViaje ? 'Requieren seguimiento' : 'Cupos especiales autorizados'}
                                 </div>
                             </div>
                         </div>
@@ -699,10 +747,25 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex justify-between items-center py-1">
-                                            <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Costo Inscripción:</span>
-                                            <span className="text-sm font-black text-white">${price.toLocaleString()} COP</span>
-                                        </div>
+                                        {isViaje ? (
+                                            <div className="py-1 space-y-1">
+                                                <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Paquetes:</span>
+                                                {tPackages.length === 0 && <p className="text-xs text-white/50">Sin paquetes configurados</p>}
+                                                {tPackages.map((p, i) => (
+                                                    <div key={i} className="flex justify-between items-center">
+                                                        <span className="text-[11px] text-white/70">{p.name}</span>
+                                                        <span className="text-xs font-black text-white">
+                                                            {(p.currency || 'USD').toUpperCase()} {Number(p.price).toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex justify-between items-center py-1">
+                                                <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Costo Inscripción:</span>
+                                                <span className="text-sm font-black text-white">${price.toLocaleString()} COP</span>
+                                            </div>
+                                        )}
                                         <div className="flex justify-between items-center py-1 border-t border-white/5 pt-3">
                                             <span className="text-[10px] text-[#86868b] font-black uppercase tracking-wider">Ingreso Inscripciones:</span>
                                             <span className="text-sm font-black text-primary">+${incomeFromRegistrations.toLocaleString()} COP</span>
@@ -743,10 +806,14 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                                         <div className="space-y-6 text-left">
                                             <div>
-                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">Meta de Jugadores para Cubrir Gastos</p>
+                                                <p className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5">
+                                                    {isViaje ? 'Recaudado (viajeros pagados)' : 'Meta de Jugadores para Cubrir Gastos'}
+                                                </p>
                                                 <div className="flex items-baseline gap-2">
-                                                    <span className="text-3xl font-black text-white">{breakEvenCount}</span>
-                                                    <span className="text-xs font-bold text-[#86868b] uppercase">Jugadores Pagados</span>
+                                                    <span className="text-3xl font-black text-white">
+                                                        {isViaje ? `$${Math.round(incomeFromRegistrations).toLocaleString()}` : breakEvenCount}
+                                                    </span>
+                                                    <span className="text-xs font-bold text-[#86868b] uppercase">{isViaje ? `COP · ${paidRegCount} pagados` : 'Jugadores Pagados'}</span>
                                                 </div>
                                             </div>
 
@@ -761,15 +828,30 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
                                         {/* Visualization / Progress radial mock */}
                                         <div className="flex flex-col items-center justify-center p-4 bg-white/2 rounded-2xl border border-white/5">
-                                            <p className="text-[10px] font-black text-white uppercase tracking-wider mb-3">Progreso de Sostenibilidad</p>
-                                            <div className="text-4xl font-black text-primary mb-1">
-                                                {breakEvenCount > 0 ? Math.min(Math.round((paidRegCount / breakEvenCount) * 100), 100) : 100}%
-                                            </div>
-                                            <p className="text-[8px] font-bold text-[#86868b] uppercase tracking-widest text-center mt-1">
-                                                {paidRegCount >= breakEvenCount
-                                                    ? "¡Superado! El torneo genera utilidades"
-                                                    : `Faltan ${breakEvenCount - paidRegCount} jugadores pagados para cubrir gastos.`}
+                                            <p className="text-[10px] font-black text-white uppercase tracking-wider mb-3">
+                                                {isViaje ? 'Balance del Viaje' : 'Progreso de Sostenibilidad'}
                                             </p>
+                                            {isViaje ? (
+                                                <>
+                                                    <div className={`text-4xl font-black mb-1 ${netBalance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                                                        {netBalance >= 0 ? '+' : ''}{Math.round(netBalance).toLocaleString()}
+                                                    </div>
+                                                    <p className="text-[8px] font-bold text-[#86868b] uppercase tracking-widest text-center mt-1">
+                                                        {rejectedRegCount > 0 ? `${rejectedRegCount} pago(s) rechazado(s) · ` : ''}{pendingRegCount} pendiente(s)
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="text-4xl font-black text-primary mb-1">
+                                                        {breakEvenCount > 0 ? Math.min(Math.round((paidRegCount / breakEvenCount) * 100), 100) : 100}%
+                                                    </div>
+                                                    <p className="text-[8px] font-bold text-[#86868b] uppercase tracking-widest text-center mt-1">
+                                                        {paidRegCount >= breakEvenCount
+                                                            ? "¡Superado! El torneo genera utilidades"
+                                                            : `Faltan ${breakEvenCount - paidRegCount} jugadores pagados para cubrir gastos.`}
+                                                    </p>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -848,14 +930,14 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
                             {/* Filters */}
                             <div className="flex gap-1 bg-black/30 p-1 rounded-xl border border-white/5 overflow-x-auto no-scrollbar shrink-0">
-                                {(['all', 'paid', 'pending'] as const).map((f) => (
+                                {(['all', 'paid', 'pending', 'rejected'] as const).map((f) => (
                                     <button
                                         key={f}
                                         onClick={() => setPlayerFilter(f)}
                                         className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap
                                             ${playerFilter === f ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-[#86868b] hover:text-foreground'}`}
                                     >
-                                        {f === 'all' ? 'Todos' : f === 'paid' ? 'Pagados' : 'Pendientes'}
+                                        {f === 'all' ? `Todos (${totalRegCount})` : f === 'paid' ? `Pagados (${paidRegCount})` : f === 'pending' ? `Pendientes (${pendingRegCount})` : `Rechazados (${rejectedRegCount})`}
                                     </button>
                                 ))}
                             </div>
@@ -885,7 +967,7 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
 
                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
                             {/* Main Registrations Table */}
-                            <div className="xl:col-span-2 apple-card overflow-hidden border-white/5 bg-white/5 backdrop-blur-md p-0">
+                            <div className={`${isViaje ? 'xl:col-span-3' : 'xl:col-span-2'} apple-card overflow-hidden border-white/5 bg-white/5 backdrop-blur-md p-0`}>
                                 <div className="p-5 border-b border-white/5 flex items-center justify-between">
                                     <h3 className="text-sm font-black text-white uppercase tracking-widest">Lista de Jugadores Inscritos ({filteredPlayers.length})</h3>
                                     <span className="text-[10px] font-black text-primary uppercase">Directos de App / Web</span>
@@ -911,9 +993,12 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                                 </tr>
                                             ) : (
                                                 filteredPlayers.map((player) => {
-                                                    const isPaid = ['paid', 'Confirmado', 'completado', 'Completado'].includes(player.registration_status)
+                                                    const isPaid = isRegPaid(player)
+                                                    const isRejected = isRegRejected(player)
+                                                    const amountCop = regAmount(player)
+                                                    const fmtCop = (n: number) => `$${Math.round(n).toLocaleString('es-CO')}`
                                                     return (
-                                                        <tr key={player.id} className="hover:bg-white/2 transition-colors">
+                                                        <tr key={player.id} className="hover:bg-white/2 transition-colors align-top">
                                                             {/* Player name */}
                                                             <td className="p-4">
                                                                 <div className="flex items-center gap-3">
@@ -932,14 +1017,20 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                                             {/* Contact */}
                                                             <td className="p-4">
                                                                 <div className="space-y-1">
-                                                                    <div className="flex items-center gap-1.5 text-[10px] text-white/80">
+                                                                    <a href={`mailto:${player.player_email}`} className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-primary">
                                                                         <Mail className="w-3 h-3 text-primary/60 shrink-0" />
-                                                                        <span className="truncate max-w-[150px]">{player.player_email}</span>
-                                                                    </div>
-                                                                    {player.player_phone && (
-                                                                        <div className="flex items-center gap-1.5 text-[10px] text-white/80">
+                                                                        <span className="truncate max-w-[170px]">{player.player_email}</span>
+                                                                    </a>
+                                                                    {player.player_phone && player.player_phone !== 'Sin teléfono' && (
+                                                                        <a href={`tel:${player.player_phone}`} className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-primary">
                                                                             <Phone className="w-3 h-3 text-primary/60 shrink-0" />
                                                                             <span>{player.player_phone}</span>
+                                                                        </a>
+                                                                    )}
+                                                                    {player.player_document && (
+                                                                        <div className="flex items-center gap-1 text-[10px] text-white/60">
+                                                                            <span className="text-[#86868b] font-bold">CC:</span>
+                                                                            <span className="font-semibold">{player.player_document}</span>
                                                                         </div>
                                                                     )}
                                                                 </div>
@@ -948,40 +1039,70 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                                             {/* Details */}
                                                             <td className="p-4">
                                                                 <div className="space-y-1 text-[10px]">
-                                                                    <div className="flex items-center gap-1 text-white/80">
-                                                                        <span className="text-[#86868b] font-bold">FED:</span>
-                                                                        <span className="font-semibold uppercase">{player.player_federation_code || 'N/A'}</span>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-1 text-white/80">
-                                                                        <span className="text-[#86868b] font-bold">HCP:</span>
-                                                                        <span className="font-semibold text-primary">{player.player_handicap}</span>
-                                                                    </div>
+                                                                    {isViaje ? (
+                                                                        <>
+                                                                            {player.selected_package && (
+                                                                                <div className="flex items-center gap-1 text-white/80">
+                                                                                    <span className="text-[#86868b] font-bold">PLAN:</span>
+                                                                                    <span className="font-semibold text-primary uppercase">{player.selected_package}</span>
+                                                                                </div>
+                                                                            )}
+                                                                            {player.player_nationality && (
+                                                                                <div className="flex items-center gap-1 text-white/70">
+                                                                                    <span className="text-[#86868b] font-bold">NAC:</span>
+                                                                                    <span className="font-semibold">{player.player_nationality}</span>
+                                                                                </div>
+                                                                            )}
+                                                                            {player.player_birthdate && (
+                                                                                <div className="flex items-center gap-1 text-white/70">
+                                                                                    <span className="text-[#86868b] font-bold">NAC.:</span>
+                                                                                    <span className="font-semibold">{new Date(player.player_birthdate).toLocaleDateString('es-CO', { timeZone: 'UTC' })}</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <div className="flex items-center gap-1 text-white/80">
+                                                                                <span className="text-[#86868b] font-bold">FED:</span>
+                                                                                <span className="font-semibold uppercase">{player.player_federation_code || 'N/A'}</span>
+                                                                            </div>
+                                                                            <div className="flex items-center gap-1 text-white/80">
+                                                                                <span className="text-[#86868b] font-bold">HCP:</span>
+                                                                                <span className="font-semibold text-primary">{player.player_handicap}</span>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
                                                                 </div>
                                                             </td>
 
                                                             {/* Status payment */}
                                                             <td className="p-4">
-                                                                <button
-                                                                    onClick={() => handleTogglePayment(player.id, player.registration_status)}
-                                                                    disabled={actionLoading === player.id}
-                                                                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all flex items-center gap-1.5
-                                                                        ${isPaid
-                                                                            ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20'
-                                                                            : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
-                                                                        }`}
-                                                                >
-                                                                    {isPaid ? (
-                                                                        <>
-                                                                            <Check className="w-3 h-3" />
-                                                                            <span>Pagado</span>
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <Clock className="w-3 h-3" />
-                                                                            <span>Pendiente</span>
-                                                                        </>
+                                                                <div className="space-y-1.5">
+                                                                    <button
+                                                                        onClick={() => handleTogglePayment(player.id, player.registration_status)}
+                                                                        disabled={actionLoading === player.id}
+                                                                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all flex items-center gap-1.5
+                                                                            ${isPaid
+                                                                                ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20'
+                                                                                : isRejected
+                                                                                    ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
+                                                                                    : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
+                                                                            }`}
+                                                                    >
+                                                                        {isPaid ? (<><Check className="w-3 h-3" /><span>Pagado</span></>)
+                                                                            : isRejected ? (<><X className="w-3 h-3" /><span>Rechazado</span></>)
+                                                                            : (<><Clock className="w-3 h-3" /><span>Pendiente</span></>)}
+                                                                    </button>
+                                                                    {(isViaje || player.mp_payment_id || player.package_price) && (
+                                                                        <p className="text-[9px] font-bold text-white/70">{fmtCop(amountCop)} COP</p>
                                                                     )}
-                                                                </button>
+                                                                    {isRejected && player.mp_status_detail && (
+                                                                        <p className="text-[8px] text-red-400/70 max-w-[140px]">{player.mp_status_detail}</p>
+                                                                    )}
+                                                                    {player.mp_payment_id && (
+                                                                        <p className="text-[8px] text-[#86868b]">MP #{player.mp_payment_id}</p>
+                                                                    )}
+                                                                </div>
                                                             </td>
 
                                                             {/* Actions */}
@@ -1003,7 +1124,8 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                 </div>
                             </div>
 
-                            {/* Guest / Invitados Card Manager */}
+                            {/* Guest / Invitados Card Manager — no aplica a viajes */}
+                            {!isViaje && (
                             <div className="apple-card border-white/5 bg-white/5 backdrop-blur-md p-5 text-left space-y-6">
                                 <div>
                                     <h3 className="text-sm font-black text-white uppercase tracking-widest">Lista de Invitados ({guestsCount})</h3>
@@ -1057,6 +1179,7 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                     )}
                                 </div>
                             </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -1145,17 +1268,79 @@ export default function TournamentDashboardPage({ params }: { params: Promise<{ 
                                 <p className="text-[9px] text-[#86868b] font-bold uppercase tracking-widest mt-1">Control del registro y aforos</p>
                             </div>
 
+                            <div>
+                                <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5 block">Tipo de Evento</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {(['torneo', 'viaje'] as const).map(t => (
+                                        <button
+                                            key={t}
+                                            type="button"
+                                            onClick={() => setEditForm({ ...editForm, event_type: t })}
+                                            className={`px-3 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wide transition-all border
+                                                ${(editForm.event_type || 'torneo') === t ? 'bg-primary text-white border-primary' : 'bg-white/5 text-[#86868b] border-white/10 hover:text-white'}`}
+                                        >
+                                            {t === 'torneo' ? 'Torneo (precio único)' : 'Viaje (por paquetes)'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {editForm.event_type === 'viaje' && (
+                                <div className="rounded-xl border border-white/10 bg-white/2 p-4 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black text-primary uppercase tracking-widest">Paquetes / Habitaciones</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditForm({ ...editForm, packages: [...(editForm.packages || []), { id: Date.now().toString(), name: '', price: 0, currency: 'USD' }] })}
+                                            className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[9px] font-black"
+                                        >+ Agregar</button>
+                                    </div>
+                                    <p className="text-[9px] text-[#86868b] leading-relaxed">Los paquetes en USD se cobran en pesos (COP) a la TRM oficial del día de la inscripción.</p>
+                                    {(editForm.packages || []).map((pkg, idx) => (
+                                        <div key={pkg.id || idx} className="grid grid-cols-[1fr_90px_70px_28px] gap-2 items-center">
+                                            <input
+                                                type="text" placeholder="Nombre (ej: Habitación Doble)"
+                                                className="apple-input w-full text-xs"
+                                                value={pkg.name}
+                                                onChange={e => { const n = [...(editForm.packages || [])]; n[idx] = { ...n[idx], name: e.target.value }; setEditForm({ ...editForm, packages: n }); }}
+                                            />
+                                            <input
+                                                type="number" placeholder="Precio"
+                                                className="apple-input w-full text-xs"
+                                                value={pkg.price || ''}
+                                                onChange={e => { const n = [...(editForm.packages || [])]; n[idx] = { ...n[idx], price: Number(e.target.value) }; setEditForm({ ...editForm, packages: n }); }}
+                                            />
+                                            <select
+                                                className="apple-input w-full text-xs"
+                                                value={pkg.currency || 'USD'}
+                                                onChange={e => { const n = [...(editForm.packages || [])]; n[idx] = { ...n[idx], currency: e.target.value }; setEditForm({ ...editForm, packages: n }); }}
+                                            >
+                                                <option value="USD">USD</option>
+                                                <option value="COP">COP</option>
+                                            </select>
+                                            <button
+                                                type="button"
+                                                onClick={() => { const n = (editForm.packages || []).filter((_, i) => i !== idx); setEditForm({ ...editForm, packages: n }); }}
+                                                className="p-1.5 rounded-lg text-[#86868b] hover:text-red-500 hover:bg-red-500/10"
+                                            ><X className="w-4 h-4" /></button>
+                                        </div>
+                                    ))}
+                                    {(editForm.packages || []).length === 0 && <p className="text-[10px] text-white/30 text-center py-1">Sin paquetes definidos</p>}
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {editForm.event_type !== 'viaje' && (
                                 <div>
                                     <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5 block">Costo Inscripción ($)</label>
                                     <input
-                                        required
                                         type="number"
                                         className="apple-input w-full"
                                         value={editForm.price || 0}
                                         onChange={e => setEditForm({ ...editForm, price: Number(e.target.value) })}
                                     />
                                 </div>
+                                )}
 
                                 <div>
                                     <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest mb-1.5 block">Límite de Jugadores</label>
